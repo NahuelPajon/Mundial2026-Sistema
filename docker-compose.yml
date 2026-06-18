@@ -1,0 +1,17 @@
+services:
+  db:
+    image: postgres:16
+    container_name: mundial2026_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mundial
+      POSTGRES_PASSWORD: mundial2026
+      POSTGRES_DB: ticketing
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/tablas_mundial2026.sql:/docker-entrypoint-initdb.d/01_tablas.sql
+ 
+volumes:
+  pgdata:
