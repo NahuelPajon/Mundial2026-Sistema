@@ -1,1 +1,5 @@
 .env
+
+backend/**/appsettings.json
+backend/**/appsettings.Development.json
+backend/**/appsettings.Local.json
