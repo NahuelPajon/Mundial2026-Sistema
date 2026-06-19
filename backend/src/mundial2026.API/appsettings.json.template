@@ -1,0 +1,12 @@
+{
+  "ConnectionStrings": {
+    "PostgresConnection": "Host=CAMBIAR_HOST;Port=5432;Database=mundial2026;Username=CAMBIAR_USUARIO;Password=CAMBIAR_CONTRASEÑA"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "Ee7NJAN7/kY=",
+  "success": true,
+  "projectFilePath": "E:\\desarrollo\\BD II\\mundial2026\\Mundial2026-Sistema\\backend\\src\\mundial2026.API\\mundial2026.API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\nahue\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.9\\microsoft.aspnetcore.openapi.10.0.9.nupkg.sha512",
+    "C:\\Users\\nahue\\.nuget\\packages\\microsoft.openapi\\2.0.0\\microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
