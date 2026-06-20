@@ -1,5 +1,53 @@
+# Environment variables
 .env
+.env.local
+.env.*.local
 
+# Backend - .NET
 backend/**/appsettings.json
 backend/**/appsettings.Development.json
 backend/**/appsettings.Local.json
+backend/**/bin/
+backend/**/obj/
+backend/**/.vs/
+backend/**/.vscode/
+backend/**/*.user
+backend/**/*.suo
+backend/**/*.sln.iml
+backend/**/.DS_Store
+backend/**/node_modules/
+
+# Frontend - React
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+npm-debug.log*
