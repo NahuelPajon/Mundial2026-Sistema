@@ -5,17 +5,17 @@
 -- ------------------------------------------------------------
 -- PERFILES
 -- ------------------------------------------------------------
-INSERT INTO Perfil (email, pais_dir, localidad, calle, numero_dir, cod_postal, doc_pais, doc_tipo, doc_numero) VALUES
-('admin.usa@mundial.com',       'USA',       'New York',         'Broadway',         '100',  '10001', 'USA',       'Passport',  'US123456'),
-('admin.mex@mundial.com',       'México',    'Ciudad de México',  'Reforma',          '200',  '06600', 'México',    'INE',       'MX789012'),
-('funcionario1@mundial.com',    'USA',       'Los Angeles',      'Sunset Blvd',      '300',  '90001', 'USA',       'Passport',  'US234567'),
-('funcionario2@mundial.com',    'México',    'Guadalajara',      'Independencia',    '400',  '44100', 'México',    'INE',       'MX345678'),
-('juan.perez@gmail.com',        'Uruguay',   'Montevideo',       '18 de Julio',      '1234', '11200', 'Uruguay',   'CI',        'UY111111'),
-('maria.garcia@gmail.com',      'Uruguay',   'Montevideo',       'Rivera',           '567',  '11300', 'Uruguay',   'CI',        'UY222222'),
-('carlos.lopez@gmail.com',      'Argentina', 'Buenos Aires',     'Corrientes',       '890',  'C1043', 'Argentina', 'DNI',       'AR333333'),
-('ana.martinez@gmail.com',      'Argentina', 'Rosario',          'Pellegrini',       '321',  'S2000', 'Argentina', 'DNI',       'AR444444'),
-('pedro.silva@gmail.com',       'Brasil',    'São Paulo',        'Paulista',         '1500', '01310', 'Brasil',    'CPF',       'BR555555'),
-('lucia.fernandez@gmail.com',   'Uruguay',   'Montevideo',       'Bulevar Artigas',  '999',  '11600', 'Uruguay',   'CI',        'UY666666');
+INSERT INTO Perfil (email, pais_dir, localidad, calle, numero_dir, cod_postal, doc_pais, doc_tipo, doc_numero, password_hash) VALUES
+('admin.usa@mundial.com',       'USA',       'New York',         'Broadway',         '100',  '10001', 'USA',       'Passport',  'US123456', crypt('Password123!', gen_salt('bf'))),
+('admin.mex@mundial.com',       'México',    'Ciudad de México',  'Reforma',          '200',  '06600', 'México',    'INE',       'MX789012', crypt('Password123!', gen_salt('bf'))),
+('funcionario1@mundial.com',    'USA',       'Los Angeles',      'Sunset Blvd',      '300',  '90001', 'USA',       'Passport',  'US234567', crypt('Password123!', gen_salt('bf'))),
+('funcionario2@mundial.com',    'México',    'Guadalajara',      'Independencia',    '400',  '44100', 'México',    'INE',       'MX345678', crypt('Password123!', gen_salt('bf'))),
+('juan.perez@gmail.com',        'Uruguay',   'Montevideo',       '18 de Julio',      '1234', '11200', 'Uruguay',   'CI',        'UY111111', crypt('Password123!', gen_salt('bf'))),
+('maria.garcia@gmail.com',      'Uruguay',   'Montevideo',       'Rivera',           '567',  '11300', 'Uruguay',   'CI',        'UY222222', crypt('Password123!', gen_salt('bf'))),
+('carlos.lopez@gmail.com',      'Argentina', 'Buenos Aires',     'Corrientes',       '890',  'C1043', 'Argentina', 'DNI',       'AR333333', crypt('Password123!', gen_salt('bf'))),
+('ana.martinez@gmail.com',      'Argentina', 'Rosario',          'Pellegrini',       '321',  'S2000', 'Argentina', 'DNI',       'AR444444', crypt('Password123!', gen_salt('bf'))),
+('pedro.silva@gmail.com',       'Brasil',    'São Paulo',        'Paulista',         '1500', '01310', 'Brasil',    'CPF',       'BR555555', crypt('Password123!', gen_salt('bf'))),
+('lucia.fernandez@gmail.com',   'Uruguay',   'Montevideo',       'Bulevar Artigas',  '999',  '11600', 'Uruguay',   'CI',        'UY666666', crypt('Password123!', gen_salt('bf')));
 
 -- ------------------------------------------------------------
 -- TELEFONOS
@@ -200,3 +200,16 @@ INSERT INTO Validacion (id_validacion, fecha, id_entrada, token_qr, id_dispositi
 -- marcar esas entradas como consumidas
 UPDATE Entrada SET consumida = TRUE WHERE id_entrada IN (1, 4);
 UPDATE QR SET activo = FALSE WHERE token IN ('QR-TOKEN-001', 'QR-TOKEN-004');
+
+-- ------------------------------------------------------------
+-- SINCRONIZAR SECUENCIAS (para INSERT sin ID explícito desde la app)
+-- ------------------------------------------------------------
+SELECT setval(pg_get_serial_sequence('equipo', 'id_equipo'), COALESCE((SELECT MAX(id_equipo) FROM equipo), 1), true);
+SELECT setval(pg_get_serial_sequence('estadio', 'id_estadio'), COALESCE((SELECT MAX(id_estadio) FROM estadio), 1), true);
+SELECT setval(pg_get_serial_sequence('evento', 'id_evento'), COALESCE((SELECT MAX(id_evento) FROM evento), 1), true);
+SELECT setval(pg_get_serial_sequence('tasa_comision', 'id_tasa'), COALESCE((SELECT MAX(id_tasa) FROM tasa_comision), 1), true);
+SELECT setval(pg_get_serial_sequence('venta', 'id_venta'), COALESCE((SELECT MAX(id_venta) FROM venta), 1), true);
+SELECT setval(pg_get_serial_sequence('entrada', 'id_entrada'), COALESCE((SELECT MAX(id_entrada) FROM entrada), 1), true);
+SELECT setval(pg_get_serial_sequence('transferencia', 'id_transferencia'), COALESCE((SELECT MAX(id_transferencia) FROM transferencia), 1), true);
+SELECT setval(pg_get_serial_sequence('dispositivo', 'id_dispositivo'), COALESCE((SELECT MAX(id_dispositivo) FROM dispositivo), 1), true);
+SELECT setval(pg_get_serial_sequence('validacion', 'id_validacion'), COALESCE((SELECT MAX(id_validacion) FROM validacion), 1), true);

@@ -1,6 +1,72 @@
 @mundial2026.API_HostAddress = http://localhost:5053
 
-GET {{mundial2026.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Auth - Login admin seed
+POST {{mundial2026.API_HostAddress}}/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "email": "admin.usa@mundial.com",
+  "password": "Password123!"
+}
+
+### Auth - Registro usuario
+POST {{mundial2026.API_HostAddress}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "rol": "Usuario",
+  "email": "nuevo.usuario@gmail.com",
+  "password": "Password123!",
+  "paisDir": "Uruguay",
+  "localidad": "Montevideo",
+  "calle": "Ejido",
+  "numeroDir": "123",
+  "codPostal": "11000",
+  "docPais": "Uruguay",
+  "docTipo": "CI",
+  "docNumero": "UY999999",
+  "telefonos": ["+598 99 000 000"]
+}
+
+### Auth - Registro funcionario
+POST {{mundial2026.API_HostAddress}}/api/auth/registro
+Content-Type: application/json
+
+{
+  "rol": "Funcionario",
+  "email": "funcionario3@mundial.com",
+  "password": "Password123!",
+  "paisDir": "USA",
+  "localidad": "Miami",
+  "calle": "Ocean Dr",
+  "numeroDir": "500",
+  "codPostal": "33139",
+  "docPais": "USA",
+  "docTipo": "Passport",
+  "docNumero": "US999999",
+  "telefonos": ["+1 305 000 0000"],
+  "nroLegajo": "LEG-003"
+}
+
+### Auth - Me (requiere token)
+GET {{mundial2026.API_HostAddress}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### Equipos - Listar (público)
+GET {{mundial2026.API_HostAddress}}/api/equipos
+
+### Equipos - Crear (Admin)
+POST {{mundial2026.API_HostAddress}}/api/equipos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "nombre": "Italia",
+  "pais": "Italia"
+}
+
+### Estadios - Listar
+GET {{mundial2026.API_HostAddress}}/api/estadios
+
+### Usuarios - Perfil
+GET {{mundial2026.API_HostAddress}}/api/usuarios/juan.perez@gmail.com

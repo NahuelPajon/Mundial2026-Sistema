@@ -10,6 +10,7 @@ public class RegisterUserRequest
     public string CodPostal { get; set; }
     public string DocPais { get; set; }
     public string DocTipo { get; set; }
-    public string DocNumero { get; set; }
+    public string DocNumero { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
     public List<string> Telefonos { get; set; } = new();
 }

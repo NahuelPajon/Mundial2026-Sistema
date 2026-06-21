@@ -88,9 +88,9 @@ public class PerfilRepository : IPerfilRepository
     {
         const string query = @"
             INSERT INTO Perfil (email, pais_dir, localidad, calle, numero_dir, cod_postal, 
-                               doc_pais, doc_tipo, doc_numero)
+                               doc_pais, doc_tipo, doc_numero, password_hash)
             VALUES (@email, @pais_dir, @localidad, @calle, @numero_dir, @cod_postal, 
-                   @doc_pais, @doc_tipo, @doc_numero)";
+                   @doc_pais, @doc_tipo, @doc_numero, crypt(@password, gen_salt('bf')))";
 
         using var connection = (NpgsqlConnection)_connectionFactory.CreateConnection();
         await connection.OpenAsync();
@@ -105,6 +105,7 @@ public class PerfilRepository : IPerfilRepository
         command.Parameters.AddWithValue("@doc_pais", perfil.DocPais);
         command.Parameters.AddWithValue("@doc_tipo", perfil.DocTipo);
         command.Parameters.AddWithValue("@doc_numero", perfil.DocNumero);
+        command.Parameters.AddWithValue("@password", perfil.PasswordHash);
 
         await command.ExecuteNonQueryAsync();
 

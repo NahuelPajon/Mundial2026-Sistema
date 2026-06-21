@@ -12,6 +12,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./db/tablas_mundial2026.sql:/docker-entrypoint-initdb.d/01_tablas.sql
- 
+      - ./db/02_seed_if_empty.sql:/docker-entrypoint-initdb.d/02_seed_if_empty.sql
+      - ./db/seed_mundial2026.sql:/docker-entrypoint-initdb.d/seed_mundial2026.sql
 volumes:
   pgdata:

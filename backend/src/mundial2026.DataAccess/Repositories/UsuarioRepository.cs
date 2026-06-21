@@ -41,6 +41,9 @@ public class UsuarioRepository : IUsuarioRepository
 
         // Obtener datos del perfil
         var perfil = await _perfilRepository.GetByEmailAsync(email);
+        if (perfil == null)
+            return null;
+
         usuario.Email = perfil.Email;
         usuario.PaisDir = perfil.PaisDir;
         usuario.Localidad = perfil.Localidad;

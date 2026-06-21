@@ -33,6 +33,7 @@ public class UsuariosController : ControllerBase
 
             await _usuarioService.RegisterAsync(
                 request.Email,
+                request.Password,
                 request.PaisDir,
                 request.Localidad,
                 request.Calle,
