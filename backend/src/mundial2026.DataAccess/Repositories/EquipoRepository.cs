@@ -81,7 +81,11 @@ public class EquipoRepository : IEquipoRepository
 
         using var command = new NpgsqlCommand(query, connection);
         command.Parameters.AddWithValue("@nombre", nombre);
-        command.Parameters.AddWithValue("@exclude_id", (object?)excludeId ?? DBNull.Value);
+        var paramExcludeId = new NpgsqlParameter("@exclude_id", NpgsqlTypes.NpgsqlDbType.Integer)
+        {
+            Value = (object?)excludeId ?? DBNull.Value
+        };
+        command.Parameters.Add(paramExcludeId);
 
         var result = await command.ExecuteScalarAsync();
         return (bool)(result ?? false);

@@ -172,6 +172,6 @@ public class SectorRepository : ISectorRepository
         command.Parameters.AddWithValue("@codigo", codigo);
 
         var result = await command.ExecuteScalarAsync();
-        return (int)(result ?? 0);
+        return Convert.ToInt32(result ?? 0);
     }
 }
