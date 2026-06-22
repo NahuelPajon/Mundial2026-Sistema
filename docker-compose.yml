@@ -4,9 +4,9 @@ services:
     container_name: mundial2026_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: mundial
-      POSTGRES_PASSWORD: mundial2026
-      POSTGRES_DB: ticketing
+      POSTGRES_USER: ic_g8_admin
+      POSTGRES_PASSWORD: BD2Obligatorio2026
+      POSTGRES_DB: IC_Grupo8
     ports:
       - "5432:5432"
     volumes:
