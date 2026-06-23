@@ -12,4 +12,5 @@ public interface ISectorRepository
     Task UpdateAsync(Sector sector);
     Task DeleteAsync(int idEstadio, string codigo);
     Task<int> GetEntradasDisponiblesAsync(int idEstadio, string codigo);
+    Task<decimal?> GetCostoAsync(int idEstadio, string codigo);
 }

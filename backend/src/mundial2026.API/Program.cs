@@ -52,12 +52,20 @@ builder.Services.AddScoped<IEquipoRepository, EquipoRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IFuncionarioRepository, FuncionarioRepository>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IEventoRepository, EventoRepository>();
+builder.Services.AddScoped<ITasaComisionRepository, TasaComisionRepository>();
+builder.Services.AddScoped<IVentaRepository, VentaRepository>();
+builder.Services.AddScoped<IEntradaRepository, EntradaRepository>();
+builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepository>();
 
 builder.Services.AddScoped<IPerfilService, PerfilService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IEstadioService, EstadioService>();
 builder.Services.AddScoped<IEquipoService, EquipoService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IEventoService, EventoService>();
+builder.Services.AddScoped<IVentaService, VentaService>();
+builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 var app = builder.Build();

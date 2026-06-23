@@ -92,7 +92,7 @@ export default function Entradas() {
             </div>
           ) : (
             tickets.map((tkt) => (
-              <div
+              <div 
                 key={tkt.id}
                 className="glass-card rounded-xl overflow-hidden flex flex-col group border border-white/5 hover:border-primary/20 transition-all duration-300"
               >
@@ -124,7 +124,7 @@ export default function Entradas() {
                   </div>
 
                   <div className="flex items-center justify-center md:border-l border-white/5 md:pl-5">
-                    <button
+                    <button 
                       onClick={() => handleOpenQR(tkt)}
                       className="bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors p-4 rounded-xl flex flex-col items-center gap-2 w-full md:w-24 text-center"
                     >
@@ -143,7 +143,7 @@ export default function Entradas() {
       {activeQR && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-sm glass-card rounded-2xl p-6 text-center space-y-6 border border-white/10 animate-in zoom-in-95 duration-200">
-            <button
+            <button 
               onClick={() => setActiveQR(null)}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
@@ -182,14 +182,14 @@ export default function Entradas() {
                 <span className="text-tertiary font-mono">{countdown}s</span>
               </div>
               <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                <div
+                <div 
                   className="bg-tertiary h-full rounded-full transition-all duration-1000 ease-linear"
                   style={{ width: `${(countdown / 30) * 100}%` }}
                 ></div>
               </div>
             </div>
 
-            <button
+            <button 
               onClick={() => setActiveQR(null)}
               className="w-full bg-white/10 hover:bg-white/20 text-white font-label-bold py-3 rounded-lg transition-transform"
             >

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FIFA World Cup 2026 - Gestión de Estadios</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#121316",
+                        "primary-container": "#001f3f",
+                        "outline": "#8e9198",
+                        "tertiary": "#4ce346",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "on-surface-variant": "#c4c6cf",
+                        "on-secondary-fixed-variant": "#454747",
+                        "on-primary-fixed-variant": "#2f486a",
+                        "secondary": "#c6c6c7",
+                        "surface-variant": "#343537",
+                        "surface-container": "#1f2022",
+                        "surface": "#121316",
+                        "primary-fixed": "#d4e3ff",
+                        "secondary-container": "#454747",
+                        "on-primary-container": "#6f88ad",
+                        "secondary-fixed": "#e2e2e2",
+                        "primary": "#afc8f0",
+                        "on-primary-fixed": "#001c3a",
+                        "tertiary-container": "#002501",
+                        "on-tertiary": "#003a03",
+                        "primary-fixed-dim": "#afc8f0",
+                        "on-tertiary-fixed": "#002201",
+                        "on-background": "#e3e2e5",
+                        "on-primary": "#163152",
+                        "surface-tint": "#afc8f0",
+                        "tertiary-fixed-dim": "#4ce346",
+                        "on-secondary": "#2f3131",
+                        "on-tertiary-fixed-variant": "#005306",
+                        "inverse-primary": "#476083",
+                        "inverse-on-surface": "#2f3033",
+                        "outline-variant": "#43474e",
+                        "on-error-container": "#ffdad6",
+                        "background": "#121316",
+                        "surface-container-high": "#292a2c",
+                        "inverse-surface": "#e3e2e5",
+                        "error-container": "#93000a",
+                        "surface-bright": "#38393c",
+                        "surface-container-low": "#1a1c1e",
+                        "on-error": "#690005",
+                        "tertiary-fixed": "#75ff68",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "on-tertiary-container": "#009c14",
+                        "on-secondary-container": "#b4b5b5",
+                        "on-surface": "#e3e2e5",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0d0e11",
+                        "surface-container-highest": "#343537"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "40px",
+                        "stack-sm": "12px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "stack-md": "24px",
+                        "base": "8px",
+                        "touch-target": "48px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Montserrat"],
+                        "body-md": ["Montserrat"],
+                        "display-lg": ["Montserrat"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-bold": ["Montserrat"],
+                        "headline-sm": ["Montserrat"],
+                        "display-lg-mobile": ["Montserrat"],
+                        "body-lg": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "display-lg-mobile": ["36px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stadium-card-gradient {
+            background: linear-gradient(180deg, rgba(18, 19, 22, 0) 0%, rgba(18, 19, 22, 0.9) 80%);
+        }
+        .backdrop-blur-md { backdrop-filter: blur(12px); }
+        .glass-panel {
+            background: rgba(31, 32, 34, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        @keyframes pulse-live {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        .animate-pulse-live { animation: pulse-live 2s infinite ease-in-out; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen font-body-md overflow-x-hidden pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm bg-surface-container-low border-b border-white/10 flex items-center justify-between px-margin-mobile h-touch-target">
+<div class="flex items-center gap-3">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter">WC2026</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-primary overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a stadium operations manager, modern athletic lighting, FIFA World Cup 2026 corporate style, high-end photography, deep blue and trophy gold accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe04ZSrRsW6-qPD5mYc7S6uic4ipYYC-028U5UQzBLeXa5EQcaee4dgkFamJRRCX5kw3veWE8kCP92hcjIAm7K-93ZX4Rgkbxj6L5F5FOrf4B2Q2kEN1suDBivnTIGH1BA0yQ0ZuTGEGBgw_97735o_a6lNRl4natGW2l-lT3ELu2TfecWXoV_WvnhcPJ1v3Mc9_p_2KzlIbqNvuEYVo88PjD5nr0GHD1PZQa6CGjACNLaIQgWrXBZEKyNVs_yp4YHXjk2ghAw3hEP"/>
+</div>
+</div>
+</header>
+<main class="mt-20 px-margin-mobile pt-6 max-w-5xl mx-auto">
+<!-- Dashboard Header -->
+<div class="flex flex-col gap-1 mb-8">
+<h1 class="font-headline-md text-headline-md text-primary">Gestión de Sedes</h1>
+<p class="text-on-surface-variant font-body-md">Administra estadios y configura parámetros de sectores para el torneo.</p>
+</div>
+<!-- Stadium Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter mb-12">
+<!-- Stadium Card 1: Estadio Azteca -->
+<div class="relative group cursor-pointer overflow-hidden rounded-xl bg-surface-container-low border border-white/10 h-80 transition-all duration-300 active:scale-95 shadow-sm" onclick="openModal('Estadio Azteca')">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Panoramic aerial view of the historic Estadio Azteca in Mexico City during sunset, vibrant stadium lights illuminating the pitch, corporate modern sport tech aesthetic, deep blue and grass green color palette." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbrB4zfVLd6b69SxWhHCO70R1YZc-kdVtt-Ww4Y28e64_q_p8IQGjs6zTeYJ4RANgMoZwpuhUw_U2WXnGPdT__PxDkbxIlIMQcS2r8fwppODzmcK2iAGAPS8Asy4VoqoTb1_-7vAlPSGIKaiuDk53XgU4yi_uqjlWAXiujcZgss45tQ9FM-O2na7wALkXG-FAhMitvy5oO0vAoSZp7Hpkl6nPnMuBa3zNVpVwRUDW6JU95JbNwmBY0tdwwRMriFdDH0l3obTzGPewo')"></div>
+<div class="absolute inset-0 stadium-card-gradient"></div>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 rounded-full bg-tertiary text-on-tertiary font-label-bold text-label-bold animate-pulse-live uppercase">Activo</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-6">
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-sm text-headline-sm text-white">Estadio Azteca</h2>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="font-body-md">Ciudad de México, México</span>
+</div>
+<div class="flex items-center gap-4 mt-3">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-outline">Capacidad Total</span>
+<span class="font-data-mono text-white">87,523</span>
+</div>
+<div class="flex flex-col border-l border-white/20 pl-4">
+<span class="text-[10px] uppercase tracking-wider text-outline">Sectores</span>
+<span class="font-data-mono text-white">12 Zonas</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stadium Card 2: MetLife Stadium -->
+<div class="relative group cursor-pointer overflow-hidden rounded-xl bg-surface-container-low border border-white/10 h-80 transition-all duration-300 active:scale-95 shadow-sm" onclick="openModal('MetLife Stadium')">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="The modern MetLife Stadium in East Rutherford, New Jersey, wide architectural shot under dramatic night lighting, glowing blue and silver facade, high-performance athletic gear aesthetic, sharp detail." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCjnoWfZH3ePz8MiK5pCRSQDmhaGdd4hGhwuzeOkrgb4PK1KSFawpdNgzaMKpWoqiCzfhohUFd9MfTUues0dcc7n4M4NcCD_pXdT--VZP0YCIU6pejbubj0i1xpca8BqFJoXgJ1D2crwWVBJXEZBLT-Ebqw64EQiJNFur8xkwtSYjCvidWMk64tc-BvsHTFfvPFAXuzCjBwsY4K23qfqvhNIXfcOHXYHqjB9Coc0Otf6bZjIFL3N01Gp_AMkf90rzM1GAnO-qjXoXHI')"></div>
+<div class="absolute inset-0 stadium-card-gradient"></div>
+<div class="absolute top-4 left-4">
+<span class="px-3 py-1 rounded-full bg-primary text-on-primary font-label-bold text-label-bold uppercase">Sede Final</span>
+</div>
+<div class="absolute bottom-0 left-0 w-full p-6">
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-sm text-headline-sm text-white">MetLife Stadium</h2>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="font-body-md">New Jersey, USA</span>
+</div>
+<div class="flex items-center gap-4 mt-3">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-outline">Capacidad Total</span>
+<span class="font-data-mono text-white">82,500</span>
+</div>
+<div class="flex flex-col border-l border-white/20 pl-4">
+<span class="text-[10px] uppercase tracking-wider text-outline">Sectores</span>
+<span class="font-data-mono text-white">18 Zonas</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Stadium Card 3: Mercedes-Benz Stadium -->
+<div class="relative group cursor-pointer overflow-hidden rounded-xl bg-surface-container-low border border-white/10 h-80 transition-all duration-300 active:scale-95 shadow-sm md:col-span-2" onclick="openModal('Mercedes-Benz Stadium')">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Futuristic Mercedes-Benz Stadium in Atlanta with its unique retractable roof, high-tech interior glow, professional sports photography, clean architectural lines, deep navy and emerald green accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAg0YTPgF2uffCpA4GaRvYotBvem-xIL5w6kb9d9YcFGLpgQUZifh2EMoeBbs3s6Zs6dcHNiLmTaRfVJZ9FriQFglTzuYFfKn8cBtbmFcHmqGjLpuXqthGGVsr5VJz0O3wnv_wZWv9xCG9W77DD63VrF18Z0TVbhY-zfYCFYZKZ05U_0cKDtLqqCjryTSDNG98SCplMh_Dc5y4K01WsO1aRelgwDuN-Vz51c581A-h15-SKgFa7wyc87nl25N-dijGoUUz3IqmX95pu')"></div>
+<div class="absolute inset-0 stadium-card-gradient"></div>
+<div class="absolute bottom-0 left-0 w-full p-6 flex flex-col md:flex-row md:items-end md:justify-between">
+<div class="flex flex-col gap-1">
+<h2 class="font-headline-sm text-headline-sm text-white">Mercedes-Benz Stadium</h2>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="font-body-md">Atlanta, USA</span>
+</div>
+</div>
+<div class="flex items-center gap-8 mt-4 md:mt-0">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-outline">Capacidad Total</span>
+<span class="font-data-mono text-white">71,000</span>
+</div>
+<div class="flex flex-col border-l border-white/20 pl-4">
+<span class="text-[10px] uppercase tracking-wider text-outline">Status Prep</span>
+<span class="font-data-mono text-tertiary">95% Ready</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Sector Details Modal Simulation -->
+<div class="fixed inset-0 z-[60] hidden" id="sectorModal">
+<div class="absolute inset-0 bg-background/90 backdrop-blur-sm" onclick="closeModal()"></div>
+<div class="absolute bottom-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full max-w-2xl bg-surface-container-high rounded-t-3xl md:rounded-3xl shadow-2xl overflow-hidden border-t md:border border-white/10 max-h-[795px] flex flex-col">
+<!-- Modal Header -->
+<div class="p-6 border-b border-white/5 flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary" id="modalStadiumTitle">Detalles de Sectores</h3>
+<p class="text-on-surface-variant font-label-bold text-label-bold">Configuración de Precios y Aforo</p>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-on-surface active:scale-90 transition-transform" onclick="closeModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Content (Sectors List) -->
+<div class="p-6 overflow-y-auto space-y-4">
+<!-- Sector Card A -->
+<div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:border-tertiary transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg bg-primary-container flex flex-col items-center justify-center">
+<span class="text-[10px] uppercase text-on-primary-container opacity-60">Sect</span>
+<span class="font-headline-sm text-primary">A</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-bold text-on-surface">General Inferior</span>
+<span class="text-on-surface-variant font-data-mono text-sm">Cap: 12,500</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-data-mono text-tertiary text-lg">$120 USD</span>
+<span class="text-[10px] text-outline uppercase tracking-wider">Precio Base</span>
+</div>
+</div>
+<!-- Sector Card B -->
+<div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:border-tertiary transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg bg-primary-container flex flex-col items-center justify-center">
+<span class="text-[10px] uppercase text-on-primary-container opacity-60">Sect</span>
+<span class="font-headline-sm text-primary">B</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-bold text-on-surface">Lateral Media</span>
+<span class="text-on-surface-variant font-data-mono text-sm">Cap: 8,200</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-data-mono text-tertiary text-lg">$250 USD</span>
+<span class="text-[10px] text-outline uppercase tracking-wider">Precio Base</span>
+</div>
+</div>
+<!-- Sector Card C -->
+<div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:border-tertiary transition-colors border-2 border-primary">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg bg-primary flex flex-col items-center justify-center">
+<span class="text-[10px] uppercase text-on-primary opacity-60">Sect</span>
+<span class="font-headline-sm text-on-primary">C</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-bold text-on-surface">Club Premium</span>
+<span class="text-on-surface-variant font-data-mono text-sm">Cap: 2,100</span>
+</div>
+</div>
+<div class="text-right">
+<div class="bg-primary/20 px-2 py-0.5 rounded text-[10px] text-primary inline-block mb-1 font-bold uppercase tracking-widest">VIP</div>
+<span class="block font-data-mono text-tertiary text-lg">$850 USD</span>
+</div>
+</div>
+<!-- Sector Card D -->
+<div class="glass-panel p-5 rounded-xl flex items-center justify-between group hover:border-tertiary transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-lg bg-primary-container flex flex-col items-center justify-center">
+<span class="text-[10px] uppercase text-on-primary-container opacity-60">Sect</span>
+<span class="font-headline-sm text-primary">D</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-bold text-on-surface">Hospitality Suite</span>
+<span class="text-on-surface-variant font-data-mono text-sm">Cap: 450</span>
+</div>
+</div>
+<div class="text-right">
+<span class="block font-data-mono text-tertiary text-lg">$1,200 USD</span>
+<span class="text-[10px] text-outline uppercase tracking-wider">Precio Base</span>
+</div>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="p-6 bg-surface-container-highest flex gap-4">
+<button class="flex-1 min-h-[56px] border-2 border-white text-white font-label-bold text-label-bold rounded-lg uppercase transition-all hover:bg-white/5 active:scale-95" onclick="closeModal()">Cerrar</button>
+<button class="flex-[2] min-h-[56px] bg-tertiary text-on-tertiary font-label-bold text-label-bold rounded-lg uppercase shadow-lg shadow-tertiary/20 transition-all active:scale-95">Guardar Cambios</button>
+</div>
+</div>
+</div>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 w-16 h-16 bg-tertiary text-on-tertiary rounded-full shadow-[0_8px_32px_rgba(76,227,70,0.3)] flex items-center justify-center z-40 active:scale-90 transition-transform duration-200">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/90 backdrop-blur-lg shadow-[0_-4px_12px_rgba(0,0,0,0.3)] bg-surface-container-highest border-t border-white/5 flex justify-around items-center h-20 pb-safe px-2">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer group transition-colors">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-bold text-[10px]">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-tertiary-container text-on-tertiary-container rounded-full px-4 py-1 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-label-bold text-[10px]">Entradas</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer group transition-colors">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-bold text-[10px]">Compras</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface cursor-pointer group transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-bold text-[10px]">Perfil</span>
+</div>
+</nav>
+<script>
+        function openModal(stadiumName) {
+            const modal = document.getElementById('sectorModal');
+            const title = document.getElementById('modalStadiumTitle');
+            title.innerText = 'Sectores: ' + stadiumName;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('sectorModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Simple tactile micro-interaction for stadium cards
+        const cards = document.querySelectorAll('.cursor-pointer');
+        cards.forEach(card => {
+            card.addEventListener('touchstart', () => card.classList.add('scale-95'));
+            card.addEventListener('touchend', () => card.classList.remove('scale-95'));
+        });
+    </script>
+</body></html>
