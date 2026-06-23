@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard Usuario - FIFA World Cup 2026</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#93000a",
+                    "surface": "#121316",
+                    "on-surface": "#e3e2e5",
+                    "on-surface-variant": "#c4c6cf",
+                    "surface-dim": "#121316",
+                    "background": "#121316",
+                    "on-primary": "#163152",
+                    "primary-container": "#001f3f",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary": "#2f3131",
+                    "on-secondary-fixed-variant": "#454747",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "inverse-on-surface": "#2f3033",
+                    "outline-variant": "#43474e",
+                    "on-background": "#e3e2e5",
+                    "error": "#ffb4ab",
+                    "surface-container-high": "#292a2c",
+                    "on-primary-fixed": "#001c3a",
+                    "primary-fixed-dim": "#afc8f0",
+                    "secondary": "#c6c6c7",
+                    "on-tertiary-fixed": "#002201",
+                    "outline": "#8e9198",
+                    "on-tertiary-fixed-variant": "#005306",
+                    "tertiary-container": "#002501",
+                    "on-tertiary-container": "#009c14",
+                    "on-secondary-container": "#b4b5b5",
+                    "surface-tint": "#afc8f0",
+                    "surface-container": "#1f2022",
+                    "surface-container-low": "#1a1c1e",
+                    "tertiary-fixed": "#75ff68",
+                    "surface-container-lowest": "#0d0e11",
+                    "on-tertiary": "#003a03",
+                    "inverse-primary": "#476083",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "primary": "#afc8f0",
+                    "surface-bright": "#38393c",
+                    "on-primary-fixed-variant": "#2f486a",
+                    "surface-container-highest": "#343537",
+                    "primary-fixed": "#d4e3ff",
+                    "on-error": "#690005",
+                    "surface-variant": "#343537",
+                    "secondary-fixed": "#e2e2e2",
+                    "inverse-surface": "#e3e2e5",
+                    "secondary-container": "#454747",
+                    "on-primary-container": "#6f88ad",
+                    "tertiary": "#4ce346",
+                    "tertiary-fixed-dim": "#4ce346"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "24px",
+                    "stack-lg": "40px",
+                    "margin-desktop": "64px",
+                    "touch-target": "48px",
+                    "margin-mobile": "20px",
+                    "base": "8px",
+                    "gutter": "16px",
+                    "stack-sm": "12px"
+            },
+            "fontFamily": {
+                    "label-bold": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "body-md": ["Montserrat"],
+                    "data-mono": ["JetBrains Mono"],
+                    "body-lg": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "headline-sm": ["Montserrat"]
+            },
+            "fontSize": {
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #121316;
+            color: #e3e2e5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: rgba(26, 28, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .stadium-shadow {
+            box-shadow: 0 10px 30px -10px rgba(0, 31, 63, 0.5);
+        }
+        .active-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .7; transform: scale(1.05); }
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md min-h-screen pb-32">
+<!-- Top Navigation Anchor (Shared Component) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md text-primary font-headline-sm text-headline-sm shadow-sm bg-surface-container-low border-b border-white/10 flex items-center justify-between px-margin-mobile h-touch-target">
+<div class="flex items-center gap-3">
+<span class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter">FIFA</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined p-2 hover:bg-white/5 transition-colors active:scale-95 duration-150">notifications</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-primary/20">
+<img class="w-full h-full object-cover" data-alt="A close-up portrait of a passionate football fan with subtle face paint in national colors, smiling warmly. The lighting is cinematic with deep blue and gold ambient highlights, reflecting a professional and high-end sports photography style. The background is a blurred stadium atmosphere under night lights." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyFOusqJE6a4mqMxgVwLH2-KdXq27ipQZCVfisEwf8ERybxAHzMib_D8yEva6s04ANYlkwor4zY64qA90lPgIT4PsUmOPaX_j-ypgZ91kTEthyeIz5KD8_c-1HNh0iHJOUN61M_sfAoWSNud-QGxJ8kekJ8ZFq3u2ZOEqT_f-7uWVqjIOY0vKVjM04b0ETr2nPtEl3wDqyB-yBb5TX3nUTYluDeC39GkTEOPeugRczBQ5OQXMKJWkOY6n-f6AjB3Gt7hn9NB6fAREx"/>
+</div>
+</div>
+</header>
+<main class="pt-24 px-margin-mobile max-w-5xl mx-auto space-y-stack-lg">
+<!-- Welcome Section -->
+<section class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+<div class="space-y-1">
+<p class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-widest">Dashboard de Aficionado</p>
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-on-surface">Hola, <span class="text-primary">Alejandro</span> 👋</h1>
+</div>
+</section>
+<!-- My Assets / Hero Banner -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<div class="md:col-span-2 glass-card rounded-xl p-stack-md flex flex-col justify-between relative overflow-hidden group">
+
+<div class="relative z-10 space-y-stack-sm">
+<h3 class="font-headline-sm text-headline-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+                        Mis Activos
+                    </h3>
+<div class="flex items-baseline gap-2">
+<span class="text-6xl font-extrabold text-white">03</span>
+<span class="font-label-bold text-on-surface-variant">Entradas Activas</span>
+</div>
+</div>
+<div class="relative z-10 pt-stack-md flex gap-stack-sm">
+<button class="bg-tertiary text-on-primary px-6 h-touch-target rounded-full font-label-bold active:scale-95 transition-transform flex items-center justify-center gap-2 stadium-shadow">
+<span class="material-symbols-outlined">qr_code_2</span>
+                        Mostrar Todos
+                    </button>
+<button class="border-2 border-white/20 text-white px-6 h-touch-target rounded-full font-label-bold hover:bg-white/5 active:scale-95 transition-colors">
+                        Ayuda
+                    </button>
+</div>
+</div>
+<!-- Quick Access Chips -->
+<div class="flex flex-col gap-gutter">
+<button class="flex-1 glass-card rounded-xl p-gutter flex items-center justify-between hover:bg-primary-container/20 transition-all active:scale-95 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">shopping_cart</span>
+</div>
+<div class="text-left">
+<p class="font-label-bold text-on-surface">Mis Compras</p>
+<p class="text-xs text-on-surface-variant">Historial de pagos</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+<button class="flex-1 glass-card rounded-xl p-gutter flex items-center justify-between hover:bg-tertiary-container/20 transition-all active:scale-95 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-lg bg-tertiary-container flex items-center justify-center text-tertiary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined">move_up</span>
+</div>
+<div class="text-left">
+<p class="font-label-bold text-on-surface">Transferir</p>
+<p class="text-xs text-on-surface-variant">Enviar a un amigo</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Upcoming Matches (Compact Vertical Cards) -->
+<section class="space-y-stack-md">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-md text-headline-md">Próximos Partidos</h2>
+<button class="text-primary font-label-bold flex items-center gap-1 hover:underline">
+                    Calendario completo
+                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+</button>
+</div>
+<!-- Horizontal Scroll on Mobile, Grid on Desktop -->
+<div class="flex md:grid md:grid-cols-3 gap-gutter overflow-x-auto no-scrollbar pb-4 -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
+<!-- Match Card 1 -->
+<div class="flex-shrink-0 w-72 md:w-full glass-card rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-all">
+<div class="h-2 bg-gradient-to-r from-primary to-tertiary"></div>
+<div class="p-gutter space-y-4">
+<div class="flex justify-between items-center text-xs font-label-bold text-on-surface-variant">
+<span>15 JUN • 18:00</span>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-white active-pulse"></span> LIVE
+                            </span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized flag of Mexico with vibrant colors and rich fabric texture. The background is a clean, dark navy blue environment with premium lighting, fitting the corporate modern sports aesthetic of the 2026 World Cup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD60ATZPvRwWVigcKfbdD-Gu8jIbK1ec5OtV8r4sVl9zvq2EQuYlfAHki2Q1L04Z0eOKRtcWBzoo-SnEyfw9o_zxBqy2VHEE35qIr-zBot59EnDtWkYPx9j4ZjoHrtPsMsnTpAfen0BIZNP7O9EoVGVqbP1NbQ79IEWh_k4hXIfJfKDS8cCehnweaE18oirgkDpW9HoTPHzAuRghfffzWXNUu4MTp7P8iMRIyC9Rx_PmEYMk4cLqxaaUWBeURWe5n70l6zucNkMmPyg"/>
+</div>
+<span class="font-label-bold">México</span>
+</div>
+<span class="font-data-mono text-primary">0</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized flag of USA with high-definition stars and stripes detail. The texture resembles premium jersey material. The lighting is sophisticated, with blue and gold reflections on a dark studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbwS0tqdMrAUmxY-qcDcI8iiQuZyLo1Zn7k-QzRrUYEXco8O79UjBRa-P-TzcmFBcXE43G5W0rblW4pprYUW_ErC1rBAiVBRlQK-uw7ZycxafsEWa1520NcA1kYXhg-d4ueTnPaFhl3cDR7zuAqPaQcAb7KmqacWaF2qcWP3Mtu8Xx-Sd5oAklxpvEJzXu4nGeD5gcSEDBlyhviOg0L9QNt4K8wbSBtotMK5owkYmLXSySpmPK9HBTAR4SxKgRViwDNK_UHbmt1HyY"/>
+</div>
+<span class="font-label-bold">USA</span>
+</div>
+<span class="font-data-mono text-primary">0</span>
+</div>
+</div>
+<div class="border-t border-white/5 pt-3 space-y-2">
+<div class="flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>Estadio Azteca, CDMX</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="text-on-surface-variant">Sector: <span class="text-on-surface font-label-bold">A4 • Fila 12</span></span>
+</div>
+</div>
+<button class="w-full bg-primary-container text-on-primary-container h-touch-target rounded-lg font-label-bold flex items-center justify-center gap-2 hover:bg-primary-container/80 transition-colors group-hover:scale-[1.02] active:scale-95 duration-150">
+<span class="material-symbols-outlined">qr_code</span>
+                            Ver QR
+                        </button>
+</div>
+</div>
+<!-- Match Card 2 -->
+<div class="flex-shrink-0 w-72 md:w-full glass-card rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-all">
+<div class="h-2 bg-white/5"></div>
+<div class="p-gutter space-y-4">
+<div class="flex justify-between items-center text-xs font-label-bold text-on-surface-variant">
+<span>18 JUN • 20:00</span>
+<span class="text-primary">FASE DE GRUPOS</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized flag of Brazil with deep greens and bright yellows, depicted with a silky texture. The overall mood is high-end and professional, set against a dark navy background with subtle light leaks in gold." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3EZGoi6u_wpZbii1m3XqyeoPvZ5B2d11XhiKXIFEiPJebU4aZ-id5O9g6tQh7I3OCgmWNb2yMi2uLhgKS-Zgl291IYEmkWQi-p-Qmjd_28iTdAKCyM1gjZBEA_ERi66-tvbBizf-8g0KDYuoApDa2goRZfwLxqCHYi2NDL-elwA_Bb2F0Gs90Jz-tVIJvCvHqzDMvYYup3fFkdObrOJjZ9HV08q2oLTpb7xfwPD6F95B-tLWWiRmNpaQC9tDSXWEQOQ1ucQmJUS80"/>
+</div>
+<span class="font-label-bold">Brasil</span>
+</div>
+<span class="font-data-mono text-on-surface-variant">-</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized flag of Spain with its distinctive red and yellow colors, shown in a clean, modern design. The fabric has a realistic weave, and the lighting is dramatic and cinematic to fit a luxury sports app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs6Mzlf9cK1IeO3Xiaz7dbKU5bvlxgMe-zQVGb5WnGAT2j6RO7Wj9VYP-gR0A2e9-v6Ispc5J5XLBHfXZxN2XhygQHdIuU0l8IG-66u9c8v1srtvTZYYA_3EWAwMllCakHpjImtToDc5V2DQYdO5mOaRhVV89TpTU9W88QF449EM4xQfCN4l6tPOsSzXZ2253b_P_cX5n_aMCbY7rhWnVPNNQG0190audVX-PKFC_R2ivHNNEAyQROFO-I9c1pn7zoLYC25loJroBa"/>
+</div>
+<span class="font-label-bold">España</span>
+</div>
+<span class="font-data-mono text-on-surface-variant">-</span>
+</div>
+</div>
+<div class="border-t border-white/5 pt-3 space-y-2">
+<div class="flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>MetLife Stadium, NJ</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="text-on-surface-variant">Sector: <span class="text-on-surface font-label-bold">G10 • Fila 04</span></span>
+</div>
+</div>
+<button class="w-full bg-surface-container-highest text-on-surface h-touch-target rounded-lg font-label-bold flex items-center justify-center gap-2 hover:bg-surface-bright transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined">qr_code</span>
+                            Ver QR
+                        </button>
+</div>
+</div>
+<!-- Match Card 3 -->
+<div class="flex-shrink-0 w-72 md:w-full glass-card rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-all opacity-80 hover:opacity-100">
+<div class="h-2 bg-white/5"></div>
+<div class="p-gutter space-y-4">
+<div class="flex justify-between items-center text-xs font-label-bold text-on-surface-variant">
+<span>22 JUN • 16:00</span>
+<span class="text-primary">FASE DE GRUPOS</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized flag of Argentina with its iconic sun emblem and light blue stripes. The texture is premium and the lighting is soft yet professional, emphasizing a modern global tournament aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBUISujsJ_RxejBEF_ATOWYSS4u3-J87Do2cz6tndg_BZkBg7B7fUTzqnddYQDVWjXeRUlwFfNLRoR9Uh55DEQIxyQg2g-lzS6uiCAnhAFL4ZSpYrvmNDJNi6r6IOC6_DVdecmIV6uL2iRjsCwU3xh2C1ItNfjsEspevpQ88rJdIoD9HIfVqqkGzT9bHIwJ2FqMgNM0WXLqb3PZrwTVXI8MBOy_tjoRKFyIYhLZfOA5zn_UM25EaiKjzmWpk1OLe_QIWpwut63a6ui"/>
+</div>
+<span class="font-label-bold">Argentina</span>
+</div>
+<span class="font-data-mono text-on-surface-variant">-</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stylized flag of France with its vertical blue, white, and red stripes. The design is sleek and professional, using high-end material textures and cinematic studio lighting on a dark surface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGP1TRymQwWLDwkvO3EYcGPkdmr74WczlvFJruhhUbiZr5D7uTCSQfLyCr66VPpTgL1JcTyhWHuoAWxii2oXgDtPtpjesLqnxSINd_Y6QoQ5EVRcJztELHR-SahbVlIANU4hfTojoFoyDz8AMupa9iv9RFD_uis2UuTijYy6sBdPPSeUyig_1H8xX3x142YqkUq6I0tZ2T4EgFqib-n1yWrcqXEhfnQrBe0rBdBQcraQA2hqyU8WBd4tJ4zSYmBFL-aNLsIL-VwLbY"/>
+</div>
+<span class="font-label-bold">Francia</span>
+</div>
+<span class="font-data-mono text-on-surface-variant">-</span>
+</div>
+</div>
+<div class="border-t border-white/5 pt-3 space-y-2">
+<div class="flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span>SoFi Stadium, LA</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<span class="text-on-surface-variant">Sector: <span class="text-on-surface font-label-bold">C22 • Fila 20</span></span>
+</div>
+</div>
+<button class="w-full bg-surface-container-highest text-on-surface h-touch-target rounded-lg font-label-bold flex items-center justify-center gap-2 hover:bg-surface-bright transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined">qr_code</span>
+                            Ver QR
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Live Stadium Feed Placeholder -->
+<section class="glass-card rounded-2xl overflow-hidden p-0 relative h-48 md:h-64 flex flex-col justify-end">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A wide-angle cinematic shot of a massive, modern football stadium at night under bright arena floodlights. The stands are filled with fans, creating a blurred mosaic of colors. The style is professional sports broadcasting, with high contrast, deep shadows, and a slight blueish tint. Modern geometric overlays suggest a digital broadcast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7YcSSt8K08-4kbwB8BXQFTWQzoXVVO99dyzxHImjFm9pNij7HCQRII72HR0qdp2WQtMDblo1wKdZJC87eb3nmi9pcWmEDf3hziKF1BWVk1-S10eKt01SpfmIC1uQTI5qTzzUwVjhwD2Adn-lWMf3MJ1-Flo7fEjGmHOS21UNmCuQCaxcTEG-nGK8co6In_DAhVkZJqMBEi1JDiNOVf7zmBuCP_CLViKLW72IHtdWp_aiqSaX4C_wQvQNR8OEan6zB66Hy4GPg0nt0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent"></div>
+</div>
+<div class="relative z-10 p-gutter flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-white">Explora el Estadio Azteca</h3>
+<p class="text-sm text-on-surface-variant">Guía de acceso, servicios y mapa interactivo</p>
+</div>
+<button class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full text-white hover:bg-white/20 transition-colors active:scale-90">
+<span class="material-symbols-outlined">explore</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell (Shared Component) -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/90 backdrop-blur-lg shadow-[0_-4px_12px_rgba(0,0,0,0.3)] bg-surface-container-highest border-t border-white/5 flex justify-around items-center h-20 pb-safe px-2">
+<!-- Dashboard Item - ACTIVE -->
+<a class="flex flex-col items-center justify-center bg-tertiary-container text-on-tertiary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<!-- Entradas -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-label-bold text-label-bold">Entradas</span>
+</a>
+<!-- Compras -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="font-label-bold text-label-bold">Compras</span>
+</a>
+<!-- Perfil -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-bold text-label-bold">Perfil</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction for cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Simulating QR code button interaction
+        document.querySelectorAll('button').forEach(btn => {
+            if (btn.innerText.includes('QR')) {
+                btn.addEventListener('click', () => {
+                    alert('Generando código de acceso dinámico...');
+                });
+            }
+        });
+    </script>
+</body></html>
