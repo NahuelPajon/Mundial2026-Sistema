@@ -3,10 +3,26 @@ const BASE_URL = "http://localhost:5053/api";
 export const apiFetch = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
 
+  // Obtener el token de la sesión guardada en localStorage
+  let token = null;
+  try {
+    const session = localStorage.getItem("user_session");
+    if (session) {
+      const parsedSession = JSON.parse(session);
+      token = parsedSession.token || parsedSession.tokenString;
+    }
+  } catch (e) {
+    console.error("Error al leer token de localStorage:", e);
+  }
+
   const headers = {
     "Content-Type": "application/json",
     ...options.headers,
   };
+
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   const config = {
     ...options,
