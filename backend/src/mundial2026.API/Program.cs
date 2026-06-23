@@ -57,6 +57,9 @@ builder.Services.AddScoped<ITasaComisionRepository, TasaComisionRepository>();
 builder.Services.AddScoped<IVentaRepository, VentaRepository>();
 builder.Services.AddScoped<IEntradaRepository, EntradaRepository>();
 builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepository>();
+builder.Services.AddScoped<IQrRepository, QrRepository>();
+builder.Services.AddScoped<IDispositivoRepository, DispositivoRepository>();
+builder.Services.AddScoped<IValidacionRepository, ValidacionRepository>();
 
 builder.Services.AddScoped<IPerfilService, PerfilService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
@@ -66,6 +69,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IEventoService, EventoService>();
 builder.Services.AddScoped<IVentaService, VentaService>();
 builder.Services.AddScoped<ITransferenciaService, TransferenciaService>();
+builder.Services.AddScoped<IEntradaService, EntradaService>();
+builder.Services.AddScoped<IQrService, QrService>();
+builder.Services.AddScoped<IDispositivoService, DispositivoService>();
+builder.Services.AddScoped<IValidacionService, ValidacionService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 var app = builder.Build();
