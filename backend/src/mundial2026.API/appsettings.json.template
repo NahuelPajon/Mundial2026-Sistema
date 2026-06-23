@@ -1,0 +1,18 @@
+{
+  "ConnectionStrings": {
+    "PostgresConnection": "Host=CAMBIAR_HOST;Port=5432;Database=CAMBIAR_BASE;Username=CAMBIAR_USUARIO;Password=CAMBIAR_CONTRASEÑA"
+  },
+  "Jwt": {
+    "Key": "CAMBIAR_POR_CLAVE_SECRETA_DE_AL_MENOS_32_CARACTERES",
+    "Issuer": "mundial2026",
+    "Audience": "mundial2026",
+    "ExpirationMinutes": 60
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
