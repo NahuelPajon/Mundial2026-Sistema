@@ -34,7 +34,11 @@ export default function ConsolaValidacion() {
 
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeOverlay, setActiveOverlay] = useState(null);
-  const [overlayData, setOverlayData] = useState({ title: "", message: "", details: "" });
+  const [overlayData, setOverlayData] = useState({
+    title: "",
+    message: "",
+    details: "",
+  });
   const [manualCode, setManualCode] = useState("");
 
   const loadStats = useCallback(async () => {
@@ -152,11 +156,18 @@ export default function ConsolaValidacion() {
 
             {showDropdown && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setShowDropdown(false)}></div>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={() => setShowDropdown(false)}
+                ></div>
                 <div className="absolute left-0 mt-2 w-48 rounded-md shadow-lg bg-surface-container-high border border-white/10 py-1 z-20">
                   <div className="px-4 py-2 border-b border-white/5">
-                    <p className="text-xs text-on-surface-variant">Sesión iniciada como</p>
-                    <p className="text-sm font-semibold truncate text-primary">{user?.email}</p>
+                    <p className="text-xs text-on-surface-variant">
+                      Sesión iniciada como
+                    </p>
+                    <p className="text-sm font-semibold truncate text-primary">
+                      {user?.email}
+                    </p>
                   </div>
                   <button
                     onClick={handleLogout}
@@ -183,7 +194,8 @@ export default function ConsolaValidacion() {
         <div className="flex items-center gap-3">
           <div className="flex flex-col items-end max-w-[140px]">
             <span className="font-data-mono text-[9px] text-tertiary uppercase tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-tertiary rounded-full pulse-live"></span> EN VIVO
+              <span className="w-1.5 h-1.5 bg-tertiary rounded-full pulse-live"></span>{" "}
+              EN VIVO
             </span>
             <span className="font-data-mono text-[10px] text-on-surface-variant truncate w-full text-right">
               {stats.dispositivo}
@@ -195,7 +207,10 @@ export default function ConsolaValidacion() {
             className="text-on-surface-variant hover:text-white transition-colors disabled:opacity-50"
             title="Actualizar estadísticas"
           >
-            <RefreshCw size={18} className={loadingStats ? "animate-spin" : ""} />
+            <RefreshCw
+              size={18}
+              className={loadingStats ? "animate-spin" : ""}
+            />
           </button>
           <button className="text-on-surface-variant hover:text-white transition-colors">
             <Bell size={20} />
@@ -205,7 +220,10 @@ export default function ConsolaValidacion() {
 
       <main className="flex-1 mt-[48px] mb-[280px] relative overflow-hidden bg-black flex flex-col">
         <div className="relative flex-1 w-full min-h-[320px]">
-          <QrCameraScanner onScan={handleCameraScan} paused={isScanningPaused} />
+          <QrCameraScanner
+            onScan={handleCameraScan}
+            paused={isScanningPaused}
+          />
 
           <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
             <div className="w-64 h-64 relative">
@@ -216,7 +234,10 @@ export default function ConsolaValidacion() {
               {!isScanningPaused && (
                 <div
                   className="absolute inset-x-0 h-0.5 bg-tertiary shadow-[0_0_12px_#4ce346]"
-                  style={{ animation: "scan-animation 3s linear infinite", top: "50%" }}
+                  style={{
+                    animation: "scan-animation 3s linear infinite",
+                    top: "50%",
+                  }}
                 ></div>
               )}
             </div>
@@ -284,9 +305,16 @@ export default function ConsolaValidacion() {
 
         {activeOverlay === "success" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-tertiary-container text-on-tertiary-container p-10 text-center">
-            <CheckCircle size={120} className="mb-6 fill-tertiary stroke-on-tertiary-container" />
-            <h2 className="font-display-lg-mobile uppercase mb-2">{overlayData.title}</h2>
-            <p className="font-headline-sm tracking-wider">{overlayData.message}</p>
+            <CheckCircle
+              size={120}
+              className="mb-6 fill-tertiary stroke-on-tertiary-container"
+            />
+            <h2 className="font-display-lg-mobile uppercase mb-2">
+              {overlayData.title}
+            </h2>
+            <p className="font-headline-sm tracking-wider">
+              {overlayData.message}
+            </p>
             <p className="mt-8 font-data-mono bg-white/10 px-4 py-2.5 rounded-lg text-sm">
               {overlayData.details}
             </p>
@@ -295,9 +323,16 @@ export default function ConsolaValidacion() {
 
         {activeOverlay === "error" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-error-container text-on-error-container p-10 text-center">
-            <XCircle size={120} className="mb-6 fill-error stroke-on-error-container" />
-            <h2 className="font-display-lg-mobile uppercase mb-2">{overlayData.title}</h2>
-            <p className="font-headline-sm tracking-wider">{overlayData.message}</p>
+            <XCircle
+              size={120}
+              className="mb-6 fill-error stroke-on-error-container"
+            />
+            <h2 className="font-display-lg-mobile uppercase mb-2">
+              {overlayData.title}
+            </h2>
+            <p className="font-headline-sm tracking-wider">
+              {overlayData.message}
+            </p>
             <p className="mt-8 font-data-mono bg-white/10 px-4 py-2.5 rounded-lg text-sm">
               {overlayData.details}
             </p>
@@ -306,9 +341,16 @@ export default function ConsolaValidacion() {
 
         {activeOverlay === "warning" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-amber-500 text-black p-10 text-center">
-            <AlertTriangle size={120} className="mb-6 fill-black stroke-amber-500" />
-            <h2 className="font-display-lg-mobile uppercase mb-2 text-black">{overlayData.title}</h2>
-            <p className="font-headline-sm tracking-wider text-black">{overlayData.message}</p>
+            <AlertTriangle
+              size={120}
+              className="mb-6 fill-black stroke-amber-500"
+            />
+            <h2 className="font-display-lg-mobile uppercase mb-2 text-black">
+              {overlayData.title}
+            </h2>
+            <p className="font-headline-sm tracking-wider text-black">
+              {overlayData.message}
+            </p>
             <p className="mt-8 font-data-mono bg-black/10 px-4 py-2.5 rounded-lg text-sm font-bold">
               {overlayData.details}
             </p>
@@ -339,29 +381,11 @@ export default function ConsolaValidacion() {
             <span className="font-label-bold text-on-surface-variant uppercase tracking-widest text-[10px]">
               Validaciones realizadas
             </span>
-            <span className="font-display-lg-mobile text-[24px] text-tertiary font-extrabold">
-              {progressPercentage}%
-            </span>
-          </div>
-          <div className="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden border border-white/5">
-            <div
-              className="h-full bg-tertiary rounded-full transition-all duration-500"
-              style={{ width: `${progressPercentage}%` }}
-            ></div>
           </div>
           <div className="flex justify-between text-[11px] font-data-mono text-on-surface-variant">
             <span>{stats.validados.toLocaleString()} VALIDADOS</span>
-            <span>Meta: {stats.total.toLocaleString()}</span>
           </div>
         </div>
-
-        <button
-          onClick={handleFinalizarTurno}
-          className="w-full h-[52px] rounded-xl font-label-bold text-sm flex items-center justify-center gap-3 bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 active:scale-95 transition-all"
-        >
-          <LogOut size={18} />
-          FINALIZAR TURNO
-        </button>
       </div>
     </div>
   );
