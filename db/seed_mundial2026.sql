@@ -187,15 +187,14 @@ INSERT INTO QR (token, id_entrada, generado_en, expira_en, activo) VALUES
 -- ------------------------------------------------------------
 INSERT INTO Dispositivo (id_dispositivo, descripcion, email_funcionario) VALUES
 (1, 'Scanner puerta norte - MetLife',   'funcionario1@mundial.com'),
-(2, 'Scanner puerta sur - MetLife',     'funcionario1@mundial.com'),
-(3, 'Scanner puerta este - Azteca',     'funcionario2@mundial.com');
+(2, 'Scanner puerta este - Azteca',     'funcionario2@mundial.com');
 
 -- ------------------------------------------------------------
 -- VALIDACIONES (simulamos el ingreso de algunos usuarios)
 -- ------------------------------------------------------------
 INSERT INTO Validacion (id_validacion, fecha, id_entrada, token_qr, id_dispositivo, email_funcionario) VALUES
 (1, '2026-06-15 18:02:00', 1, 'QR-TOKEN-001', 1, 'funcionario1@mundial.com'),
-(2, '2026-06-15 18:03:00', 4, 'QR-TOKEN-004', 2, 'funcionario1@mundial.com');
+(2, '2026-06-15 18:03:00', 4, 'QR-TOKEN-004', 1, 'funcionario1@mundial.com');
 
 -- marcar esas entradas como consumidas
 UPDATE Entrada SET consumida = TRUE WHERE id_entrada IN (1, 4);

@@ -60,6 +60,7 @@ builder.Services.AddScoped<ITransferenciaRepository, TransferenciaRepository>();
 builder.Services.AddScoped<IQrRepository, QrRepository>();
 builder.Services.AddScoped<IDispositivoRepository, DispositivoRepository>();
 builder.Services.AddScoped<IValidacionRepository, ValidacionRepository>();
+builder.Services.AddScoped<IReporteRepository, ReporteRepository>();
 
 builder.Services.AddScoped<IPerfilService, PerfilService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
@@ -73,6 +74,7 @@ builder.Services.AddScoped<IEntradaService, EntradaService>();
 builder.Services.AddScoped<IQrService, QrService>();
 builder.Services.AddScoped<IDispositivoService, DispositivoService>();
 builder.Services.AddScoped<IValidacionService, ValidacionService>();
+builder.Services.AddScoped<IReporteService, ReporteService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 var app = builder.Build();
