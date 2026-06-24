@@ -78,7 +78,7 @@ public class ValidacionService : IValidacionService
                 Status = "error",
                 Title = "ERROR",
                 Message = "DISPOSITIVO NO AUTORIZADO",
-                Details = "Este escáner no está habilitado para su legajo"
+                Details = "El dispositivo no está autorizado para este funcionario"
             };
         }
         catch (KeyNotFoundException)
