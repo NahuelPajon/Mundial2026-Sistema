@@ -5,7 +5,12 @@ import UserDashboard from './pages/Dashboard';
 import Entradas from './pages/Entradas';
 import Compras from './pages/Compras';
 import Perfil from './pages/Perfil';
+import ConsolaValidacion from './pages/ConsolaValidacion';
 import UserLayout from './components/layout/UserLayout';
+import AdminLayout from './components/layout/AdminLayout';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminEstadios from './pages/AdminEstadios';
+import AdminPartidos from './pages/AdminPartidos';
 import { authService } from './services/authService';
 
 // Guardia de ruta protegido con soporte de roles (RBAC)
@@ -41,48 +46,33 @@ const DashboardRedirector = () => {
       );
     case 'Admin':
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background text-on-surface p-6 text-center">
-          <div className="glass-card rounded-xl p-8 max-w-md w-full border border-white/10 space-y-6">
-            <h1 className="text-2xl font-bold text-primary">⚽ Panel de Administrador</h1>
-            <p className="text-sm text-on-surface-variant leading-relaxed">
-              Bienvenido al portal de gestión de sedes, estadios, configuración de sectores y programación de partidos.
-            </p>
-            <div className="bg-primary-container/10 border border-primary-container/20 rounded-lg p-3 text-xs text-on-surface-variant">
-              Rol Activo: <strong>{user.rol}</strong>
-            </div>
-            <button 
-              onClick={() => { authService.logout(); window.location.reload(); }} 
-              className="w-full bg-error-container text-on-error-container font-label-bold py-3 rounded-lg hover:opacity-90 active:scale-95 transition-all"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
+        <AdminLayout>
+          <AdminDashboard />
+        </AdminLayout>
       );
     case 'Funcionario':
-      return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-background text-on-surface p-6 text-center">
-          <div className="glass-card rounded-xl p-8 max-w-md w-full border border-white/10 space-y-6">
-            <h1 className="text-2xl font-mono font-bold text-tertiary">📱 Consola de Validación</h1>
-            <p className="text-sm text-on-surface-variant leading-relaxed">
-              Consola optimizada para dispositivos móviles vinculada al legajo del funcionario para escanear y validar accesos QR.
-            </p>
-            <div className="bg-tertiary-container/10 border border-tertiary-container/20 rounded-lg p-3 text-xs text-on-surface-variant">
-              Rol Activo: <strong>{user.rol}</strong>
-            </div>
-            <button 
-              onClick={() => { authService.logout(); window.location.reload(); }} 
-              className="w-full bg-error-container text-on-error-container font-label-bold py-3 rounded-lg hover:opacity-90 active:scale-95 transition-all"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        </div>
-      );
+      return <ConsolaValidacion />;
     default:
       authService.logout();
       return <Navigate to="/login" replace />;
   }
+};
+
+// Componente que decide qué Layout usar para el perfil según el rol del usuario
+const ProfileLayoutRedirector = () => {
+  const user = authService.getCurrentUser();
+  if (user?.rol === 'Admin') {
+    return (
+      <AdminLayout>
+        <Perfil />
+      </AdminLayout>
+    );
+  }
+  return (
+    <UserLayout>
+      <Perfil />
+    </UserLayout>
+  );
 };
 
 export default function App() {
@@ -112,10 +102,25 @@ export default function App() {
         } />
 
         <Route path="/perfil" element={
-          <ProtectedRoute allowedRoles={['Usuario']}>
-            <UserLayout>
-              <Perfil />
-            </UserLayout>
+          <ProtectedRoute allowedRoles={['Usuario', 'Admin']}>
+            <ProfileLayoutRedirector />
+          </ProtectedRoute>
+        } />
+
+        {/* Rutas exclusivas del Administrador por País Sede */}
+        <Route path="/estadios" element={
+          <ProtectedRoute allowedRoles={['Admin']}>
+            <AdminLayout>
+              <AdminEstadios />
+            </AdminLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/partidos" element={
+          <ProtectedRoute allowedRoles={['Admin']}>
+            <AdminLayout>
+              <AdminPartidos />
+            </AdminLayout>
           </ProtectedRoute>
         } />
 

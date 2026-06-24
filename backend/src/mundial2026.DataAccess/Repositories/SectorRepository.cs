@@ -174,4 +174,22 @@ public class SectorRepository : ISectorRepository
         var result = await command.ExecuteScalarAsync();
         return Convert.ToInt32(result ?? 0);
     }
+
+    public async Task<decimal?> GetCostoAsync(int idEstadio, string codigo)
+    {
+        const string query = @"
+            SELECT costo
+            FROM Sector
+            WHERE id_estadio = @id_estadio AND codigo = @codigo";
+
+        using var connection = (NpgsqlConnection)_connectionFactory.CreateConnection();
+        await connection.OpenAsync();
+
+        using var command = new NpgsqlCommand(query, connection);
+        command.Parameters.AddWithValue("@id_estadio", idEstadio);
+        command.Parameters.AddWithValue("@codigo", codigo);
+
+        var result = await command.ExecuteScalarAsync();
+        return result == null || result is DBNull ? null : (decimal)result;
+    }
 }

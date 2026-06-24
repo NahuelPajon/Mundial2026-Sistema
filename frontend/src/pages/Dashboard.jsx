@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import {
-  Ticket,
-  QrCode,
-  ShoppingCart,
-  Send,
-  ChevronRight,
-  MapPin,
-  Compass,
-  ExternalLink,
-  AlertCircle,
-  Loader2,
+import { 
+  Ticket, 
+  QrCode, 
+  ShoppingCart, 
+  Send, 
+  ChevronRight, 
+  MapPin, 
+  Compass, 
+  ExternalLink, 
+  AlertCircle, 
+  Loader2, 
   HelpCircle,
   X,
   Check
@@ -21,12 +21,12 @@ export default function Dashboard() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  
   // Estados para modales
   const [activeQR, setActiveQR] = useState(null); // Ticket para el cual se muestra el QR
   const [qrCodeData, setQrCodeData] = useState(null); // Datos del QR dinámico
   const [countdown, setCountdown] = useState(30);
-
+  
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [transferring, setTransferring] = useState(false);
   const [transferSuccess, setTransferSuccess] = useState("");
@@ -34,7 +34,7 @@ export default function Dashboard() {
   const [recipientEmail, setRecipientEmail] = useState("");
 
   const user = authService.getCurrentUser();
-  const displayName = user && user.email
+  const displayName = user && user.email 
     ? user.email.split("@")[0].split(".")[0].charAt(0).toUpperCase() + user.email.split("@")[0].split(".")[0].slice(1)
     : "Aficionado";
 
@@ -110,12 +110,12 @@ export default function Dashboard() {
       setTransferring(true);
       setError("");
       setTransferSuccess("");
-
+      
       await ticketService.transferTicket(selectedTicketId, recipientEmail);
-
+      
       setTransferSuccess("¡Entrada transferida con éxito!");
       setRecipientEmail("");
-
+      
       // Volver a cargar la lista de tickets
       setTimeout(() => {
         loadTickets();
@@ -163,7 +163,7 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="relative z-10 pt-stack-md flex gap-stack-sm">
-            <button
+            <button 
               onClick={() => tickets.length > 0 && handleOpenQR(tickets[0])}
               disabled={tickets.length === 0}
               className="bg-tertiary text-on-primary px-6 h-touch-target rounded-full font-label-bold active:scale-95 transition-transform flex items-center justify-center gap-2 stadium-shadow disabled:opacity-50 disabled:cursor-not-allowed"
@@ -191,7 +191,7 @@ export default function Dashboard() {
             </div>
             <ChevronRight size={20} className="text-on-surface-variant" />
           </button>
-          <button
+          <button 
             onClick={() => setTransferModalOpen(true)}
             className="flex-1 glass-card rounded-xl p-gutter flex items-center justify-between hover:bg-tertiary-container/20 transition-all active:scale-95 group"
           >
@@ -243,7 +243,7 @@ export default function Dashboard() {
               </div>
             ) : (
               tickets.map((tkt) => (
-                <div
+                <div 
                   key={tkt.id}
                   className="flex-shrink-0 w-72 md:w-full glass-card rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-all duration-300"
                 >
@@ -259,7 +259,7 @@ export default function Dashboard() {
                         <span className="text-primary">{tkt.fase}</span>
                       )}
                     </div>
-
+                    
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ export default function Dashboard() {
                           {tkt.golesLocal !== null ? tkt.golesLocal : "-"}
                         </span>
                       </div>
-
+                      
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
@@ -285,7 +285,7 @@ export default function Dashboard() {
                         </span>
                       </div>
                     </div>
-
+                    
                     <div className="border-t border-white/5 pt-3 space-y-2">
                       <div className="flex items-center gap-2 text-on-surface-variant text-sm">
                         <MapPin size={14} />
@@ -297,8 +297,8 @@ export default function Dashboard() {
                         </span>
                       </div>
                     </div>
-
-                    <button
+                    
+                    <button 
                       onClick={() => handleOpenQR(tkt)}
                       className="w-full bg-primary-container text-on-primary-container h-touch-target rounded-lg font-label-bold flex items-center justify-center gap-2 hover:bg-primary-container/80 transition-colors group-hover:scale-[1.02] active:scale-95 duration-150"
                     >
@@ -316,10 +316,10 @@ export default function Dashboard() {
       {/* Live Stadium Feed Placeholder */}
       <section className="glass-card rounded-2xl overflow-hidden p-0 relative h-48 md:h-64 flex flex-col justify-end group border border-white/5 hover:border-white/10 transition-colors">
         <div className="absolute inset-0 z-0">
-          <img
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            alt="Estadio Azteca"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7YcSSt8K08-4kbwB8BXQFTWQzoXVVO99dyzxHImjFm9pNij7HCQRII72HR0qdp2WQtMDblo1wKdZJC87eb3nmi9pcWmEDf3hziKF1BWVk1-S10eKt01SpfmIC1uQTI5qTzzUwVjhwD2Adn-lWMf3MJ1-Flo7fEjGmHOS21UNmCuQCaxcTEG-nGK8co6In_DAhVkZJqMBEi1JDiNOVf7zmBuCP_CLViKLW72IHtdWp_aiqSaX4C_wQvQNR8OEan6zB66Hy4GPg0nt0"
+          <img 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+            alt="Estadio Azteca" 
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7YcSSt8K08-4kbwB8BXQFTWQzoXVVO99dyzxHImjFm9pNij7HCQRII72HR0qdp2WQtMDblo1wKdZJC87eb3nmi9pcWmEDf3hziKF1BWVk1-S10eKt01SpfmIC1uQTI5qTzzUwVjhwD2Adn-lWMf3MJ1-Flo7fEjGmHOS21UNmCuQCaxcTEG-nGK8co6In_DAhVkZJqMBEi1JDiNOVf7zmBuCP_CLViKLW72IHtdWp_aiqSaX4C_wQvQNR8OEan6zB66Hy4GPg0nt0" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent"></div>
         </div>
@@ -339,7 +339,7 @@ export default function Dashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-sm glass-card rounded-2xl p-6 text-center space-y-6 border border-white/10 animate-in zoom-in-95 duration-200">
             {/* Cerrar */}
-            <button
+            <button 
               onClick={handleCloseQR}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
@@ -358,7 +358,7 @@ export default function Dashboard() {
                 top: "15%",
                 animation: "scan 3s ease-in-out infinite"
               }}></div>
-
+              
               {/* Estructura del QR simulada */}
               <div className="w-48 h-48 flex items-center justify-center border-4 border-dashed border-slate-200 p-2">
                 <QrCode size={144} className="text-slate-900 stroke-[1.25px]" />
@@ -391,7 +391,7 @@ export default function Dashboard() {
                   <span className="text-tertiary font-mono">{countdown}s</span>
                 </div>
                 <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                  <div
+                  <div 
                     className="bg-tertiary h-full rounded-full transition-all duration-1000 ease-linear"
                     style={{ width: `${(countdown / 30) * 100}%` }}
                   ></div>
@@ -400,7 +400,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <button
+            <button 
               onClick={handleCloseQR}
               className="w-full bg-white/10 hover:bg-white/20 text-white font-label-bold py-3 rounded-lg active:scale-95 transition-transform"
             >
@@ -415,7 +415,7 @@ export default function Dashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md glass-card rounded-2xl p-6 border border-white/10 animate-in zoom-in-95 duration-200">
             {/* Cerrar */}
-            <button
+            <button 
               onClick={() => setTransferModalOpen(false)}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
@@ -448,7 +448,7 @@ export default function Dashboard() {
                   <label className="block text-xs font-label-bold text-on-surface-variant mb-2">
                     SELECCIONAR ENTRADA
                   </label>
-                  <select
+                  <select 
                     value={selectedTicketId}
                     onChange={(e) => setSelectedTicketId(e.target.value)}
                     required
@@ -466,7 +466,7 @@ export default function Dashboard() {
                   <label className="block text-xs font-label-bold text-on-surface-variant mb-2">
                     EMAIL DEL DESTINATARIO
                   </label>
-                  <input
+                  <input 
                     type="email"
                     required
                     value={recipientEmail}
@@ -481,14 +481,14 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <button
+                  <button 
                     type="button"
                     onClick={() => setTransferModalOpen(false)}
                     className="flex-1 bg-white/5 hover:bg-white/10 text-white font-label-bold py-3 rounded-lg transition-colors"
                   >
                     Cancelar
                   </button>
-                  <button
+                  <button 
                     type="submit"
                     disabled={transferring || tickets.length === 0}
                     className="flex-1 bg-tertiary text-on-primary font-label-bold py-3 rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"

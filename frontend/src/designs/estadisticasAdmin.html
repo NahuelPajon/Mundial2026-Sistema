@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FIFA World Cup 2026 - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-dim": "#121316",
+                    "primary-container": "#001f3f",
+                    "outline": "#8e9198",
+                    "tertiary": "#4ce346",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "on-surface-variant": "#c4c6cf",
+                    "on-secondary-fixed-variant": "#454747",
+                    "on-primary-fixed-variant": "#2f486a",
+                    "secondary": "#c6c6c7",
+                    "surface-variant": "#343537",
+                    "surface-container": "#1f2022",
+                    "surface": "#121316",
+                    "primary-fixed": "#d4e3ff",
+                    "secondary-container": "#454747",
+                    "on-primary-container": "#6f88ad",
+                    "secondary-fixed": "#e2e2e2",
+                    "primary": "#afc8f0",
+                    "on-primary-fixed": "#001c3a",
+                    "tertiary-container": "#002501",
+                    "on-tertiary": "#003a03",
+                    "primary-fixed-dim": "#afc8f0",
+                    "on-tertiary-fixed": "#002201",
+                    "on-background": "#e3e2e5",
+                    "on-primary": "#163152",
+                    "surface-tint": "#afc8f0",
+                    "tertiary-fixed-dim": "#4ce346",
+                    "on-secondary": "#2f3131",
+                    "on-tertiary-fixed-variant": "#005306",
+                    "inverse-primary": "#476083",
+                    "inverse-on-surface": "#2f3033",
+                    "outline-variant": "#43474e",
+                    "on-error-container": "#ffdad6",
+                    "background": "#121316",
+                    "surface-container-high": "#292a2c",
+                    "inverse-surface": "#e3e2e5",
+                    "error-container": "#93000a",
+                    "surface-bright": "#38393c",
+                    "surface-container-low": "#1a1c1e",
+                    "on-error": "#690005",
+                    "tertiary-fixed": "#75ff68",
+                    "on-secondary-fixed": "#1a1c1c",
+                    "on-tertiary-container": "#009c14",
+                    "on-secondary-container": "#b4b5b5",
+                    "on-surface": "#e3e2e5",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#0d0e11",
+                    "surface-container-highest": "#343537"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "40px",
+                    "stack-sm": "12px",
+                    "margin-desktop": "64px",
+                    "margin-mobile": "20px",
+                    "gutter": "16px",
+                    "stack-md": "24px",
+                    "base": "8px",
+                    "touch-target": "48px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Montserrat"],
+                    "body-md": ["Montserrat"],
+                    "display-lg": ["Montserrat"],
+                    "data-mono": ["JetBrains Mono"],
+                    "label-bold": ["Montserrat"],
+                    "headline-sm": ["Montserrat"],
+                    "display-lg-mobile": ["Montserrat"],
+                    "body-lg": ["Montserrat"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "700"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "display-lg-mobile": ["36px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .glass-card {
+        background: rgba(31, 32, 34, 0.7);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .stadium-pulse {
+        animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      @keyframes pulse-green {
+        0%, 100% { opacity: 1; }
+        50% { opacity: .5; }
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-md shadow-sm bg-surface-container-low border-b border-white/10 h-touch-target flex items-center justify-between px-margin-mobile">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-primary-container border border-primary/20 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a high-level sports administrator for the FIFA World Cup 2026. The individual has a confident expression, wearing a sleek navy suit with a gold lapel pin. The background is a blurred, high-tech stadium control room with glowing blue and green data screens, maintaining a corporate modern sport-tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAcnjDHgMEXif6uJEZWK5oL5ojTuj9m24ikei-_PD5KSZWzFL0JnaN03w_C8YaeJD2yQNTlhvnZ41ZeVtpv0fSqhv9CrPSjQXZG7Hhebss1oeYucXL-fA2yFdRsWYNWEMNoqCsFEYrEMe377peI8k04PRwtkGJdZN9H306AAg55wlA3RBF02CYm2ThRmdV1PaWmYg96Y6OI-SmXj1raFh62283het1GZZTF4vsYaK7VPBY2b13EJ9h0Zr1E4IMuuQlN_CM8PecKz0W"/>
+</div>
+<span class="font-headline-sm text-headline-sm text-primary">Admin Panel</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<div class="hidden md:block">
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary tracking-tighter">FIFA World Cup 2026</h1>
+</div>
+</div>
+</header>
+<main class="pt-24 px-margin-mobile max-w-7xl mx-auto space-y-stack-md">
+<!-- Summary Statistics Bento Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Total Tickets -->
+<div class="glass-card p-stack-md rounded-xl flex flex-col justify-between h-40 relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform duration-500">
+<span class="material-symbols-outlined text-9xl">confirmation_number</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface-variant">Total Tickets Sold</p>
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary">1,240,500</h2>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-sm">trending_up</span>
+<p class="text-tertiary font-data-mono text-data-mono">+12.5% vs last week</p>
+</div>
+</div>
+<!-- Total Revenue -->
+<div class="glass-card p-stack-md rounded-xl flex flex-col justify-between h-40 border-l-4 border-tertiary relative overflow-hidden group">
+<div>
+<p class="font-label-bold text-label-bold text-on-surface-variant">Total Revenue (5% Comm.)</p>
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-white">$452.8M</h2>
+</div>
+<div class="flex items-center justify-between">
+<p class="text-on-surface-variant font-data-mono text-data-mono">Comm: $22.64M</p>
+<span class="material-symbols-outlined text-primary group-hover:rotate-12 transition-transform">payments</span>
+</div>
+</div>
+<!-- Active Stadiums -->
+<div class="glass-card p-stack-md rounded-xl flex flex-col justify-between h-40 relative overflow-hidden group">
+<div>
+<p class="font-label-bold text-label-bold text-on-surface-variant">Active Stadiums</p>
+<div class="flex items-baseline gap-2">
+<h2 class="font-display-lg-mobile text-display-lg-mobile text-primary">16</h2>
+<span class="text-on-surface-variant font-body-md text-body-md">/ 16 Operating</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-tertiary stadium-pulse"></div>
+<p class="text-tertiary font-label-bold text-label-bold">All Systems Online</p>
+</div>
+</div>
+</section>
+<!-- Main Insights Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-md">
+<!-- Sales Chart Representation -->
+<section class="glass-card p-stack-md rounded-xl space-y-stack-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline-sm text-headline-sm text-white">Partidos con más ventas</h3>
+<button class="text-primary font-label-bold text-label-bold hover:underline">View Full Report</button>
+</div>
+<div class="space-y-6">
+<!-- Match Row 1 -->
+<div class="space-y-2">
+<div class="flex justify-between font-label-bold text-label-bold">
+<span class="text-on-surface">Mexico vs Argentina</span>
+<span class="text-primary">98% Capacity</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full" style="width: 98%"></div>
+</div>
+<p class="text-on-surface-variant font-data-mono text-data-mono">Stadium: Azteca, CDMX</p>
+</div>
+<!-- Match Row 2 -->
+<div class="space-y-2">
+<div class="flex justify-between font-label-bold text-label-bold">
+<span class="text-on-surface">USA vs England</span>
+<span class="text-primary">92% Capacity</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 92%"></div>
+</div>
+<p class="text-on-surface-variant font-data-mono text-data-mono">Stadium: SoFi, LA</p>
+</div>
+<!-- Match Row 3 -->
+<div class="space-y-2">
+<div class="flex justify-between font-label-bold text-label-bold">
+<span class="text-on-surface">Canada vs Brazil</span>
+<span class="text-primary">85% Capacity</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 85%"></div>
+</div>
+<p class="text-on-surface-variant font-data-mono text-data-mono">Stadium: BC Place, Vancouver</p>
+</div>
+<!-- Match Row 4 -->
+<div class="space-y-2">
+<div class="flex justify-between font-label-bold text-label-bold">
+<span class="text-on-surface">Spain vs Morocco</span>
+<span class="text-primary">79% Capacity</span>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary-container rounded-full" style="width: 79%"></div>
+</div>
+<p class="text-on-surface-variant font-data-mono text-data-mono">Stadium: MetLife, NJ</p>
+</div>
+</div>
+</section>
+<!-- Top Buyers Section -->
+<section class="glass-card p-stack-md rounded-xl space-y-stack-sm">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline-sm text-headline-sm text-white">Ranking de Mayores Compradores</h3>
+<span class="material-symbols-outlined text-primary">military_tech</span>
+</div>
+<div class="space-y-base">
+<!-- User 1 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-tertiary">
+<img class="w-full h-full object-cover" data-alt="A profile portrait of a soccer superfan, a young man with face paint in national colors, wearing a vintage football jersey. The style is cinematic with warm stadium lighting in the background, bokeh effects from stadium floods, and a deep navy and vibrant green color palette, following the FIFA World Cup 2026 branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw-oKB3dyXZ9ZMLSaNEJTRzW3t8BaVr8fOlG0x0K_iqI372pCkSOW-D-Hi9O-eZTRsJ6TsB6Dsp40ZHbMc1lR5SmilGvLRITYOCLtYasXk31C-VdlWei9oFOkTacS1h8BZAJwTa1vAWHXyoN8xS3UXJ4WEr7fNltSpfmE8OG-IPI2YSrOnMkLLVFM_K0izZriKFhagwyP2z9TcfYpCMhoiWE6C4OB1gARmC1X0bOW7nJ95CD3_PShr7HjVNjXTJxgYweT9UakgTDkO"/>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Ricardo Mendoza</p>
+<p class="text-on-surface-variant text-sm font-body-md">24 Tickets Purchased</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-tertiary">$12,450.00</p>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Top Tier VIP</span>
+</div>
+</div>
+<!-- User 2 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/40">
+<img class="w-full h-full object-cover" data-alt="A portrait of a middle-aged woman wearing a premium FIFA World Cup scarf, smiling warmly. The setting is a luxury stadium lounge with golden ambient lighting and dark wood textures. The aesthetic is corporate luxury, consistent with high-level event management and premium sport services." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTfJeQdRmkDhSbuCcMZQAA0LFmEtnIzVuolJ4Sh89kimWxfmMPtAIVW_XX1hgd8jTRdxJNlwUEhK58rUnvVRaMBqroe4gu2_mVuYuDUXs3LENXL0_L0mZ558rN9QqfxKkggeTcXilRTlQSdvr7IPSXCTJlTLc8bqfQcqJCL8FEKn7qxVD3tAQepee1MGQVm3zfk6IJDtNxMdKpuD1EUySrRyrdiwUrd9Dg610adz4vEk_CGFZsKn2J0LP2-a6eJ_rAs9On3q5Ct0Hh"/>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Sarah Jenkins</p>
+<p class="text-on-surface-variant text-sm font-body-md">18 Tickets Purchased</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary">$9,200.00</p>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Corporate Account</span>
+</div>
+</div>
+<!-- User 3 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/40">
+<img class="w-full h-full object-cover" data-alt="A headshot of a diverse male sports enthusiast with tech glasses, appearing in a modern apartment with a subtle world map in the background. The lighting is soft and cool-toned, dominated by deep blues and crisp whites, reflecting a high-tech, global fan experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzXpwAKsdTiASck1x9I16BD-PWZDhuJRaPaLW0867mVI5_jHlkT349metlnmIlgRBlZjUKOuVJMX75O7xk2pA7hcqjCSt0cLYucjWY8nAQuTKNoUOQQK26SX1pCw8w9MYq7Xp_MyUtg-JkbF-CcOP-vrNKheDg9f9ZlvbCK65Kpw9SttkVLYFwViXWXPofs43mSDQUYlVxY0skVj_pSEAofLn_LaCn5u_tGgsIg2DJkHeJDGqQGGbfSMfrty4J-ZBIBfynlfFxU3I7"/>
+</div>
+<div>
+<p class="font-label-bold text-label-bold text-on-surface">Kenji Tanaka</p>
+<p class="text-on-surface-variant text-sm font-body-md">15 Tickets Purchased</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary">$7,800.00</p>
+<span class="text-[10px] uppercase font-bold text-on-surface-variant">Club Member</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- System Map/Location Preview (Optional Visual Polish) -->
+<section class="glass-card rounded-xl overflow-hidden h-64 relative group">
+<div class="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" data-alt="A sleek, futuristic digital map of North America featuring glowing nodes at the 2026 World Cup host cities. The map is rendered in dark navy with neon green and bright blue connection lines, showing a live data network. The style is high-end UI dashboard aesthetic with holographic data overlays and motion-blur effects." data-location="North America" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCn35DqhkIhhtnQM1w5HqT-wgbrzRpOPoAf9DCNN2GCK56EMcK5G0xhP8KuQE6LnSDiO4Gc1SXEyMxjd611_XwsCEnH1AnX-0y70LdVPGaDHwdZIbzanArycbgS9Rwq79YCRTlUeHzrK5q4zXz1P4q0vckSMAIG6-_aYiND7ft3ng895wJiUJaiq7jAfKfkCS6wGNA67ncW9ESkMg8WX5OjNZhGZ00cjFICJ4GQjRp2fk7uFmqraBP9YywNk-PTnDqdaqZxsZgzkEE8')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-dim via-transparent to-transparent z-10"></div>
+<div class="absolute bottom-6 left-6 z-20">
+<h3 class="font-headline-sm text-headline-sm text-white">Stadium Network Status</h3>
+<p class="text-on-surface-variant font-body-md text-body-md">Live monitoring of all 16 host venues.</p>
+</div>
+<div class="absolute top-6 right-6 z-20">
+<button class="bg-tertiary text-on-tertiary px-6 py-3 rounded-full font-label-bold text-label-bold active:scale-95 transition-transform">
+                    Check All Stadiums
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-xl bg-surface/90 backdrop-blur-lg border-t border-white/5 shadow-[0_-4px_12px_rgba(0,0,0,0.3)] h-20 pb-safe px-2 flex justify-around items-center">
+<!-- Dashboard (Active) -->
+<a class="flex flex-col items-center justify-center bg-tertiary-container text-on-tertiary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-bold text-label-bold">Dashboard</span>
+</a>
+<!-- Estadios -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">stadium</span>
+<span class="font-label-bold text-label-bold">Estadios</span>
+</a>
+<!-- Eventos -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-bold text-label-bold">Eventos</span>
+</a>
+<!-- Reportes -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-bold text-label-bold">Reportes</span>
+</a>
+<!-- Perfil -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:text-on-surface active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-bold text-label-bold">Perfil</span>
+</a>
+</nav>
+<script>
+        // Simple interaction handling for micro-effects
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('click', (e) => {
+                // Subtle tactile feedback simulated via classes if not already handled by tailwind
+                console.log('Interaction detected');
+            });
+        });
+    </script>
+</body></html>

@@ -70,3 +70,99 @@ GET {{mundial2026.API_HostAddress}}/api/estadios
 
 ### Usuarios - Perfil
 GET {{mundial2026.API_HostAddress}}/api/usuarios/juan.perez@gmail.com
+
+### Eventos - Listar (público)
+GET {{mundial2026.API_HostAddress}}/api/eventos
+
+### Eventos - Listar por estadio
+GET {{mundial2026.API_HostAddress}}/api/eventos?idEstadio=1
+
+### Eventos - Detalle
+GET {{mundial2026.API_HostAddress}}/api/eventos/1
+
+### Eventos - Crear (Admin, requiere token)
+POST {{mundial2026.API_HostAddress}}/api/eventos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "fecha": "2026-07-01T20:00:00",
+  "estado": "programado",
+  "idEstadio": 2,
+  "idEquipoLocal": 1,
+  "idEquipoVisitante": 3,
+  "sectoresHabilitados": ["A", "B", "C", "D"]
+}
+
+### Auth - Login usuario seed
+# @name loginUsuario
+POST {{mundial2026.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "juan.perez@gmail.com",
+  "password": "Password123!"
+}
+
+### Ventas - Tasa comisión vigente (público)
+GET {{mundial2026.API_HostAddress}}/api/ventas/tasa-comision
+
+### Ventas - Comprar entradas (Usuario)
+POST {{mundial2026.API_HostAddress}}/api/ventas
+Content-Type: application/json
+Authorization: Bearer {{loginUsuario.response.body.token}}
+
+{
+  "entradas": [
+    { "idEvento": 1, "codigoSector": "C" },
+    { "idEvento": 1, "codigoSector": "C" }
+  ]
+}
+
+### Ventas - Mis compras
+GET {{mundial2026.API_HostAddress}}/api/ventas/mis-compras
+Authorization: Bearer {{loginUsuario.response.body.token}}
+
+### Ventas - Detalle
+GET {{mundial2026.API_HostAddress}}/api/ventas/1
+Authorization: Bearer {{loginUsuario.response.body.token}}
+
+### Auth - Login destino transferencia
+# @name loginDestino
+POST {{mundial2026.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "carlos.lopez@gmail.com",
+  "password": "Password123!"
+}
+
+### Transferencias - Listar (todas)
+GET {{mundial2026.API_HostAddress}}/api/transferencias
+Authorization: Bearer {{loginUsuario.response.body.token}}
+
+### Transferencias - Enviadas
+GET {{mundial2026.API_HostAddress}}/api/transferencias?tipo=enviadas
+Authorization: Bearer {{loginUsuario.response.body.token}}
+
+### Transferencias - Recibidas
+GET {{mundial2026.API_HostAddress}}/api/transferencias?tipo=recibidas
+Authorization: Bearer {{loginDestino.response.body.token}}
+
+### Transferencias - Solicitar
+POST {{mundial2026.API_HostAddress}}/api/transferencias
+Content-Type: application/json
+Authorization: Bearer {{loginUsuario.response.body.token}}
+
+{
+  "idEntrada": 1,
+  "emailDestino": "carlos.lopez@gmail.com"
+}
+
+### Transferencias - Aceptar
+POST {{mundial2026.API_HostAddress}}/api/transferencias/3/aceptar
+Authorization: Bearer {{loginDestino.response.body.token}}
+
+### Transferencias - Rechazar
+POST {{mundial2026.API_HostAddress}}/api/transferencias/4/rechazar
+Authorization: Bearer {{loginDestino.response.body.token}}
