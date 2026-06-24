@@ -4,6 +4,7 @@ import Login from './pages/login'; // Importar con minúscula para coincidir con
 import UserDashboard from './pages/Dashboard';
 import Entradas from './pages/Entradas';
 import Compras from './pages/Compras';
+import ComprarEntradas from './pages/ComprarEntradas';
 import Perfil from './pages/Perfil';
 import ConsolaValidacion from './pages/ConsolaValidacion';
 import UserLayout from './components/layout/UserLayout';
@@ -97,6 +98,14 @@ export default function App() {
           <ProtectedRoute allowedRoles={['Usuario']}>
             <UserLayout>
               <Compras />
+            </UserLayout>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/comprar" element={
+          <ProtectedRoute allowedRoles={['Usuario']}>
+            <UserLayout>
+              <ComprarEntradas />
             </UserLayout>
           </ProtectedRoute>
         } />
