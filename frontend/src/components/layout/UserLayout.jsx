@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Ticket, ShoppingCart, User, Bell, LogOut } from "lucide-react";
+import { LayoutDashboard, Ticket, ShoppingCart, User, Bell, LogOut, Store } from "lucide-react";
 import { authService } from "../../services/authService";
 
 export default function UserLayout({ children }) {
@@ -32,8 +32,13 @@ export default function UserLayout({ children }) {
       icon: Ticket
     },
     {
+      path: "/comprar",
+      label: "Comprar",
+      icon: Store
+    },
+    {
       path: "/compras",
-      label: "Compras",
+      label: "Historial",
       icon: ShoppingCart
     },
     {
