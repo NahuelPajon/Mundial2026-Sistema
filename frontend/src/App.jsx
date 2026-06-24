@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import UserDashboard from './pages/Dashboard';
 import Entradas from './pages/Entradas';
 import Compras from './pages/Compras';
+import ComprarEntradas from './pages/ComprarEntradas';
 import Perfil from './pages/Perfil';
 import ConsolaValidacion from './pages/ConsolaValidacion';
 import UserLayout from './components/layout/UserLayout';
