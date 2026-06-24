@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Ticket, QrCode, MapPin, Loader2, AlertCircle, X } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Ticket, QrCode, MapPin, Loader2, AlertCircle, X, Copy, Check } from "lucide-react";
 import { ticketService } from "../services/ticketService";
 
 export default function Entradas() {
@@ -9,6 +9,7 @@ export default function Entradas() {
   const [activeQR, setActiveQR] = useState(null);
   const [qrCodeData, setQrCodeData] = useState(null);
   const [countdown, setCountdown] = useState(30);
+  const [copied, setCopied] = useState(false);
 
   const loadTickets = async () => {
     try {
@@ -27,13 +28,20 @@ export default function Entradas() {
     loadTickets();
   }, []);
 
+  const refreshQR = useCallback(async (ticketId) => {
+    const qrInfo = await ticketService.generateDynamicQR(ticketId);
+    setQrCodeData(qrInfo.qrCode);
+    setCountdown(qrInfo.expiresIn ?? 30);
+    return qrInfo;
+  }, []);
+
   useEffect(() => {
     let timer;
     if (activeQR) {
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
-            refreshQR(activeQR.id);
+            refreshQR(activeQR.id).catch(() => {});
             return 30;
           }
           return prev - 1;
@@ -41,27 +49,31 @@ export default function Entradas() {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [activeQR]);
+  }, [activeQR, refreshQR]);
 
   const handleOpenQR = async (tkt) => {
     setActiveQR(tkt);
-    setCountdown(30);
+    setCopied(false);
     try {
-      const qrInfo = await ticketService.generateDynamicQR(tkt.id);
-      setQrCodeData(qrInfo.qrCode);
-    } catch {
-      setQrCodeData(`FIFA-2026-${tkt.id}-${Math.floor(Date.now() / 1000)}`);
+      await refreshQR(tkt.id);
+    } catch (err) {
+      setError(err.message || "No se pudo generar el QR.");
+      setActiveQR(null);
     }
   };
 
-  const refreshQR = async (ticketId) => {
+  const handleCopyToken = async () => {
+    if (!qrCodeData) return;
     try {
-      const qrInfo = await ticketService.generateDynamicQR(ticketId);
-      setQrCodeData(qrInfo.qrCode);
+      await navigator.clipboard.writeText(qrCodeData);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      setQrCodeData(`FIFA-2026-${ticketId}-${Math.floor(Date.now() / 1000)}`);
+      setCopied(false);
     }
   };
+
+  const maxCountdown = 30;
 
   return (
     <div className="space-y-6">
@@ -92,7 +104,7 @@ export default function Entradas() {
             </div>
           ) : (
             tickets.map((tkt) => (
-              <div 
+              <div
                 key={tkt.id}
                 className="glass-card rounded-xl overflow-hidden flex flex-col group border border-white/5 hover:border-primary/20 transition-all duration-300"
               >
@@ -118,13 +130,14 @@ export default function Entradas() {
                         <span className="truncate">{tkt.estadio}</span>
                       </div>
                       <p>
-                        Sector: <span className="font-semibold text-white">{tkt.sector}</span> • Fila: <span className="font-semibold text-white">{tkt.fila}</span>
+                        Sector: <span className="font-semibold text-white">{tkt.sector}</span> • Fila:{" "}
+                        <span className="font-semibold text-white">{tkt.fila}</span>
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center justify-center md:border-l border-white/5 md:pl-5">
-                    <button 
+                    <button
                       onClick={() => handleOpenQR(tkt)}
                       className="bg-primary-container text-on-primary-container hover:bg-primary-container/80 transition-colors p-4 rounded-xl flex flex-col items-center gap-2 w-full md:w-24 text-center"
                     >
@@ -139,12 +152,14 @@ export default function Entradas() {
         </div>
       )}
 
-      {/* QR Code Modal */}
-      {activeQR && (
+      {activeQR && qrCodeData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-sm glass-card rounded-2xl p-6 text-center space-y-6 border border-white/10 animate-in zoom-in-95 duration-200">
-            <button 
-              onClick={() => setActiveQR(null)}
+            <button
+              onClick={() => {
+                setActiveQR(null);
+                setQrCodeData(null);
+              }}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
               <X size={20} />
@@ -152,17 +167,17 @@ export default function Entradas() {
 
             <div className="space-y-1">
               <h3 className="font-headline-sm text-lg text-white">Entrada Digital</h3>
-              <p className="text-xs text-on-surface-variant">{activeQR.equipoLocal} vs {activeQR.equipoVisita}</p>
+              <p className="text-xs text-on-surface-variant">
+                {activeQR.equipoLocal} vs {activeQR.equipoVisita}
+              </p>
             </div>
 
-            <div className="relative bg-white p-6 rounded-xl inline-block mx-auto shadow-2xl stadium-shadow overflow-hidden">
-              <div className="absolute left-0 right-0 h-0.5 bg-tertiary shadow-[0_0_10px_#4ce346] active-pulse pointer-events-none" style={{
-                top: "15%",
-                animation: "scan 3s ease-in-out infinite"
-              }}></div>
-              <div className="w-48 h-48 flex items-center justify-center border-4 border-dashed border-slate-200 p-2">
-                <QrCode size={144} className="text-slate-900 stroke-[1.25px]" />
-              </div>
+            <div className="relative bg-white p-4 rounded-xl inline-block mx-auto shadow-2xl stadium-shadow overflow-hidden">
+              <img
+                src={ticketService.getQrImageUrl(qrCodeData, 192)}
+                alt="Código QR dinámico"
+                className="w-48 h-48 object-contain"
+              />
             </div>
 
             <div className="bg-surface/50 rounded-lg p-3 text-sm text-left inline-block w-full">
@@ -172,25 +187,43 @@ export default function Entradas() {
               </div>
               <div className="flex justify-between font-semibold text-white">
                 <span className="truncate max-w-[150px]">{activeQR.estadio.split(",")[0]}</span>
-                <span>Sec {activeQR.sector} • Fila {activeQR.fila}</span>
+                <span>
+                  Sec {activeQR.sector} • Fila {activeQR.fila}
+                </span>
               </div>
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 bg-surface/50 rounded-lg px-3 py-2">
+                <code className="text-[10px] text-on-surface-variant truncate flex-1 text-left">
+                  {qrCodeData.slice(0, 24)}…
+                </code>
+                <button
+                  onClick={handleCopyToken}
+                  className="text-primary hover:text-white transition-colors p-1"
+                  title="Copiar token para prueba manual"
+                >
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                </button>
+              </div>
+
               <div className="flex justify-between text-xs font-label-bold text-on-surface-variant px-1">
                 <span>Código de Seguridad Dinámico</span>
                 <span className="text-tertiary font-mono">{countdown}s</span>
               </div>
               <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="bg-tertiary h-full rounded-full transition-all duration-1000 ease-linear"
-                  style={{ width: `${(countdown / 30) * 100}%` }}
+                  style={{ width: `${(countdown / maxCountdown) * 100}%` }}
                 ></div>
               </div>
             </div>
 
-            <button 
-              onClick={() => setActiveQR(null)}
+            <button
+              onClick={() => {
+                setActiveQR(null);
+                setQrCodeData(null);
+              }}
               className="w-full bg-white/10 hover:bg-white/20 text-white font-label-bold py-3 rounded-lg transition-transform"
             >
               Cerrar

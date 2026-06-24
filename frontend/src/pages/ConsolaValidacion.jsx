@@ -1,87 +1,127 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
-  Bell, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
-  LogOut, 
-  Loader2, 
-  QrCode, 
-  Keyboard 
+import {
+  Bell,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  LogOut,
+  Loader2,
+  QrCode,
+  Keyboard,
+  RefreshCw,
 } from "lucide-react";
 import { authService } from "../services/authService";
 import { validationService } from "../services/validationService";
 
+const EMPTY_STATS = {
+  legajo: "—",
+  nombre: "Cargando…",
+  puerta: "—",
+  sectoresAsignados: "—",
+  validados: 0,
+  total: 10,
+  dispositivos: [],
+  selectedDeviceId: null,
+};
+
 export default function ConsolaValidacion() {
   const navigate = useNavigate();
   const user = authService.getCurrentUser();
-  
-  // Cargar estadísticas iniciales del oficial
-  const [stats, setStats] = useState(() => {
-    return validationService.getOfficialStats(user?.email);
-  });
-  
+
+  const [stats, setStats] = useState(EMPTY_STATS);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [statsError, setStatsError] = useState("");
+
   const [showDropdown, setShowDropdown] = useState(false);
-  const [activeOverlay, setActiveOverlay] = useState(null); // 'success', 'error', 'warning', 'validating'
+  const [activeOverlay, setActiveOverlay] = useState(null);
   const [overlayData, setOverlayData] = useState({ title: "", message: "", details: "" });
   const [manualCode, setManualCode] = useState("");
   const [showManualInput, setShowManualInput] = useState(false);
 
-  const progressPercentage = Math.round((stats.validados / stats.total) * 100);
-  const isTurnoFinalizable = progressPercentage >= 100;
+  const loadStats = useCallback(async () => {
+    try {
+      setLoadingStats(true);
+      setStatsError("");
+      const data = await validationService.fetchOfficialStats(user?.email);
+      setStats(data);
+    } catch (err) {
+      setStatsError(err.message || "No se pudieron cargar las estadísticas.");
+    } finally {
+      setLoadingStats(false);
+    }
+  }, [user?.email]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
+
+  const progressPercentage = Math.min(
+    100,
+    Math.round((stats.validados / stats.total) * 100),
+  );
 
   const handleLogout = () => {
+    validationService.setSelectedDeviceId(null);
     authService.logout();
     navigate("/login");
   };
 
-  const triggerValidation = async (typeOrCode) => {
-    // Si ya hay una validación en curso, ignoramos
+  const handleDeviceChange = (e) => {
+    const id = Number(e.target.value);
+    validationService.setSelectedDeviceId(id);
+    const device = stats.dispositivos.find((d) => d.id === id);
+    setStats((prev) => ({
+      ...prev,
+      selectedDeviceId: id,
+      puerta: device?.descripcion ?? prev.puerta,
+    }));
+  };
+
+  const triggerValidation = async (qrCode) => {
     if (activeOverlay === "validating") return;
 
-    // Vibrar dispositivo (simulación háptica)
-    if ("vibrate" in navigator) {
-      if (typeOrCode === "success") navigator.vibrate(50);
-      else if (typeOrCode === "error") navigator.vibrate([100, 50, 100]);
-      else if (typeOrCode === "warning") navigator.vibrate(200);
-      else navigator.vibrate(80);
+    if (!stats.selectedDeviceId && stats.dispositivos.length > 1) {
+      setOverlayData({
+        title: "ERROR",
+        message: "SELECCIONÁ UN DISPOSITIVO",
+        details: "Elegí el escáner autorizado antes de validar",
+      });
+      setActiveOverlay("error");
+      setTimeout(() => setActiveOverlay(null), 2500);
+      return;
     }
+
+    if ("vibrate" in navigator) navigator.vibrate(80);
 
     setActiveOverlay("validating");
 
-    // Realizar validación asíncrona mediante el servicio
     try {
-      const response = await validationService.validateTicketQR(typeOrCode);
-      
+      const response = await validationService.validateTicketQR(
+        qrCode,
+        stats.selectedDeviceId,
+      );
+
       setOverlayData({
         title: response.title,
         message: response.message,
-        details: response.details
+        details: response.details,
       });
       setActiveOverlay(response.status);
 
-      // Si la validación fue exitosa, incrementamos el contador
       if (response.status === "success") {
-        const updatedStats = validationService.incrementValidatedCount();
-        setStats(updatedStats);
+        await loadStats();
       }
 
-      // Cerrar el overlay después de 2.5 segundos
-      setTimeout(() => {
-        setActiveOverlay(null);
-      }, 2500);
-
+      setTimeout(() => setActiveOverlay(null), 2500);
     } catch (err) {
       setOverlayData({
         title: "ERROR",
         message: "FALLO DE CONEXIÓN",
-        details: err.message || "Error de red"
+        details: err.message || "Error de red",
       });
       setActiveOverlay("error");
-      setTimeout(() => {
-        setActiveOverlay(null);
-      }, 2500);
+      setTimeout(() => setActiveOverlay(null), 2500);
     }
   };
 
@@ -94,32 +134,27 @@ export default function ConsolaValidacion() {
   };
 
   const handleFinalizarTurno = () => {
-    if (!isTurnoFinalizable) return;
-    alert("Turno finalizado con éxito. Sincronizando registros con FIFA Cloud...");
-    validationService.resetStats();
+    validationService.setSelectedDeviceId(null);
     authService.logout();
     navigate("/login");
   };
 
   return (
     <div className="flex flex-col min-h-screen bg-black text-on-surface font-body-md select-none overflow-hidden relative">
-      
-      {/* TopAppBar */}
       <header className="fixed top-0 w-full z-50 bg-surface/95 backdrop-blur-md text-primary shadow-sm flex items-center justify-between px-margin-mobile h-touch-target bg-surface-container-low border-b border-white/10">
         <div className="flex items-center gap-3">
-          {/* Avatar con Dropdown de Logout */}
           <div className="relative">
-            <button 
+            <button
               onClick={() => setShowDropdown(!showDropdown)}
               className="w-10 h-10 rounded-full bg-primary-container border border-primary/20 flex items-center justify-center overflow-hidden focus:outline-none hover:border-primary/50"
             >
-              <img 
-                className="w-full h-full object-cover" 
-                alt="Oficial" 
+              <img
+                className="w-full h-full object-cover"
+                alt="Oficial"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1S0nrZcuLKPeIx30phhW3MJlJlATFwJS45DmrxpIpTUseGhGcPwx3IskVd7ehxgLm9kzIkwNdOysxXD8v2muLVNskEN1GFsY7PthySf1_mv64oDbDgaUit0T3niQFDyIB_YsSb_CIsbdxbJPdOio43wAZArla-Ud1M_FrYW5G1UrDAZ-LidXeeJVGnPcm-S9H8dLMHM9QBTCJOrdkifK1DlODp3lUtRiFM9tEq6u7xI3rF8ndPulWmyYeEwMBrn87NOjg1lAVnSTD"
               />
             </button>
-            
+
             {showDropdown && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setShowDropdown(false)}></div>
@@ -139,10 +174,14 @@ export default function ConsolaValidacion() {
               </>
             )}
           </div>
-          
+
           <div className="flex flex-col text-left">
-            <span className="font-label-bold text-[11px] leading-tight text-on-surface-variant">{stats.legajo}</span>
-            <span className="font-headline-sm text-[15px] leading-tight text-white font-semibold">{stats.nombre}</span>
+            <span className="font-label-bold text-[11px] leading-tight text-on-surface-variant">
+              {stats.legajo}
+            </span>
+            <span className="font-headline-sm text-[15px] leading-tight text-white font-semibold">
+              {stats.nombre}
+            </span>
           </div>
         </div>
 
@@ -151,43 +190,46 @@ export default function ConsolaValidacion() {
             <span className="font-data-mono text-[9px] text-tertiary uppercase tracking-wider flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-tertiary rounded-full pulse-live"></span> EN VIVO
             </span>
-            <span className="font-data-mono text-[11px] text-on-surface-variant">{stats.puerta}</span>
+            <span className="font-data-mono text-[11px] text-on-surface-variant max-w-[120px] truncate">
+              {stats.puerta}
+            </span>
           </div>
+          <button
+            onClick={loadStats}
+            disabled={loadingStats}
+            className="text-on-surface-variant hover:text-white transition-colors disabled:opacity-50"
+            title="Actualizar estadísticas"
+          >
+            <RefreshCw size={18} className={loadingStats ? "animate-spin" : ""} />
+          </button>
           <button className="text-on-surface-variant hover:text-white transition-colors">
             <Bell size={20} />
           </button>
         </div>
       </header>
 
-      {/* Main Content Area (Camera Scanner Simulator) */}
-      <main className="flex-1 mt-[48px] mb-[180px] relative overflow-hidden bg-black flex flex-col">
-        {/* Virtual Viewfinder */}
+      <main className="flex-1 mt-[48px] mb-[220px] relative overflow-hidden bg-black flex flex-col">
         <div className="relative flex-1 w-full h-full flex flex-col justify-between">
-          
-          {/* Simulated Camera Feed Background */}
           <div className="absolute inset-0 z-0">
-            <div 
+            <div
               className="w-full h-full bg-cover bg-center opacity-65"
-              style={{ 
-                backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBambLcNxgfPaaXAAfBOwyaYn-0cXgiux4-HKWgYgEnHEtZ4K4PJ6QStcd0B4iAKVF9XGw8Xs5L_MJrmTzFXlFmCg0AmfAY8FYkUITyspaUBUNJ4UY0Q1UKgmlB2jTT47jYXwz_6mDlAO8LlAeFwHud67d69sQNWiwdZghRWq-mMg2cTW1d-4jaTgHQ_ePBByM7aoSRgqYqAdDGNhx801eNSvqOTiXrp6EZ8T7u-M1RBwWUIXzTmPsvpQgBDRV4l5TkJFLM7KY5Az-g')`
+              style={{
+                backgroundImage: `url('https://lh3.googleusercontent.com/aida-public/AB6AXuBambLcNxgfPaaXAAfBOwyaYn-0cXgiux4-HKWgYgEnHEtZ4K4PJ6QStcd0B4iAKVF9XGw8Xs5L_MJrmTzFXlFmCg0AmfAY8FYkUITyspaUBUNJ4UY0Q1UKgmlB2jTT47jYXwz_6mDlAO8LlAeFwHud67d69sQNWiwdZghRWq-mMg2cTW1d-4jaTgHQ_ePBByM7aoSRgqYqAdDGNhx801eNSvqOTiXrp6EZ8T7u-M1RBwWUIXzTmPsvpQgBDRV4l5TkJFLM7KY5Az-g')`,
               }}
             ></div>
             <div className="absolute inset-0 scanner-overlay"></div>
           </div>
 
-          {/* Viewfinder Brackets */}
           <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
             <div className="w-64 h-64 relative">
               <div className="absolute top-0 left-0 w-10 h-10 border-t-4 border-l-4 border-primary rounded-tl-xl"></div>
               <div className="absolute top-0 right-0 w-10 h-10 border-t-4 border-r-4 border-primary rounded-tr-xl"></div>
               <div className="absolute bottom-0 left-0 w-10 h-10 border-b-4 border-l-4 border-primary rounded-bl-xl"></div>
               <div className="absolute bottom-0 right-0 w-10 h-10 border-b-4 border-r-4 border-primary rounded-br-xl"></div>
-              
-              {/* Scan Laser Line */}
-              <div className="absolute inset-x-0 h-0.5 bg-tertiary shadow-[0_0_12px_#4ce346] scan-line" style={{
-                position: "absolute",
-                animation: "scan-animation 3s linear infinite"
-              }}></div>
+              <div
+                className="absolute inset-x-0 h-0.5 bg-tertiary shadow-[0_0_12px_#4ce346] scan-line"
+                style={{ animation: "scan-animation 3s linear infinite" }}
+              ></div>
             </div>
           </div>
 
@@ -206,22 +248,25 @@ export default function ConsolaValidacion() {
             }
           `}</style>
 
-          {/* Top Instruction Banner */}
-          <div className="relative z-10 w-full text-center pt-6 px-4">
+          <div className="relative z-10 w-full text-center pt-6 px-4 space-y-2">
             <span className="bg-black/60 backdrop-blur-md border border-white/5 text-xs text-on-surface px-4 py-2 rounded-full inline-flex items-center gap-1.5">
               <QrCode size={14} className="text-primary animate-pulse" />
-              Alinea el código QR dentro del visor
+              Pegá el token QR del titular para validar
             </span>
+            {statsError && (
+              <p className="text-xs text-error bg-error-container/20 px-3 py-1 rounded-full inline-block">
+                {statsError}
+              </p>
+            )}
           </div>
 
-          {/* Manual Input Trigger Form */}
           {showManualInput ? (
             <div className="relative z-20 mx-margin-mobile p-4 bg-surface/90 border border-white/10 rounded-xl mb-6 shadow-2xl animate-in slide-in-from-bottom-2">
               <form onSubmit={handleManualSubmit} className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-primary">Ingreso Manual de Entrada</span>
-                  <button 
-                    type="button" 
+                  <span className="text-xs font-bold text-primary">Ingreso Manual de Token QR</span>
+                  <button
+                    type="button"
                     onClick={() => setShowManualInput(false)}
                     className="text-on-surface-variant hover:text-white"
                   >
@@ -229,15 +274,15 @@ export default function ConsolaValidacion() {
                   </button>
                 </div>
                 <div className="flex gap-2">
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     value={manualCode}
                     onChange={(e) => setManualCode(e.target.value)}
-                    placeholder="Código de ticket (ej: error, warning, ok)"
-                    className="flex-1 bg-surface-container border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary"
+                    placeholder="Token hex del QR (copiado desde la app del titular)"
+                    className="flex-1 bg-surface-container border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary font-mono"
                     autoFocus
                   />
-                  <button 
+                  <button
                     type="submit"
                     className="bg-primary text-on-primary px-4 py-2 rounded-lg font-bold text-sm hover:opacity-90 active:scale-95 transition-all"
                   >
@@ -247,51 +292,34 @@ export default function ConsolaValidacion() {
               </form>
             </div>
           ) : (
-            /* Simulation & Option Buttons */
-            <div className="relative z-20 inset-x-0 pb-6 px-margin-mobile flex justify-center gap-3 flex-wrap">
-              <button 
-                onClick={() => triggerValidation("success")}
-                className="h-12 px-5 bg-surface/85 backdrop-blur-md border border-white/10 rounded-full font-label-bold text-xs text-emerald-400 hover:text-emerald-300 hover:bg-surface active:scale-95 transition-all flex items-center gap-1"
-              >
-                <CheckCircle size={14} /> Sim. OK
-              </button>
-              <button 
-                onClick={() => triggerValidation("error")}
-                className="h-12 px-5 bg-surface/85 backdrop-blur-md border border-white/10 rounded-full font-label-bold text-xs text-error hover:text-red-400 hover:bg-surface active:scale-95 transition-all flex items-center gap-1"
-              >
-                <XCircle size={14} /> Sim. Fallo
-              </button>
-              <button 
-                onClick={() => triggerValidation("warning")}
-                className="h-12 px-5 bg-surface/85 backdrop-blur-md border border-white/10 rounded-full font-label-bold text-xs text-amber-400 hover:text-amber-300 hover:bg-surface active:scale-95 transition-all flex items-center gap-1"
-              >
-                <AlertTriangle size={14} /> Sim. Sector
-              </button>
-              <button 
+            <div className="relative z-20 inset-x-0 pb-6 px-margin-mobile flex justify-center">
+              <button
                 onClick={() => setShowManualInput(true)}
-                className="h-12 w-12 bg-surface/85 backdrop-blur-md border border-white/10 rounded-full text-primary hover:text-white hover:bg-surface active:scale-95 transition-all flex items-center justify-center"
-                title="Ingresar código manual"
+                className="h-14 px-8 bg-primary/90 backdrop-blur-md border border-primary/30 rounded-full font-label-bold text-sm text-on-primary hover:bg-primary active:scale-95 transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
               >
                 <Keyboard size={18} />
+                Ingresar token QR
               </button>
             </div>
           )}
         </div>
 
-        {/* --- VALIDATING STATE SCREEN OVERLAY --- */}
         {activeOverlay === "validating" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/85 backdrop-blur-md text-white p-10 text-center animate-in fade-in duration-100">
             <Loader2 className="animate-spin text-primary mb-4" size={48} />
-            <h2 className="font-label-bold text-base tracking-widest text-primary uppercase">Consultando Ticket...</h2>
+            <h2 className="font-label-bold text-base tracking-widest text-primary uppercase">
+              Consultando Ticket...
+            </h2>
             <p className="text-xs text-on-surface-variant mt-2 font-mono">FIFA Secure Network</p>
           </div>
         )}
 
-        {/* --- STATUS SCREEN OVERLAYS (check, error, warning) --- */}
         {activeOverlay === "success" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-tertiary-container text-on-tertiary-container p-10 text-center animate-in zoom-in-95 duration-200">
             <CheckCircle size={120} className="mb-6 fill-tertiary stroke-on-tertiary-container" />
-            <h2 className="font-display-lg-mobile text-display-lg-mobile uppercase mb-2 leading-none">{overlayData.title}</h2>
+            <h2 className="font-display-lg-mobile text-display-lg-mobile uppercase mb-2 leading-none">
+              {overlayData.title}
+            </h2>
             <p className="font-headline-sm text-headline-sm tracking-wider">{overlayData.message}</p>
             <p className="mt-8 font-data-mono bg-white/10 px-4 py-2.5 rounded-lg border border-white/10 text-sm">
               {overlayData.details}
@@ -302,7 +330,9 @@ export default function ConsolaValidacion() {
         {activeOverlay === "error" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-error-container text-on-error-container p-10 text-center animate-in zoom-in-95 duration-200">
             <XCircle size={120} className="mb-6 fill-error stroke-on-error-container" />
-            <h2 className="font-display-lg-mobile text-display-lg-mobile uppercase mb-2 leading-none">{overlayData.title}</h2>
+            <h2 className="font-display-lg-mobile text-display-lg-mobile uppercase mb-2 leading-none">
+              {overlayData.title}
+            </h2>
             <p className="font-headline-sm text-headline-sm tracking-wider">{overlayData.message}</p>
             <p className="mt-8 font-data-mono bg-white/10 px-4 py-2.5 rounded-lg border border-white/10 text-sm">
               {overlayData.details}
@@ -313,7 +343,9 @@ export default function ConsolaValidacion() {
         {activeOverlay === "warning" && (
           <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-amber-500 text-black p-10 text-center animate-in zoom-in-95 duration-200">
             <AlertTriangle size={120} className="mb-6 fill-black stroke-amber-500" />
-            <h2 className="font-display-lg-mobile text-display-lg-mobile uppercase mb-2 leading-none text-black">{overlayData.title}</h2>
+            <h2 className="font-display-lg-mobile text-display-lg-mobile uppercase mb-2 leading-none text-black">
+              {overlayData.title}
+            </h2>
             <p className="font-headline-sm text-headline-sm tracking-wider text-black">{overlayData.message}</p>
             <p className="mt-8 font-data-mono bg-black/10 px-4 py-2.5 rounded-lg border border-black/15 text-sm font-bold">
               {overlayData.details}
@@ -322,15 +354,34 @@ export default function ConsolaValidacion() {
         )}
       </main>
 
-      {/* Validation Dashboard Panel */}
-      <div className="fixed bottom-0 w-full z-40 bg-surface/95 backdrop-blur-xl border-t border-white/10 rounded-t-[32px] p-margin-mobile flex flex-col gap-6 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-        
-        {/* Progress Info */}
+      <div className="fixed bottom-0 w-full z-40 bg-surface/95 backdrop-blur-xl border-t border-white/10 rounded-t-[32px] p-margin-mobile flex flex-col gap-5 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
+        {stats.dispositivos.length > 1 && (
+          <div className="space-y-1">
+            <label className="font-label-bold text-on-surface-variant uppercase tracking-widest text-[10px]">
+              Escáner activo
+            </label>
+            <select
+              value={stats.selectedDeviceId ?? ""}
+              onChange={handleDeviceChange}
+              className="w-full bg-surface-container border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary"
+            >
+              <option value="" disabled>
+                Seleccionar dispositivo…
+              </option>
+              {stats.dispositivos.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.descripcion}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="flex flex-col gap-3">
           <div className="flex justify-between items-end">
             <div className="text-left">
               <h3 className="font-label-bold text-on-surface-variant uppercase tracking-widest text-[10px]">
-                Asignación Actual
+                Dispositivos asignados
               </h3>
               <p className="font-headline-sm text-sm md:text-base text-on-surface font-bold">
                 {stats.sectoresAsignados}
@@ -342,41 +393,27 @@ export default function ConsolaValidacion() {
               </span>
             </div>
           </div>
-          
-          {/* Progress Bar */}
+
           <div className="w-full h-4 bg-surface-container-highest rounded-full overflow-hidden border border-white/5">
-            <div 
+            <div
               className="h-full bg-tertiary progress-glow rounded-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
-          
+
           <div className="flex justify-between text-[11px] font-data-mono text-on-surface-variant">
             <span>{stats.validados.toLocaleString()} VALIDADOS</span>
-            <span>{stats.total.toLocaleString()} TOTAL</span>
+            <span>Meta: {stats.total.toLocaleString()}</span>
           </div>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-3">
-          <button 
-            onClick={handleFinalizarTurno}
-            disabled={!isTurnoFinalizable}
-            id="finish-btn"
-            className={`w-full h-[64px] rounded-xl font-label-bold text-sm tracking-wide flex items-center justify-center gap-3 transition-all duration-300 ${
-              isTurnoFinalizable
-                ? "bg-tertiary text-on-primary font-bold shadow-lg shadow-tertiary/20 active:scale-95 cursor-pointer"
-                : "bg-white/5 border border-white/10 text-on-surface opacity-40 cursor-not-allowed"
-            }`}
-          >
-            <LogOut size={18} />
-            FINALIZAR TURNO
-            {isTurnoFinalizable && <span className="ml-1">→</span>}
-          </button>
-          <p className="text-center text-[10px] text-on-surface-variant/60 font-medium">
-            Completa el 100% de tus sectores para finalizar turno.
-          </p>
-        </div>
+        <button
+          onClick={handleFinalizarTurno}
+          className="w-full h-[56px] rounded-xl font-label-bold text-sm tracking-wide flex items-center justify-center gap-3 bg-white/5 border border-white/10 text-on-surface hover:bg-white/10 active:scale-95 transition-all"
+        >
+          <LogOut size={18} />
+          FINALIZAR TURNO
+        </button>
       </div>
     </div>
   );
