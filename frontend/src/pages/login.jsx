@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
+import { Link } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -143,6 +144,27 @@ export default function Login() {
             {loading ? "Cargando..." : "Iniciar Sesión"}
           </button>
         </form>
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "16px",
+          }}
+        >
+          <span style={{ color: "#6b7280", fontSize: "14px" }}>
+            ¿No tienes cuenta?{" "}
+          </span>
+
+          <Link
+            to="/register"
+            style={{
+              color: "#2563eb",
+              textDecoration: "none",
+              fontWeight: "bold",
+            }}
+          >
+            Registrarse
+          </Link>
+        </div>
         <p
           style={{
             textAlign: "center",
