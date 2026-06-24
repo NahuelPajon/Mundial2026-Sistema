@@ -82,6 +82,9 @@ public class EntradaRepository : IEntradaRepository
 
     public async Task<List<Entrada>> GetActivasByTitularAsync(string emailTitular)
     {
+        // Solo muestra entradas de partidos que aún no terminaron.
+        // Se usa NOW() - INTERVAL '2 hours' como margen: un partido dura ~2 horas,
+        // así que si hace más de 2 horas que comenzó, ya pasó y la entrada desaparece.
         const string query = @"
             SELECT e.id_entrada, e.titular, e.id_venta, e.id_evento, e.id_estadio,
                    e.codigo_sector, e.consumida,
@@ -92,7 +95,9 @@ public class EntradaRepository : IEntradaRepository
             JOIN Equipo ev ON ev.id_equipo = ev_evento.id_equipo_visitante
             JOIN Estadio est ON est.id_estadio = e.id_estadio
             JOIN Sector s ON s.id_estadio = e.id_estadio AND s.codigo = e.codigo_sector
-            WHERE e.titular = @email AND e.consumida = FALSE
+            WHERE e.titular = @email
+              AND e.consumida = FALSE
+              AND ev_evento.fecha >= NOW() - INTERVAL '2 hours'
             ORDER BY ev_evento.fecha ASC";
 
         var entradas = new List<Entrada>();

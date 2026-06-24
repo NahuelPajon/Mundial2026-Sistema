@@ -189,6 +189,7 @@ public class VentaRepository : IVentaRepository
             FROM Entrada
             WHERE id_estadio = @id_estadio
               AND codigo_sector = @codigo
+              AND id_evento = @id_evento
               AND consumida = false";
 
         int entradasEmitidas;

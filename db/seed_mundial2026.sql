@@ -98,10 +98,10 @@ INSERT INTO Sector (id_estadio, codigo, capacidad_maxima, costo) VALUES
 -- EVENTOS
 -- ------------------------------------------------------------
 INSERT INTO Evento (id_evento, fecha, estado, id_estadio, email_admin, id_equipo_local, id_equipo_visitante) VALUES
-(1, '2026-06-15 18:00:00', 'programado', 1, 'admin.usa@mundial.com', 1, 2),  -- Uruguay vs Argentina
-(2, '2026-06-18 21:00:00', 'programado', 1, 'admin.usa@mundial.com', 3, 4),  -- Brasil vs Francia
-(3, '2026-06-21 18:00:00', 'programado', 2, 'admin.usa@mundial.com', 5, 6),  -- España vs Alemania
-(4, '2026-06-24 21:00:00', 'programado', 3, 'admin.mex@mundial.com', 8, 7);  -- México vs Portugal
+(1, '2026-07-02 18:00:00', 'programado', 1, 'admin.usa@mundial.com', 1, 2),  -- Uruguay vs Argentina
+(2, '2026-07-04 21:00:00', 'programado', 1, 'admin.usa@mundial.com', 3, 4),  -- Brasil vs Francia
+(3, '2026-07-06 18:00:00', 'programado', 2, 'admin.usa@mundial.com', 5, 6),  -- España vs Alemania
+(4, '2026-07-08 21:00:00', 'programado', 3, 'admin.mex@mundial.com', 8, 7);  -- México vs Portugal
 
 -- ------------------------------------------------------------
 -- EVENTO_SECTOR (sectores habilitados por evento)
@@ -177,10 +177,10 @@ INSERT INTO Historial_Transferencia (id_entrada, id_transferencia, orden) VALUES
 -- QR (tokens activos por entrada)
 -- ------------------------------------------------------------
 INSERT INTO QR (token, id_entrada, generado_en, expira_en, activo) VALUES
-('QR-TOKEN-001', 1,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE),
-('QR-TOKEN-002', 2,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE),
-('QR-TOKEN-003', 3,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE),
-('QR-TOKEN-004', 4,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE);
+('QR-TOKEN-001', 1,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE),
+('QR-TOKEN-002', 2,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE),
+('QR-TOKEN-003', 3,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE),
+('QR-TOKEN-004', 4,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE);
 
 -- ------------------------------------------------------------
 -- DISPOSITIVOS
