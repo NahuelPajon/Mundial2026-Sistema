@@ -203,12 +203,16 @@ export default function AdminDashboard() {
                 className="flex items-center justify-between p-4 bg-surface-container-low rounded-lg hover:bg-surface-container transition-all group border border-white/5 hover:border-white/10"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/40 group-hover:border-tertiary transition-colors">
-                    <img 
-                      className="w-full h-full object-cover" 
-                      alt={buyer.nombre} 
-                      src={buyer.avatar} 
-                    />
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-primary/40 group-hover:border-tertiary transition-colors bg-primary-container flex items-center justify-center">
+                    {buyer.avatar ? (
+                      <img 
+                        className="w-full h-full object-cover" 
+                        alt={buyer.nombre} 
+                        src={buyer.avatar} 
+                      />
+                    ) : (
+                      <Users size={20} className="text-primary" />
+                    )}
                   </div>
                   <div className="text-left">
                     <p className="font-label-bold text-sm font-semibold text-on-surface">{buyer.nombre}</p>
