@@ -10,7 +10,7 @@ export const authService = {
         },
         body: JSON.stringify({
           email: email.trim(),
-          password
+          password: password
         })
       });
 
