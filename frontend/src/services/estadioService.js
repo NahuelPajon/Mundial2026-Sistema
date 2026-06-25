@@ -1,5 +1,16 @@
 import { apiFetch } from "./api";
 
+const mapSectoresFromApi = (sectores) => {
+  return (sectores || []).map((sector) => ({
+    idSector: sector.codigo,
+    nombre: `Sector ${sector.codigo}`,
+    capacidad: sector.capacidadMaxima,
+    precioBase: sector.costo,
+    entradasDisponibles: sector.entradasDisponibles,
+    isVIP: sector.codigo?.toLowerCase() === "vip"
+  }));
+};
+
 export const estadioService = {
   getAll: async () => {
     try {
@@ -18,25 +29,22 @@ export const estadioService = {
     return await apiFetch(`/estadios/${id}`);
   },
 
-  getSectores: async (estadioId) => {
-    try {
-      return await apiFetch(`/estadios/${estadioId}/sectores`);
-    } catch (error) {
-      console.warn(`Backend /estadios/${estadioId}/sectores no disponible. Usando mock data:`, error.message);
-      return [
-        { idSector: "A", nombre: "General Inferior", capacidad: 12500, precioBase: 120, isVIP: false },
-        { idSector: "B", nombre: "Lateral Media", capacidad: 8200, precioBase: 250, isVIP: false },
-        { idSector: "C", nombre: "Club Premium", capacidad: 2100, precioBase: 850, isVIP: true },
-        { idSector: "D", nombre: "Hospitality Suite", capacidad: 450, precioBase: 1200, isVIP: false }
-      ];
-    }
+  getSectores: async (id) => {
+    const estadio = await apiFetch(`/estadios/${id}`);
+    return mapSectoresFromApi(estadio.sectores);
   },
 
-  // Sin fallback: si el backend rechaza por jurisdicción, el error debe llegar al usuario
-  updateSectorPrecio: async (estadioId, sectorId, precioBase) => {
-    return await apiFetch(`/estadios/${estadioId}/sectores/${sectorId}`, {
+  create: async (data) => {
+    return await apiFetch("/estadios", {
+      method: "POST",
+      body: JSON.stringify(data)
+    });
+  },
+
+  updateSectorPrecio: async (idEstadio, codigo, costo) => {
+    return await apiFetch(`/estadios/${idEstadio}/sectores/${codigo}`, {
       method: "PUT",
-      body: JSON.stringify({ precioBase: Number(precioBase) })
+      body: JSON.stringify({ costo: Number(costo) })
     });
   }
 };
