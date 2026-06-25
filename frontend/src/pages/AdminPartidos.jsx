@@ -25,6 +25,8 @@ export default function AdminPartidos() {
   const [visita, setVisita] = useState("");
   const [fechaHora, setFechaHora] = useState("");
   const [selectedStadium, setSelectedStadium] = useState("");
+  const [selectedSectores, setSelectedSectores] = useState([]);
+  const [stadiumSectores, setStadiumSectores] = useState([]);
 
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
@@ -45,6 +47,10 @@ export default function AdminPartidos() {
 
       if (stadiumsData.length > 0) {
         setSelectedStadium(stadiumsData[0].idEstadio);
+        const sectores = stadiumsData[0].sectores || [];
+        setStadiumSectores(sectores);
+        // Habilitar todos los sectores por defecto
+        setSelectedSectores(sectores.map(s => s.codigo));
       }
     } catch {
       setError("Error cargando datos");
@@ -57,11 +63,25 @@ export default function AdminPartidos() {
     loadData();
   }, []);
 
+  const handleStadiumChange = (stadiumId) => {
+    setSelectedStadium(stadiumId);
+    const stadium = stadiums.find(s => s.idEstadio === Number(stadiumId));
+    const sectores = stadium?.sectores || [];
+    setStadiumSectores(sectores);
+    // Habilitar todos los sectores por defecto
+    setSelectedSectores(sectores.map(s => s.codigo));
+  };
+
   const handleCreatePartido = async (e) => {
     e.preventDefault();
 
     if (!local || !visita || !fechaHora || !selectedStadium) {
-      setError("Completa todos los campos");
+      setError("Completa todos los campos obligatorios");
+      return;
+    }
+
+    if (selectedSectores.length === 0) {
+      setError("Selecciona al menos un sector");
       return;
     }
 
@@ -75,7 +95,7 @@ export default function AdminPartidos() {
         idEstadio: Number(selectedStadium),
         idEquipoLocal: Number(local),
         idEquipoVisitante: Number(visita),
-        sectoresHabilitados: []
+        sectoresHabilitados: selectedSectores
       });
 
       await loadData();
@@ -83,6 +103,7 @@ export default function AdminPartidos() {
       setLocal("");
       setVisita("");
       setFechaHora("");
+      setSelectedSectores([]);
 
       setSuccessMsg("Partido creado correctamente");
       setTimeout(() => setSuccessMsg(""), 2500);
@@ -211,7 +232,7 @@ export default function AdminPartidos() {
             <label className="text-sm text-gray-400">Estadio</label>
             <select
               value={selectedStadium}
-              onChange={(e) => setSelectedStadium(e.target.value)}
+              onChange={(e) => handleStadiumChange(e.target.value)}
               className="w-full mt-1 p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white focus:border-lime-400 outline-none"
             >
               {stadiums.map(s => (
@@ -223,6 +244,34 @@ export default function AdminPartidos() {
           </div>
 
         </div>
+
+        {/* SECTORES */}
+        {stadiumSectores.length > 0 && (
+          <div>
+            <label className="text-sm text-gray-400">Sectores a habilitar</label>
+            <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2 bg-[#0a0f1a] p-4 rounded-lg border border-gray-700">
+              {stadiumSectores.map(s => (
+                <label key={s.codigo} className="flex items-center gap-2 cursor-pointer hover:text-lime-400 transition">
+                  <input
+                    type="checkbox"
+                    checked={selectedSectores.includes(s.codigo)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setSelectedSectores([...selectedSectores, s.codigo]);
+                      } else {
+                        setSelectedSectores(selectedSectores.filter(c => c !== s.codigo));
+                      }
+                    }}
+                    className="w-4 h-4 rounded cursor-pointer"
+                  />
+                  <span className="text-sm">
+                    {s.codigo} ({s.capacidadMaxima})
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* BOTÓN */}
         <button
