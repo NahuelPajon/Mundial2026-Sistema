@@ -18,10 +18,18 @@ import { useNavigate } from "react-router-dom";
 import { ticketService } from "../services/ticketService";
 import { authService } from "../services/authService";
 
+const flagImports = import.meta.glob("../assets/*.svg", { query: '?url', import: 'default' });
+
+const getAssetKey = (teamName) => {
+  const name = String(teamName || "").trim();
+  return `../assets/${name}.svg`;
+};
+
 export default function Dashboard() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [flagUrls, setFlagUrls] = useState({});
 
   // Estados para modal QR
   const [activeQR, setActiveQR] = useState(null);
@@ -73,6 +81,41 @@ export default function Dashboard() {
     window.addEventListener("tickets-actualizados", handler);
     return () => window.removeEventListener("tickets-actualizados", handler);
   }, []);
+
+  useEffect(() => {
+    const teams = Array.from(
+      new Set(
+        tickets
+          .flatMap((t) => [t.equipoLocal, t.equipoVisita])
+          .filter(Boolean)
+      )
+    );
+
+    const loaders = teams.map((team) => {
+      const key = getAssetKey(team);
+      const importer = flagImports[key];
+      if (!importer) return null;
+      if (flagUrls[key]) return null;
+      return importer().then((url) => [key, url?.default || url]);
+    }).filter(Boolean);
+
+    if (loaders.length === 0) return;
+
+    Promise.all(loaders).then((resolved) => {
+      setFlagUrls((prev) => {
+        const next = { ...prev };
+        resolved.forEach(([key, url]) => {
+          if (key && url) next[key] = url;
+        });
+        return next;
+      });
+    });
+  }, [tickets, flagUrls]);
+
+  const getFlagForTeam = (teamName) => {
+    const key = getAssetKey(teamName);
+    return flagUrls[key] || "";
+  };
 
   // ── QR dinámico ─────────────────────────────────────────────
   const refreshQR = useCallback(async (ticketId) => {
@@ -267,8 +310,18 @@ export default function Dashboard() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex items-center justify-center text-xs font-bold text-on-surface-variant">
-                            {tkt.equipoLocal?.slice(0, 2).toUpperCase()}
+                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5">
+                            {getFlagForTeam(tkt.equipoLocal) ? (
+                              <img
+                                className="w-full h-full object-cover"
+                                alt={tkt.equipoLocal}
+                                src={getFlagForTeam(tkt.equipoLocal)}
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-white/10 flex items-center justify-center text-xs font-bold text-on-surface-variant">
+                                {tkt.equipoLocal?.slice(0, 2).toUpperCase()}
+                              </div>
+                            )}
                           </div>
                           <span className="font-label-bold">{tkt.equipoLocal}</span>
                         </div>
@@ -276,8 +329,18 @@ export default function Dashboard() {
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5 flex items-center justify-center text-xs font-bold text-on-surface-variant">
-                            {tkt.equipoVisita?.slice(0, 2).toUpperCase()}
+                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5">
+                            {getFlagForTeam(tkt.equipoVisita) ? (
+                              <img
+                                className="w-full h-full object-cover"
+                                alt={tkt.equipoVisita}
+                                src={getFlagForTeam(tkt.equipoVisita)}
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-white/10 flex items-center justify-center text-xs font-bold text-on-surface-variant">
+                                {tkt.equipoVisita?.slice(0, 2).toUpperCase()}
+                              </div>
+                            )}
                           </div>
                           <span className="font-label-bold">{tkt.equipoVisita}</span>
                         </div>

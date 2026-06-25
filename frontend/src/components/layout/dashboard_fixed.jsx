@@ -17,6 +17,14 @@ import {
 import { ticketService } from "../services/ticketService";
 import { authService } from "../services/authService";
 
+const flagAssets = import.meta.globEager("../../assets/*.svg", { as: "url" });
+
+const getFlagForTeam = (teamName) => {
+  const name = String(teamName || "").trim();
+  const assetKey = `../../assets/${name}.svg`;
+  return flagAssets[assetKey] || "";
+};
+
 export default function Dashboard() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -281,7 +289,11 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
-                            <img className="w-full h-full object-cover" alt={tkt.equipoLocal} src={tkt.flagLocal} />
+                            <img
+                              className="w-full h-full object-cover"
+                              alt={tkt.equipoLocal}
+                              src={getFlagForTeam(tkt.equipoLocal)}
+                            />
                           </div>
                           <span className="font-label-bold">{tkt.equipoLocal}</span>
                         </div>
@@ -293,7 +305,11 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
-                            <img className="w-full h-full object-cover" alt={tkt.equipoVisita} src={tkt.flagVisita} />
+                            <img
+                              className="w-full h-full object-cover"
+                              alt={tkt.equipoVisita}
+                              src={getFlagForTeam(tkt.equipoVisita)}
+                            />
                           </div>
                           <span className="font-label-bold">{tkt.equipoVisita}</span>
                         </div>
