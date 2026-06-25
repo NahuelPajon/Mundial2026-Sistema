@@ -1,6 +1,5 @@
 import React from "react";
 
-// Lista oficializada de los 48 clasificados
 const PAISES_MUNDIAL = [
   "Alemania", "Arabia Saudita", "Argentina", "Argelia", "Australia", "Austria", 
   "Bélgica", "Bosnia y Herzegovina", "Brasil", "Cabo Verde", "Canadá", "Catar", 
@@ -10,22 +9,26 @@ const PAISES_MUNDIAL = [
   "Noruega", "Nueva Zelanda", "Países Bajos", "Panamá", "Paraguay", "Portugal", 
   "República Checa", "República Democrática del Congo", "Senegal", "Sudáfrica", 
   "Suecia", "Suiza", "Túnez", "Turquía", "Uruguay", "Uzbekistán"
-].sort(); // Los ordena alfabéticamente de forma automática
+].sort();
 
-export default function PaisSelect({ name, value, onChange, onFocus, onBlur, style }) {
+// Lista reducida de sedes
+const ANFITRIONES = ["Canadá", "USA", "México"];
+
+export default function PaisSelect({ name, value, onChange, soloAnfitriones = false, className, style }) {
+  // Si la propiedad soloAnfitriones es true, usa la lista corta; si no, usa la completa
+  const listaPaises = soloAnfitriones ? ANFITRIONES : PAISES_MUNDIAL;
+
   return (
     <select
       name={name}
       value={value}
       onChange={onChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
       required
-      className="w-full px-4 py-3 text-base rounded transition"
+      className={className}
       style={{
         ...style,
-        appearance: "none", // Quita el estilo por defecto de select de Windows/Mac
-        backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23c4c6cf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>")`,
+        appearance: "none",
+        backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://w3.org' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>")`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 12px center",
         backgroundSize: "16px",
@@ -36,8 +39,8 @@ export default function PaisSelect({ name, value, onChange, onFocus, onBlur, sty
       <option value="" disabled style={{ backgroundColor: "#1f2022", color: "#8e9199" }}>
         Seleccionar país...
       </option>
-      {PAISES_MUNDIAL.map((pais) => (
-        <option key={pais} value={pais} style={{ backgroundColor: "#1f2022", color: "#e3e2e5" }}>
+      {listaPaises.map((pais) => (
+        <option key={pais} value={pais} style={{ backgroundColor: "#1f2022", color: "#ffffff" }}>
           {pais}
         </option>
       ))}

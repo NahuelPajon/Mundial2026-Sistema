@@ -426,12 +426,12 @@ export default function AdminEstadios() {
                 </div>
                 <div>
                   <label className="text-sm text-on-surface-variant block mb-2">País</label>
-                  <input
+                  <PaisSelect
                     value={createForm.paisDir}
                     onChange={(e) => handleCreateInputChange("paisDir", e.target.value)}
+                    soloAnfitriones={true}
                     required
                     className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
-                    placeholder="México"
                   />
                 </div>
                 <div>
