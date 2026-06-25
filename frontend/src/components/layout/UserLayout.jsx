@@ -24,6 +24,37 @@ export default function UserLayout({ children }) {
     navigate("/login");
   };
 
+  // ── Helpers localStorage con TTL de 7 días ─────────────────
+  const NOTIFS_KEY = "notifs_desc_v2";
+  const TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+  const getDescartadas = () => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(NOTIFS_KEY) || "[]");
+      const ahora = Date.now();
+      const vigentes = raw.filter((e) => ahora - e.ts < TTL_MS);
+      if (vigentes.length !== raw.length)
+        localStorage.setItem(NOTIFS_KEY, JSON.stringify(vigentes));
+      return vigentes.map((e) => e.id);
+    } catch {
+      localStorage.removeItem(NOTIFS_KEY);
+      return [];
+    }
+  };
+
+  const descartarNotif = (idTransferencia) => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(NOTIFS_KEY) || "[]");
+      const id = Number(idTransferencia);
+      if (!raw.find((e) => e.id === id)) {
+        raw.push({ id, ts: Date.now() });
+        localStorage.setItem(NOTIFS_KEY, JSON.stringify(raw));
+      }
+    } catch {
+      localStorage.removeItem(NOTIFS_KEY);
+    }
+  };
+
   // Cargar transferencias pendientes recibidas
   const cargarTransferencias = async () => {
     try {
@@ -32,12 +63,10 @@ export default function UserLayout({ children }) {
         apiFetch("/transferencias?tipo=enviadas"),
       ]);
       setTransferencias(recibidas.filter((t) => t.estado?.toLowerCase() === "pendiente"));
-      // Notificar al remitente sobre respuestas que aún no vio
       const respondidas = enviadas.filter((t) =>
         ["aceptada", "rechazada"].includes(t.estado?.toLowerCase())
       );
-      // Filtrar las que el usuario ya descartó (guardadas en localStorage)
-      const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]").map(Number);
+      const descartadas = getDescartadas();
       const nuevas = respondidas.filter((t) => !descartadas.includes(Number(t.idTransferencia)));
       setNotifEnviadas(nuevas);
     } catch {
@@ -46,14 +75,6 @@ export default function UserLayout({ children }) {
   };
 
   useEffect(() => {
-    // Normalizar IDs en localStorage a número (fix de tipo string vs number)
-    try {
-      const raw = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]");
-      const normalized = raw.map(Number).filter((n) => !isNaN(n));
-      localStorage.setItem("notifs_descartadas", JSON.stringify(normalized));
-    } catch {
-      localStorage.removeItem("notifs_descartadas");
-    }
     cargarTransferencias();
     const interval = setInterval(cargarTransferencias, 30000);
     return () => clearInterval(interval);
@@ -159,8 +180,7 @@ export default function UserLayout({ children }) {
                           </p>
                           <button
                             onClick={() => {
-                              const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]").map(Number);
-                              localStorage.setItem("notifs_descartadas", JSON.stringify([...descartadas, Number(t.idTransferencia)]));
+                              descartarNotif(t.idTransferencia);
                               setNotifEnviadas((prev) => prev.filter((n) => n.idTransferencia !== t.idTransferencia));
                             }}
                             className="text-on-surface-variant hover:text-on-surface shrink-0"
