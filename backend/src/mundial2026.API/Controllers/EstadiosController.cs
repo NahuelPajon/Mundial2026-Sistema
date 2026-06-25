@@ -1,6 +1,9 @@
-using mundial2026.Business.Services;
-using mundial2026.API.DTOs;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using mundial2026.API.DTOs;
+using mundial2026.Business.Security;
+using mundial2026.Business.Services;
 
 namespace mundial2026.API.Controllers;
 
@@ -17,9 +20,6 @@ public class EstadiosController : ControllerBase
         _logger = logger;
     }
 
-    /// <summary>
-    /// Obtiene todos los estadios
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -53,9 +53,6 @@ public class EstadiosController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Obtiene un estadio por ID
-    /// </summary>
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -84,7 +81,6 @@ public class EstadiosController : ControllerBase
         }
         catch (KeyNotFoundException ex)
         {
-            _logger.LogWarning($"Estadio no encontrado: {ex.Message}");
             return NotFound(new { error = ex.Message });
         }
         catch (Exception ex)
@@ -95,8 +91,79 @@ public class EstadiosController : ControllerBase
     }
 
     /// <summary>
-    /// Crea un nuevo estadio con sectores
+    /// Obtiene los sectores de un estadio (accesible por todos los roles)
     /// </summary>
+    [HttpGet("{id}/sectores")]
+    public async Task<IActionResult> GetSectores(int id)
+    {
+        try
+        {
+            var sectores = await _estadioService.GetSectoresAsync(id);
+            var response = sectores.Select(s => new
+            {
+                idSector = s.Codigo,
+                nombre = s.Codigo,       // si no tenés nombre en BD, usás el código
+                capacidad = s.CapacidadMaxima,
+                precioBase = s.Costo,
+                isVIP = false
+            });
+
+            return Ok(response);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error al obtener sectores: {ex.Message}");
+            return StatusCode(500, new { error = "Error interno del servidor" });
+        }
+    }
+
+    /// <summary>
+    /// Actualiza el precio de un sector. Solo el admin del país correspondiente puede hacerlo.
+    /// </summary>
+    [Authorize(Roles = Roles.Admin)]
+    [HttpPut("{id}/sectores/{codigo}")]
+    public async Task<IActionResult> UpdateSectorPrecio(int id, string codigo, [FromBody] UpdateSectorPrecioRequest request)
+    {
+        try
+        {
+            var emailAdmin = User.FindFirstValue(ClaimTypes.Email)
+                ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(emailAdmin))
+                return Unauthorized(new { error = "Token inválido" });
+
+            await _estadioService.UpdateSectorPrecioAsync(emailAdmin, id, codigo, request.PrecioBase);
+
+            _logger.LogInformation($"Admin {emailAdmin} actualizó precio del sector {codigo} en estadio {id}");
+            return Ok(new { mensaje = "Precio actualizado correctamente" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error al actualizar sector: {ex.Message}");
+            return StatusCode(500, new { error = "Error interno del servidor" });
+        }
+    }
+
+    /// <summary>
+    /// Crea un nuevo estadio. Solo el admin del país correspondiente puede hacerlo.
+    /// </summary>
+    [Authorize(Roles = Roles.Admin)]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateEstadioRequest request)
     {
@@ -105,7 +172,14 @@ public class EstadiosController : ControllerBase
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var emailAdmin = User.FindFirstValue(ClaimTypes.Email)
+                ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(emailAdmin))
+                return Unauthorized(new { error = "Token inválido" });
+
             var idEstadio = await _estadioService.CreateAsync(
+                emailAdmin,
                 request.Nombre,
                 request.Aforo,
                 request.PaisDir,
@@ -120,18 +194,20 @@ public class EstadiosController : ControllerBase
                 }).ToList()
             );
 
-            _logger.LogInformation($"Estadio '{request.Nombre}' creado con ID {idEstadio}");
-            return CreatedAtAction(nameof(GetById), new { id = idEstadio }, 
+            _logger.LogInformation($"Estadio '{request.Nombre}' creado por {emailAdmin} con ID {idEstadio}");
+            return CreatedAtAction(nameof(GetById), new { id = idEstadio },
                 new { mensaje = "Estadio creado exitosamente", idEstadio });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { error = ex.Message });
         }
         catch (ArgumentException ex)
         {
-            _logger.LogWarning($"Validación fallida: {ex.Message}");
             return BadRequest(new { error = ex.Message });
         }
         catch (InvalidOperationException ex)
         {
-            _logger.LogWarning($"Operación inválida: {ex.Message}");
             return Conflict(new { error = ex.Message });
         }
         catch (Exception ex)

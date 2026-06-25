@@ -69,215 +69,392 @@ export default function Register() {
     }
   };
 
+  const inputFieldStyle = {
+    backgroundColor: "#1f2022",
+    border: "1px solid #43474e",
+    color: "#e3e2e5"
+  };
+
+  const handleInputFocus = (e) => {
+    e.target.style.borderColor = "#D4AF37";
+    e.target.style.boxShadow = "0 0 0 3px rgba(212, 175, 55, 0.15)";
+  };
+
+  const handleInputBlur = (e) => {
+    e.target.style.borderColor = "#43474e";
+    e.target.style.boxShadow = "none";
+  };
+
   return (
-    <div className="min-h-screen bg-[#0b1220] text-white px-4 py-8">
+    <div 
+      className="min-h-screen px-5 py-8"
+      style={{ backgroundColor: "#0d0e11" }}
+    >
+      <style>{`
+        * {
+          font-family: 'Montserrat', sans-serif;
+        }
+        
+        .section-divider {
+          border-color: #43474e;
+        }
+      `}</style>
+
       <div className="max-w-2xl mx-auto">
         
         {/* HEADER */}
-        <div className="text-center mb-8 space-y-2">
+        <div className="text-center mb-8 space-y-3">
           <div className="flex justify-center">
-            <UserPlus className="text-lime-400" size={32} />
+            <UserPlus size={40} style={{ color: "#4ce346" }} className="drop-shadow-lg" />
           </div>
-          <h1 className="text-3xl font-bold">Registro - Mundial 2026</h1>
-          <p className="text-sm text-gray-400">Crea tu cuenta para acceder</p>
+          <h1 
+            className="text-4xl font-black tracking-tight"
+            style={{ 
+              color: "#e3e2e5",
+              fontWeight: 800,
+              letterSpacing: "-0.02em"
+            }}
+          >
+            Registro
+          </h1>
+          <p 
+            className="text-base"
+            style={{ color: "#c4c6cf" }}
+          >
+            Crea tu cuenta para acceder - Mundial 2026
+          </p>
         </div>
 
         {/* FORM CONTAINER */}
-        <div className="bg-[#111a2e] border border-gray-700 rounded-xl p-8 shadow-2xl space-y-6">
+        <div 
+          className="rounded-lg p-8 shadow-2xl space-y-6"
+          style={{ 
+            backgroundColor: "#292a2c",
+            border: "1px solid #43474e"
+          }}
+        >
           
           {/* ALERTS */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg flex gap-2">
-              <AlertCircle size={18} className="flex-shrink-0" />
-              <span>{error}</span>
+            <div 
+              className="p-4 rounded-lg flex gap-3 items-start"
+              style={{ 
+                backgroundColor: "rgba(255, 180, 171, 0.1)",
+                border: "1px solid #ffb4ab"
+              }}
+            >
+              <AlertCircle size={20} style={{ color: "#ffb4ab", flexShrink: 0, marginTop: "2px" }} />
+              <span style={{ color: "#ffb4ab" }} className="text-sm leading-relaxed">{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="bg-lime-500/10 border border-lime-500/30 text-lime-300 p-3 rounded-lg flex gap-2">
-              <Check size={18} className="flex-shrink-0" />
-              <span>{success}</span>
+            <div 
+              className="p-4 rounded-lg flex gap-3 items-start"
+              style={{ 
+                backgroundColor: "rgba(76, 227, 70, 0.1)",
+                border: "1px solid #4ce346"
+              }}
+            >
+              <Check size={20} style={{ color: "#4ce346", flexShrink: 0, marginTop: "2px" }} />
+              <span style={{ color: "#4ce346" }} className="text-sm leading-relaxed">{success}</span>
             </div>
           )}
 
           {/* FORM */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             
             {/* CREDENCIALES */}
-            <div className="space-y-4 pb-4 border-b border-gray-700">
-              <h3 className="text-lime-400 font-semibold">Credenciales</h3>
+            <div className="space-y-4 pb-6 section-divider border-b">
+              <h3 
+                className="text-lg font-bold"
+                style={{ color: "#4ce346" }}
+              >
+                Credenciales
+              </h3>
               
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Email</label>
+                <label 
+                  className="text-sm block mb-2 font-semibold"
+                  style={{ color: "#c4c6cf" }}
+                >
+                  Email
+                </label>
                 <input
                   type="email"
                   name="email"
                   placeholder="tu@email.com"
                   value={form.email}
                   onChange={handleChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   required
-                  className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                  className="w-full px-4 py-3 text-base rounded transition"
+                  style={inputFieldStyle}
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Contraseña</label>
+                <label 
+                  className="text-sm block mb-2 font-semibold"
+                  style={{ color: "#c4c6cf" }}
+                >
+                  Contraseña
+                </label>
                 <input
                   type="password"
                   name="password"
                   placeholder="••••••••"
                   value={form.password}
                   onChange={handleChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   required
-                  className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                  className="w-full px-4 py-3 text-base rounded transition"
+                  style={inputFieldStyle}
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Confirmar contraseña</label>
+                <label 
+                  className="text-sm block mb-2 font-semibold"
+                  style={{ color: "#c4c6cf" }}
+                >
+                  Confirmar contraseña
+                </label>
                 <input
                   type="password"
                   name="confirmPassword"
                   placeholder="••••••••"
                   value={form.confirmPassword}
                   onChange={handleChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   required
-                  className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                  className="w-full px-4 py-3 text-base rounded transition"
+                  style={inputFieldStyle}
                 />
               </div>
             </div>
 
             {/* DIRECCIÓN */}
-            <div className="space-y-4 pb-4 border-b border-gray-700">
-              <h3 className="text-lime-400 font-semibold">Domicilio</h3>
+            <div className="space-y-4 pb-6 section-divider border-b">
+              <h3 
+                className="text-lg font-bold"
+                style={{ color: "#4ce346" }}
+              >
+                Domicilio
+              </h3>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">País</label>
+                  <label 
+                    className="text-sm block mb-2 font-semibold"
+                    style={{ color: "#c4c6cf" }}
+                  >
+                    País
+                  </label>
                   <input
                     type="text"
                     name="paisDir"
                     placeholder="País"
                     value={form.paisDir}
                     onChange={handleChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                    className="w-full px-4 py-3 text-base rounded transition"
+                    style={inputFieldStyle}
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Localidad</label>
+                  <label 
+                    className="text-sm block mb-2 font-semibold"
+                    style={{ color: "#c4c6cf" }}
+                  >
+                    Localidad
+                  </label>
                   <input
                     type="text"
                     name="localidad"
                     placeholder="Ciudad"
                     value={form.localidad}
                     onChange={handleChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                    className="w-full px-4 py-3 text-base rounded transition"
+                    style={inputFieldStyle}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Calle</label>
+                <label 
+                  className="text-sm block mb-2 font-semibold"
+                  style={{ color: "#c4c6cf" }}
+                >
+                  Calle
+                </label>
                 <input
                   type="text"
                   name="calle"
                   placeholder="Nombre de la calle"
                   value={form.calle}
                   onChange={handleChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   required
-                  className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                  className="w-full px-4 py-3 text-base rounded transition"
+                  style={inputFieldStyle}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Número</label>
+                  <label 
+                    className="text-sm block mb-2 font-semibold"
+                    style={{ color: "#c4c6cf" }}
+                  >
+                    Número
+                  </label>
                   <input
                     type="text"
                     name="numeroDir"
                     placeholder="Número"
                     value={form.numeroDir}
                     onChange={handleChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                    className="w-full px-4 py-3 text-base rounded transition"
+                    style={inputFieldStyle}
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Código Postal</label>
+                  <label 
+                    className="text-sm block mb-2 font-semibold"
+                    style={{ color: "#c4c6cf" }}
+                  >
+                    Código Postal
+                  </label>
                   <input
                     type="text"
                     name="codPostal"
                     placeholder="CP"
                     value={form.codPostal}
                     onChange={handleChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                    className="w-full px-4 py-3 text-base rounded transition"
+                    style={inputFieldStyle}
                   />
                 </div>
               </div>
             </div>
 
             {/* DOCUMENTO */}
-            <div className="space-y-4 pb-4 border-b border-gray-700">
-              <h3 className="text-lime-400 font-semibold">Identificación</h3>
+            <div className="space-y-4 pb-6 section-divider border-b">
+              <h3 
+                className="text-lg font-bold"
+                style={{ color: "#4ce346" }}
+              >
+                Identificación
+              </h3>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">País del documento</label>
+                  <label 
+                    className="text-sm block mb-2 font-semibold"
+                    style={{ color: "#c4c6cf" }}
+                  >
+                    País del documento
+                  </label>
                   <input
                     type="text"
                     name="docPais"
                     placeholder="País"
                     value={form.docPais}
                     onChange={handleChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                    className="w-full px-4 py-3 text-base rounded transition"
+                    style={inputFieldStyle}
                   />
                 </div>
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Tipo</label>
+                  <label 
+                    className="text-sm block mb-2 font-semibold"
+                    style={{ color: "#c4c6cf" }}
+                  >
+                    Tipo
+                  </label>
                   <input
                     type="text"
                     name="docTipo"
                     placeholder="CI, Pasaporte..."
                     value={form.docTipo}
                     onChange={handleChange}
+                    onFocus={handleInputFocus}
+                    onBlur={handleInputBlur}
                     required
-                    className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                    className="w-full px-4 py-3 text-base rounded transition"
+                    style={inputFieldStyle}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Número de documento</label>
+                <label 
+                  className="text-sm block mb-2 font-semibold"
+                  style={{ color: "#c4c6cf" }}
+                >
+                  Número de documento
+                </label>
                 <input
                   type="text"
                   name="docNumero"
                   placeholder="Número"
                   value={form.docNumero}
                   onChange={handleChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   required
-                  className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                  className="w-full px-4 py-3 text-base rounded transition"
+                  style={inputFieldStyle}
                 />
               </div>
             </div>
 
             {/* CONTACTO */}
             <div className="space-y-4">
-              <h3 className="text-lime-400 font-semibold">Contacto</h3>
+              <h3 
+                className="text-lg font-bold"
+                style={{ color: "#4ce346" }}
+              >
+                Contacto
+              </h3>
               
               <div>
-                <label className="text-sm text-gray-400 block mb-2">Teléfono</label>
+                <label 
+                  className="text-sm block mb-2 font-semibold"
+                  style={{ color: "#c4c6cf" }}
+                >
+                  Teléfono
+                </label>
                 <input
                   type="tel"
                   name="telefono"
                   placeholder="+598 99 123 456"
                   value={form.telefono}
                   onChange={handleChange}
+                  onFocus={handleInputFocus}
+                  onBlur={handleInputBlur}
                   required
-                  className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+                  className="w-full px-4 py-3 text-base rounded transition"
+                  style={inputFieldStyle}
                 />
               </div>
             </div>
@@ -286,7 +463,12 @@ export default function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg border border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black transition font-semibold flex justify-center items-center gap-2 disabled:opacity-50 mt-6"
+              className="w-full py-3 rounded font-bold text-base flex justify-center items-center gap-2 transition duration-200 hover:scale-105 active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed mt-6"
+              style={{ 
+                backgroundColor: "#4ce346",
+                color: "#001f3f",
+                height: "56px"
+              }}
             >
               {loading ? (
                 <>
@@ -304,10 +486,11 @@ export default function Register() {
 
           {/* LOGIN LINK */}
           <div className="text-center text-sm pt-4">
-            <span className="text-gray-400">¿Ya tienes cuenta? </span>
+            <span style={{ color: "#c4c6cf" }}>¿Ya tienes cuenta? </span>
             <Link
               to="/login"
-              className="text-lime-400 font-semibold hover:text-lime-300 transition"
+              className="font-bold transition hover:opacity-80"
+              style={{ color: "#afc8f0" }}
             >
               Inicia sesión
             </Link>

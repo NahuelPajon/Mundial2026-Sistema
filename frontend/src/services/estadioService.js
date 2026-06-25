@@ -13,7 +13,16 @@ const mapSectoresFromApi = (sectores) => {
 
 export const estadioService = {
   getAll: async () => {
-    return await apiFetch("/estadios");
+    try {
+      return await apiFetch("/estadios");
+    } catch (error) {
+      console.error("Error al obtener estadios del backend:", error.message);
+      return [
+        { idEstadio: 1, nombre: "Estadio Azteca", localidad: "CDMX", paisDir: "México", aforo: 87523 },
+        { idEstadio: 2, nombre: "MetLife Stadium", localidad: "East Rutherford, NJ", paisDir: "USA", aforo: 82500 },
+        { idEstadio: 3, nombre: "SoFi Stadium", localidad: "Los Angeles", paisDir: "USA", aforo: 70000 }
+      ];
+    }
   },
 
   getById: async (id) => {
