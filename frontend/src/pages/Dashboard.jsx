@@ -378,8 +378,11 @@ export default function Dashboard() {
         )}
       </section>
 
-      {/* Live Stadium Feed */}
-      <section className="glass-card rounded-2xl overflow-hidden p-0 relative h-48 md:h-64 flex flex-col justify-end group border border-white/5 hover:border-white/10 transition-colors">
+      {/* Live Stadium Feed — CAMBIO 1: onClick navega a /sedes, cursor-pointer, hover verde */}
+      <section
+        onClick={() => navigate("/sedes")}
+        className="glass-card rounded-2xl overflow-hidden p-0 relative h-48 md:h-64 flex flex-col justify-end group border border-white/5 hover:border-primary/20 transition-colors cursor-pointer"
+      >
         <div className="absolute inset-0 z-0">
           <img
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -391,7 +394,8 @@ export default function Dashboard() {
         <div className="relative z-10 p-gutter flex items-center justify-between">
           <div>
             <h3 className="font-headline-sm text-headline-sm text-white">Explora el Estadio Azteca</h3>
-            <p className="text-sm text-on-surface-variant">Guía de acceso, servicios y mapa interactivo</p>
+            {/* CAMBIO 2: texto actualizado */}
+            <p className="text-sm text-on-surface-variant">Ver todos los estadios y sus sectores</p>
           </div>
           <button className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full text-white hover:bg-white/20 transition-all active:scale-90 duration-150">
             <Compass size={24} />
@@ -399,7 +403,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ── MODAL: QR DINÁMICO (mismo que Entradas.jsx) ────────── */}
+      {/* ── MODAL: QR DINÁMICO ────────── */}
       {activeQR && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-sm glass-card rounded-2xl p-6 text-center space-y-6 border border-white/10 animate-in zoom-in-95 duration-200">
@@ -417,7 +421,6 @@ export default function Dashboard() {
               </p>
             </div>
 
-            {/* QR real generado desde el token */}
             <div className="relative bg-white p-4 rounded-xl inline-block mx-auto shadow-2xl overflow-hidden">
               {qrCodeData ? (
                 <img
@@ -445,7 +448,6 @@ export default function Dashboard() {
 
             {qrCodeData && (
               <div className="space-y-2">
-                {/* Token copiable */}
                 <div className="flex items-center gap-2 bg-surface/50 rounded-lg px-3 py-2">
                   <code className="text-[10px] text-on-surface-variant truncate flex-1 text-left">
                     {qrCodeData.slice(0, 24)}…
@@ -459,7 +461,6 @@ export default function Dashboard() {
                   </button>
                 </div>
 
-                {/* Countdown */}
                 <div className="flex justify-between text-xs font-label-bold text-on-surface-variant px-1">
                   <span>Código de Seguridad Dinámico</span>
                   <span className="text-tertiary font-mono">{countdown}s</span>
