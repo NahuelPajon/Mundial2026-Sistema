@@ -27,68 +27,80 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10 text-on-surface">
-      <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-[1rem] border border-outline bg-surface-container-highest/95 p-8 stadium-shadow backdrop-blur-sm">
-        <div className="pointer-events-none absolute -right-16 top-6 h-48 w-48 rounded-full bg-primary/10 blur-3xl"></div>
-        <div className="relative z-10">
-          <p className="text-sm font-label-bold uppercase tracking-[0.22em] text-primary">Apex Arena</p>
-          <h1 className="mt-4 text-display-lg-mobile font-display-lg text-on-surface">Bienvenido de nuevo</h1>
-          <p className="mt-2 text-body-md text-on-surface-variant">
-            Accede a tu cuenta para consultar entradas, validar acceso y disfrutar de la experiencia del Mundial 2026.
-          </p>
-
-          {error && (
-            <div className="mt-6 rounded-xl border border-error bg-error-container/20 px-4 py-3 text-sm text-error">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-            <div>
-              <label htmlFor="login-email" className="mb-2 block text-sm font-label-bold uppercase tracking-[0.18em] text-on-surface-variant">
-                Email
-              </label>
-              <input
-                id="login-email"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Correo electrónico"
-                required
-                className="w-full rounded-xl border border-outline bg-surface-container-low px-4 py-4 text-on-surface placeholder:text-on-surface-variant focus:border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container/20"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="login-password" className="mb-2 block text-sm font-label-bold uppercase tracking-[0.18em] text-on-surface-variant">
-                Contraseña
-              </label>
-              <input
-                id="login-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full rounded-xl border border-outline bg-surface-container-low px-4 py-4 text-on-surface placeholder:text-on-surface-variant focus:border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container/20"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex h-[56px] w-full items-center justify-center rounded-xl bg-tertiary text-primary-container text-body-md font-bold shadow-lg shadow-tertiary/20 transition duration-200 hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-surface-container-low"
-            >
-              {loading ? "Cargando..." : "Iniciar Sesión"}
-            </button>
-          </form>
-
-          <div className="mt-6 flex flex-col items-center gap-2 text-center text-sm text-on-surface-variant">
-            <span>¿No tienes cuenta?</span>
-            <Link to="/register" className="font-label-bold text-primary transition hover:text-primary-fixed">
-              Registrarse
-            </Link>
+    <div className="min-h-screen bg-[#0b1220] text-white flex justify-center items-center px-4 py-8">
+      <div className="w-full max-w-md bg-[#111a2e] border border-gray-700 rounded-xl p-8 shadow-2xl space-y-6">
+        
+        {/* HEADER */}
+        <div className="text-center space-y-2">
+          <div className="flex justify-center">
+            <LogIn className="text-lime-400" size={32} />
           </div>
+          <h1 className="text-3xl font-bold">Mundial 2026</h1>
+          <p className="text-sm text-gray-400">Acceso a tu cuenta</p>
+        </div>
+
+        {/* ERROR */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg flex gap-2">
+            <AlertCircle size={18} className="flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-sm text-gray-400 block mb-2">Email</label>
+            <input
+              type="email"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="tu@email.com"
+              required
+              className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-400 block mb-2">Contraseña</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg border border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black transition font-semibold flex justify-center items-center gap-2 disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" size={18} />
+                Accediendo...
+              </>
+            ) : (
+              <>
+                <LogIn size={18} />
+                Iniciar Sesión
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* REGISTER LINK */}
+        <div className="text-center text-sm">
+          <span className="text-gray-400">¿No tienes cuenta? </span>
+          <Link
+            to="/register"
+            className="text-lime-400 font-semibold hover:text-lime-300 transition"
+          >
+            Regístrate aquí
+          </Link>
         </div>
       </div>
     </div>
