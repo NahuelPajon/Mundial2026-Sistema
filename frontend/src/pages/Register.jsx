@@ -18,7 +18,7 @@ export default function Register() {
     docPais: "",
     docTipo: "",
     docNumero: "",
-    telefono: ""
+    telefono: "",
   });
 
   const [error, setError] = useState("");
@@ -28,7 +28,7 @@ export default function Register() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -57,7 +57,7 @@ export default function Register() {
         docPais: form.docPais,
         docTipo: form.docTipo,
         docNumero: form.docNumero,
-        telefonos: [form.telefono]
+        telefonos: [form.telefono],
       });
 
       setSuccess("Usuario registrado correctamente. Redirigiendo...");
@@ -72,7 +72,7 @@ export default function Register() {
   const inputFieldStyle = {
     backgroundColor: "#1f2022",
     border: "1px solid #43474e",
-    color: "#e3e2e5"
+    color: "#e3e2e5",
   };
 
   const handleInputFocus = (e) => {
@@ -86,7 +86,7 @@ export default function Register() {
   };
 
   return (
-    <div 
+    <div
       className="min-h-screen px-5 py-8"
       style={{ backgroundColor: "#0d0e11" }}
     >
@@ -101,80 +101,91 @@ export default function Register() {
       `}</style>
 
       <div className="max-w-2xl mx-auto">
-        
         {/* HEADER */}
         <div className="text-center mb-8 space-y-3">
           <div className="flex justify-center">
-            <UserPlus size={40} style={{ color: "#4ce346" }} className="drop-shadow-lg" />
+            <UserPlus
+              size={40}
+              style={{ color: "#4ce346" }}
+              className="drop-shadow-lg"
+            />
           </div>
-          <h1 
+          <h1
             className="text-4xl font-black tracking-tight"
-            style={{ 
+            style={{
               color: "#e3e2e5",
               fontWeight: 800,
-              letterSpacing: "-0.02em"
+              letterSpacing: "-0.02em",
             }}
           >
             Registro
           </h1>
-          <p 
-            className="text-base"
-            style={{ color: "#c4c6cf" }}
-          >
+          <p className="text-base" style={{ color: "#c4c6cf" }}>
             Crea tu cuenta para acceder - Mundial 2026
           </p>
         </div>
 
         {/* FORM CONTAINER */}
-        <div 
+        <div
           className="rounded-lg p-8 shadow-2xl space-y-6"
-          style={{ 
+          style={{
             backgroundColor: "#292a2c",
-            border: "1px solid #43474e"
+            border: "1px solid #43474e",
           }}
         >
-          
           {/* ALERTS */}
           {error && (
-            <div 
+            <div
               className="p-4 rounded-lg flex gap-3 items-start"
-              style={{ 
+              style={{
                 backgroundColor: "rgba(255, 180, 171, 0.1)",
-                border: "1px solid #ffb4ab"
+                border: "1px solid #ffb4ab",
               }}
             >
-              <AlertCircle size={20} style={{ color: "#ffb4ab", flexShrink: 0, marginTop: "2px" }} />
-              <span style={{ color: "#ffb4ab" }} className="text-sm leading-relaxed">{error}</span>
+              <AlertCircle
+                size={20}
+                style={{ color: "#ffb4ab", flexShrink: 0, marginTop: "2px" }}
+              />
+              <span
+                style={{ color: "#ffb4ab" }}
+                className="text-sm leading-relaxed"
+              >
+                {error}
+              </span>
             </div>
           )}
 
           {success && (
-            <div 
+            <div
               className="p-4 rounded-lg flex gap-3 items-start"
-              style={{ 
+              style={{
                 backgroundColor: "rgba(76, 227, 70, 0.1)",
-                border: "1px solid #4ce346"
+                border: "1px solid #4ce346",
               }}
             >
-              <Check size={20} style={{ color: "#4ce346", flexShrink: 0, marginTop: "2px" }} />
-              <span style={{ color: "#4ce346" }} className="text-sm leading-relaxed">{success}</span>
+              <Check
+                size={20}
+                style={{ color: "#4ce346", flexShrink: 0, marginTop: "2px" }}
+              />
+              <span
+                style={{ color: "#4ce346" }}
+                className="text-sm leading-relaxed"
+              >
+                {success}
+              </span>
             </div>
           )}
 
           {/* FORM */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            
             {/* CREDENCIALES */}
             <div className="space-y-4 pb-6 section-divider border-b">
-              <h3 
-                className="text-lg font-bold"
-                style={{ color: "#4ce346" }}
-              >
+              <h3 className="text-lg font-bold" style={{ color: "#4ce346" }}>
                 Credenciales
               </h3>
-              
+
               <div>
-                <label 
+                <label
                   className="text-sm block mb-2 font-semibold"
                   style={{ color: "#c4c6cf" }}
                 >
@@ -195,7 +206,7 @@ export default function Register() {
               </div>
 
               <div>
-                <label 
+                <label
                   className="text-sm block mb-2 font-semibold"
                   style={{ color: "#c4c6cf" }}
                 >
@@ -216,7 +227,7 @@ export default function Register() {
               </div>
 
               <div>
-                <label 
+                <label
                   className="text-sm block mb-2 font-semibold"
                   style={{ color: "#c4c6cf" }}
                 >
@@ -239,16 +250,13 @@ export default function Register() {
 
             {/* DIRECCIÓN */}
             <div className="space-y-4 pb-6 section-divider border-b">
-              <h3 
-                className="text-lg font-bold"
-                style={{ color: "#4ce346" }}
-              >
+              <h3 className="text-lg font-bold" style={{ color: "#4ce346" }}>
                 Domicilio
               </h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label 
+                  <label
                     className="text-sm block mb-2 font-semibold"
                     style={{ color: "#c4c6cf" }}
                   >
@@ -268,7 +276,7 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label 
+                  <label
                     className="text-sm block mb-2 font-semibold"
                     style={{ color: "#c4c6cf" }}
                   >
@@ -290,7 +298,7 @@ export default function Register() {
               </div>
 
               <div>
-                <label 
+                <label
                   className="text-sm block mb-2 font-semibold"
                   style={{ color: "#c4c6cf" }}
                 >
@@ -312,7 +320,7 @@ export default function Register() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label 
+                  <label
                     className="text-sm block mb-2 font-semibold"
                     style={{ color: "#c4c6cf" }}
                   >
@@ -332,7 +340,7 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label 
+                  <label
                     className="text-sm block mb-2 font-semibold"
                     style={{ color: "#c4c6cf" }}
                   >
@@ -356,16 +364,13 @@ export default function Register() {
 
             {/* DOCUMENTO */}
             <div className="space-y-4 pb-6 section-divider border-b">
-              <h3 
-                className="text-lg font-bold"
-                style={{ color: "#4ce346" }}
-              >
+              <h3 className="text-lg font-bold" style={{ color: "#4ce346" }}>
                 Identificación
               </h3>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label 
+                  <label
                     className="text-sm block mb-2 font-semibold"
                     style={{ color: "#c4c6cf" }}
                   >
@@ -385,29 +390,33 @@ export default function Register() {
                   />
                 </div>
                 <div>
-                  <label 
+                  <label
                     className="text-sm block mb-2 font-semibold"
                     style={{ color: "#c4c6cf" }}
                   >
                     Tipo
                   </label>
-                  <input
-                    type="text"
+                  <select
                     name="docTipo"
-                    placeholder="CI, Pasaporte..."
                     value={form.docTipo}
                     onChange={handleChange}
                     onFocus={handleInputFocus}
                     onBlur={handleInputBlur}
                     required
-                    className="w-full px-4 py-3 text-base rounded transition"
+                    className="w-full px-4 py-3 text-base rounded transition appearance-none bg-white"
                     style={inputFieldStyle}
-                  />
+                  >
+                    <option value="" disabled hidden>
+                      CI o Pasaporte
+                    </option>
+                    <option value="CI">CI</option>
+                    <option value="Pasaporte">Pasaporte</option>
+                  </select>
                 </div>
               </div>
 
               <div>
-                <label 
+                <label
                   className="text-sm block mb-2 font-semibold"
                   style={{ color: "#c4c6cf" }}
                 >
@@ -430,15 +439,12 @@ export default function Register() {
 
             {/* CONTACTO */}
             <div className="space-y-4">
-              <h3 
-                className="text-lg font-bold"
-                style={{ color: "#4ce346" }}
-              >
+              <h3 className="text-lg font-bold" style={{ color: "#4ce346" }}>
                 Contacto
               </h3>
-              
+
               <div>
-                <label 
+                <label
                   className="text-sm block mb-2 font-semibold"
                   style={{ color: "#c4c6cf" }}
                 >
@@ -464,10 +470,10 @@ export default function Register() {
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded font-bold text-base flex justify-center items-center gap-2 transition duration-200 hover:scale-105 active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed mt-6"
-              style={{ 
+              style={{
                 backgroundColor: "#4ce346",
                 color: "#001f3f",
-                height: "56px"
+                height: "56px",
               }}
             >
               {loading ? (
