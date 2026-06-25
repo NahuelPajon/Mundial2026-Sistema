@@ -13,7 +13,6 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(false);
 
     try {
       setLoading(true);
@@ -27,152 +26,69 @@ export default function Login() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f3f4f6",
-        padding: "16px",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#ffffff",
-          padding: "32px",
-          borderRadius: "8px",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          width: "100%",
-          maxWidth: "400px",
-        }}
-      >
-        <h2
-          style={{
-            textAlign: "center",
-            marginBottom: "24px",
-            color: "#1f2937",
-          }}
-        >
-          Mundial 2026 - Acceso
-        </h2>
+    <div className="min-h-screen bg-background px-4 py-10 text-on-surface">
+      <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-[1rem] border border-outline bg-surface-container-highest/95 p-8 stadium-shadow backdrop-blur-sm">
+        <div className="pointer-events-none absolute -right-16 top-6 h-48 w-48 rounded-full bg-primary/10 blur-3xl"></div>
+        <div className="relative z-10">
+          <p className="text-sm font-label-bold uppercase tracking-[0.22em] text-primary">Apex Arena</p>
+          <h1 className="mt-4 text-display-lg-mobile font-display-lg text-on-surface">Bienvenido de nuevo</h1>
+          <p className="mt-2 text-body-md text-on-surface-variant">
+            Accede a tu cuenta para consultar entradas, validar acceso y disfrutar de la experiencia del Mundial 2026.
+          </p>
 
-        {error && (
-          <div
-            style={{
-              color: "#dc2626",
-              backgroundColor: "#fee2e2",
-              padding: "10px",
-              borderRadius: "4px",
-              marginBottom: "16px",
-              fontSize: "14px",
-            }}
-          >
-            {error}
-          </div>
-        )}
+          {error && (
+            <div className="mt-6 rounded-xl border border-error bg-error-container/20 px-4 py-3 text-sm text-error">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "16px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "6px",
-                color: "#4b5563",
-                fontSize: "14px",
-              }}
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <div>
+              <label htmlFor="login-email" className="mb-2 block text-sm font-label-bold uppercase tracking-[0.18em] text-on-surface-variant">
+                Email
+              </label>
+              <input
+                id="login-email"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Correo electrónico"
+                required
+                className="w-full rounded-xl border border-outline bg-surface-container-low px-4 py-4 text-on-surface placeholder:text-on-surface-variant focus:border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container/20"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="login-password" className="mb-2 block text-sm font-label-bold uppercase tracking-[0.18em] text-on-surface-variant">
+                Contraseña
+              </label>
+              <input
+                id="login-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                className="w-full rounded-xl border border-outline bg-surface-container-low px-4 py-4 text-on-surface placeholder:text-on-surface-variant focus:border-primary-container focus:outline-none focus:ring-2 focus:ring-primary-container/20"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex h-[56px] w-full items-center justify-center rounded-xl bg-tertiary text-primary-container text-body-md font-bold shadow-lg shadow-tertiary/20 transition duration-200 hover:-translate-y-0.5 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-surface-container-low"
             >
-            </label>
-            Email
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Email address"
-              required
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #d1d5db",
-                boxSizing: "border-box",
-              }}
-            />
+              {loading ? "Cargando..." : "Iniciar Sesión"}
+            </button>
+          </form>
+
+          <div className="mt-6 flex flex-col items-center gap-2 text-center text-sm text-on-surface-variant">
+            <span>¿No tienes cuenta?</span>
+            <Link to="/register" className="font-label-bold text-primary transition hover:text-primary-fixed">
+              Registrarse
+            </Link>
           </div>
-
-          <div style={{ marginBottom: "24px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "6px",
-                color: "#4b5563",
-                fontSize: "14px",
-              }}
-            >
-              Contraseña
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="******"
-              required
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #d1d5db",
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "#2563eb",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            {loading ? "Cargando..." : "Iniciar Sesión"}
-          </button>
-        </form>
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "16px",
-          }}
-        >
-          <span style={{ color: "#6b7280", fontSize: "14px" }}>
-            ¿No tienes cuenta?{" "}
-          </span>
-
-          <Link
-            to="/register"
-            style={{
-              color: "#2563eb",
-              textDecoration: "none",
-              fontWeight: "bold",
-            }}
-          >
-            Registrarse
-          </Link>
         </div>
-        <p
-          style={{
-            textAlign: "center",
-            color: "#9ca3af",
-            fontSize: "12px",
-            marginTop: "16px",
-          }}
-        ></p>
       </div>
     </div>
   );
