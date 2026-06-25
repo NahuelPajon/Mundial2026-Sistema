@@ -102,7 +102,8 @@ public class TicketsController : ControllerBase
             EquipoVisita = e.EquipoVisitanteNombre ?? string.Empty,
             Estadio = e.EstadioNombre ?? string.Empty,
             Sector = e.CodigoSector,
-            Fila = (e.IdEntrada % 30 + 1).ToString(CultureInfo.InvariantCulture)
+            Fila = (e.IdEntrada % 30 + 1).ToString(CultureInfo.InvariantCulture),
+            VecesTransferida = e.VecesTransferida
         };
     }
 }

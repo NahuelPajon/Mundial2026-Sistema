@@ -15,4 +15,5 @@ public class Entrada
     public DateTime? EventoFecha { get; set; }
     public string? EstadioNombre { get; set; }
     public decimal? Costo { get; set; }
+    public int VecesTransferida { get; set; }
 }

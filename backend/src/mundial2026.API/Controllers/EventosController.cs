@@ -5,6 +5,7 @@ using mundial2026.API.DTOs;
 using mundial2026.Business.Security;
 using mundial2026.Business.Services;
 using mundial2026.DataAccess.Models;
+using mundial2026.DataAccess.Repositories;
 
 namespace mundial2026.API.Controllers;
 
@@ -13,11 +14,13 @@ namespace mundial2026.API.Controllers;
 public class EventosController : ControllerBase
 {
     private readonly IEventoService _eventoService;
+    private readonly ISectorRepository _sectorRepository;
     private readonly ILogger<EventosController> _logger;
 
-    public EventosController(IEventoService eventoService, ILogger<EventosController> logger)
+    public EventosController(IEventoService eventoService, ISectorRepository sectorRepository, ILogger<EventosController> logger)
     {
         _eventoService = eventoService;
+        _sectorRepository = sectorRepository;
         _logger = logger;
     }
 
@@ -104,6 +107,32 @@ public class EventosController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError($"Error al crear evento: {ex.Message}");
+            return StatusCode(500, new { error = "Error interno del servidor" });
+        }
+    }
+
+    [HttpGet("{id}/sectores")]
+    public async Task<IActionResult> GetSectoresPorEvento(int id)
+    {
+        try
+        {
+            var evento = await _eventoService.GetByIdAsync(id);
+            var sectores = await _sectorRepository.GetHabilitadosPorEventoAsync(evento.IdEstadio, id);
+            return Ok(sectores.Select(s => new
+            {
+                codigo = s.Codigo,
+                capacidadMaxima = s.CapacidadMaxima,
+                costo = s.Costo,
+                entradasDisponibles = s.EntradasDisponibles
+            }));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error al obtener sectores del evento: {ex.Message}");
             return StatusCode(500, new { error = "Error interno del servidor" });
         }
     }

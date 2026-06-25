@@ -133,6 +133,17 @@ export default function Entradas() {
                         Sector: <span className="font-semibold text-white">{tkt.sector}</span> • Fila:{" "}
                         <span className="font-semibold text-white">{tkt.fila}</span>
                       </p>
+                      <div className="flex items-center gap-1.5 pt-0.5">
+                        {tkt.vecesTransferida >= 3 ? (
+                          <span className="text-xs text-error font-semibold">
+                            No transferible · máximo de 3 transferencias alcanzado
+                          </span>
+                        ) : (
+                          <span className="text-xs text-on-surface-variant">
+                            Transferencias: <span className="font-semibold text-white">{tkt.vecesTransferida}/3</span>
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 

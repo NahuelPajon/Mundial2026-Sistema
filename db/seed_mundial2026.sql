@@ -60,14 +60,54 @@ INSERT INTO Usuario (email_perfil, fecha_registro, estado_verificacion) VALUES
 -- EQUIPOS
 -- ------------------------------------------------------------
 INSERT INTO Equipo (id_equipo, nombre, pais) VALUES
-(1,  'Uruguay',   'Uruguay'),
-(2,  'Argentina', 'Argentina'),
-(3,  'Brasil',    'Brasil'),
-(4,  'Francia',   'Francia'),
-(5,  'España',    'España'),
-(6,  'Alemania',  'Alemania'),
-(7,  'Portugal',  'Portugal'),
-(8,  'México',    'México');
+(1, 'Canadá', 'Canadá'),
+(2, 'Estados Unidos', 'Estados Unidos'),
+(3, 'México', 'México'),
+(4, 'Alemania', 'Alemania'),
+(5, 'Austria', 'Austria'),
+(6, 'Bélgica', 'Bélgica'),
+(7, 'Bosnia y Herzegovina', 'Bosnia y Herzegovina'),
+(8, 'Croacia', 'Croacia'),
+(9, 'Escocia', 'Escocia'),
+(10, 'España', 'España'),
+(11, 'Francia', 'Francia'),
+(12, 'Inglaterra', 'Inglaterra'),
+(13, 'Noruega', 'Noruega'),
+(14, 'Países Bajos', 'Países Bajos'),
+(15, 'Portugal', 'Portugal'),
+(16, 'República Checa', 'República Checa'),
+(17, 'Suecia', 'Suecia'),
+(18, 'Suiza', 'Suiza'),
+(19, 'Turquía', 'Turquía'),
+(20, 'Argentina', 'Argentina'),
+(21, 'Brasil', 'Brasil'),
+(22, 'Colombia', 'Colombia'),
+(23, 'Ecuador', 'Ecuador'),
+(24, 'Paraguay', 'Paraguay'),
+(25, 'Uruguay', 'Uruguay'),
+(26, 'Arabia Saudita', 'Arabia Saudita'),
+(27, 'Australia', 'Australia'),
+(28, 'Corea del Sur', 'Corea del Sur'),
+(29, 'Irán', 'Irán'),
+(30, 'Irak', 'Irak'),
+(31, 'Japón', 'Japón'),
+(32, 'Jordania', 'Jordania'),
+(33, 'Catar', 'Catar'),
+(34, 'Uzbekistán', 'Uzbekistán'),
+(35, 'Argelia', 'Argelia'),
+(36, 'Cabo Verde', 'Cabo Verde'),
+(37, 'Costa de Marfil', 'Costa de Marfil'),
+(38, 'Egipto', 'Egipto'),
+(39, 'Ghana', 'Ghana'),
+(40, 'Marruecos', 'Marruecos'),
+(41, 'República Democrática del Congo', 'República Democrática del Congo'),
+(42, 'Senegal', 'Senegal'),
+(43, 'Sudáfrica', 'Sudáfrica'),
+(44, 'Túnez', 'Túnez'),
+(45, 'Curazao', 'Curazao'),
+(46, 'Haití', 'Haití'),
+(47, 'Panamá', 'Panamá'),
+(48, 'Nueva Zelanda', 'Nueva Zelanda');
 
 -- ------------------------------------------------------------
 -- ESTADIOS
@@ -98,10 +138,10 @@ INSERT INTO Sector (id_estadio, codigo, capacidad_maxima, costo) VALUES
 -- EVENTOS
 -- ------------------------------------------------------------
 INSERT INTO Evento (id_evento, fecha, estado, id_estadio, email_admin, id_equipo_local, id_equipo_visitante) VALUES
-(1, '2026-06-15 18:00:00', 'programado', 1, 'admin.usa@mundial.com', 1, 2),  -- Uruguay vs Argentina
-(2, '2026-06-18 21:00:00', 'programado', 1, 'admin.usa@mundial.com', 3, 4),  -- Brasil vs Francia
-(3, '2026-06-21 18:00:00', 'programado', 2, 'admin.usa@mundial.com', 5, 6),  -- España vs Alemania
-(4, '2026-06-24 21:00:00', 'programado', 3, 'admin.mex@mundial.com', 8, 7);  -- México vs Portugal
+(1, '2026-07-02 18:00:00', 'programado', 1, 'admin.usa@mundial.com', 1, 2),  -- Uruguay vs Argentina
+(2, '2026-07-04 21:00:00', 'programado', 1, 'admin.usa@mundial.com', 3, 4),  -- Brasil vs Francia
+(3, '2026-07-06 18:00:00', 'programado', 2, 'admin.usa@mundial.com', 5, 6),  -- España vs Alemania
+(4, '2026-07-08 21:00:00', 'programado', 3, 'admin.mex@mundial.com', 8, 7);  -- México vs Portugal
 
 -- ------------------------------------------------------------
 -- EVENTO_SECTOR (sectores habilitados por evento)
@@ -160,8 +200,7 @@ INSERT INTO Entrada (id_entrada, titular, id_venta, id_evento, id_estadio, codig
 -- TRANSFERENCIAS (juan le transfiere una entrada a carlos)
 -- ------------------------------------------------------------
 INSERT INTO Transferencia (id_transferencia, id_entrada, email_origen, email_destino, fecha_solicitud, fecha_aceptacion, estado) VALUES
-(1, 3, 'juan.perez@gmail.com', 'carlos.lopez@gmail.com', '2026-05-10 09:00:00', '2026-05-10 10:30:00', 'aceptada'),
-(2, 2, 'juan.perez@gmail.com', 'pedro.silva@gmail.com',  '2026-05-11 09:00:00', NULL,                  'pendiente');
+(1, 3, 'juan.perez@gmail.com', 'carlos.lopez@gmail.com', '2026-05-10 09:00:00', '2026-05-10 10:30:00', 'aceptada');
 
 -- actualizar titular de entrada 3 tras transferencia aceptada
 UPDATE Entrada SET titular = 'carlos.lopez@gmail.com' WHERE id_entrada = 3;
@@ -170,17 +209,16 @@ UPDATE Entrada SET titular = 'carlos.lopez@gmail.com' WHERE id_entrada = 3;
 -- HISTORIAL DE TRANSFERENCIAS
 -- ------------------------------------------------------------
 INSERT INTO Historial_Transferencia (id_entrada, id_transferencia, orden) VALUES
-(3, 1, 1),
-(2, 2, 1);
+(3, 1, 1);
 
 -- ------------------------------------------------------------
 -- QR (tokens activos por entrada)
 -- ------------------------------------------------------------
 INSERT INTO QR (token, id_entrada, generado_en, expira_en, activo) VALUES
-('QR-TOKEN-001', 1,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE),
-('QR-TOKEN-002', 2,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE),
-('QR-TOKEN-003', 3,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE),
-('QR-TOKEN-004', 4,  '2026-06-15 17:55:00', '2026-06-15 17:55:30', TRUE);
+('QR-TOKEN-001', 1,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE),
+('QR-TOKEN-002', 2,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE),
+('QR-TOKEN-003', 3,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE),
+('QR-TOKEN-004', 4,  '2026-07-01 12:00:00', '2026-07-01 12:00:30', TRUE);
 
 -- ------------------------------------------------------------
 -- DISPOSITIVOS
