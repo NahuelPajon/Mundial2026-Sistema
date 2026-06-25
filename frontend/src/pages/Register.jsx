@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
 import { UserPlus, AlertCircle, Loader2, Check } from "lucide-react";
+import PaisSelect from "../components/common/PaisSelect";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -262,8 +263,7 @@ export default function Register() {
                   >
                     País
                   </label>
-                  <input
-                    type="text"
+                  <PaisSelect
                     name="paisDir"
                     placeholder="País"
                     value={form.paisDir}
@@ -376,10 +376,8 @@ export default function Register() {
                   >
                     País del documento
                   </label>
-                  <input
-                    type="text"
+                  <PaisSelect
                     name="docPais"
-                    placeholder="País"
                     value={form.docPais}
                     onChange={handleChange}
                     onFocus={handleInputFocus}

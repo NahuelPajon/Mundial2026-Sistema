@@ -10,6 +10,7 @@ import {
   Plus
 } from "lucide-react";
 import { estadioService } from "../services/estadioService";
+import PaisSelect from "../components/common/PaisSelect";
 
 export default function AdminEstadios() {
   const [stadiums, setStadiums] = useState([]);
