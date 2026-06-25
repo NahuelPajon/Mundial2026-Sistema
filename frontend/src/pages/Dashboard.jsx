@@ -58,7 +58,14 @@ export default function Dashboard() {
     }
   };
 
-  useEffect(() => { loadTickets(); }, []);
+  useEffect(() => {
+    loadTickets();
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") loadTickets();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
 
   // Recargar cuando el Layout avisa que se aceptó una transferencia
   useEffect(() => {
@@ -128,13 +135,9 @@ export default function Dashboard() {
       setTransferError("");
       setTransferSuccess("");
       await ticketService.transferTicket(selectedTicketId, recipientEmail);
-      setTransferSuccess("¡Solicitud de transferencia enviada!");
+      setTransferSuccess(recipientEmail);
       setRecipientEmail("");
-      setTimeout(() => {
-        loadTickets();
-        setTransferModalOpen(false);
-        setTransferSuccess("");
-      }, 2000);
+      setTimeout(() => { loadTickets(); }, 500);
     } catch (err) {
       setTransferError(err.message || "Hubo un error al transferir la entrada.");
     } finally {
@@ -441,8 +444,19 @@ export default function Dashboard() {
                 <div className="w-16 h-16 bg-tertiary/20 text-tertiary rounded-full flex items-center justify-center mx-auto">
                   <Check size={36} />
                 </div>
-                <p className="text-lg font-semibold text-white">{transferSuccess}</p>
-                <p className="text-sm text-on-surface-variant">El destinatario recibirá una notificación para aceptarla.</p>
+                <p className="text-lg font-semibold text-white">¡Solicitud enviada!</p>
+                <p className="text-sm text-on-surface-variant">
+                  Tu entrada fue enviada a <span className="text-primary font-semibold">{transferSuccess}</span>.
+                </p>
+                <p className="text-xs text-on-surface-variant mt-1">
+                  La entrada seguirá siendo tuya hasta que el destinatario acepte. Te avisaremos cuando responda.
+                </p>
+                <button
+                  onClick={() => { setTransferModalOpen(false); setTransferSuccess(""); }}
+                  className="mt-2 px-6 py-2 bg-surface-container-high rounded-lg text-sm text-on-surface hover:bg-white/10 transition-colors"
+                >
+                  Cerrar
+                </button>
               </div>
             ) : (
               <form onSubmit={handleTransfer} className="space-y-4">
@@ -464,8 +478,8 @@ export default function Dashboard() {
                     className="w-full bg-surface-container-highest border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-primary"
                   >
                     {tickets.map((tkt) => (
-                      <option key={tkt.id} value={tkt.id}>
-                        {tkt.equipoLocal} vs {tkt.equipoVisita} — Sector {tkt.sector}{tkt.fila && tkt.fila !== "—" ? `, Fila ${tkt.fila}` : ""} (#{tkt.id})
+                      <option key={tkt.id} value={tkt.id} disabled={tkt.vecesTransferida >= 3}>
+                        {tkt.equipoLocal} vs {tkt.equipoVisita} — Sector {tkt.sector}{tkt.fila && tkt.fila !== "—" ? `, Fila ${tkt.fila}` : ""} ({tkt.vecesTransferida >= 3 ? "no transferible" : `${tkt.vecesTransferida ?? 0}/3`})
                       </option>
                     ))}
                   </select>
@@ -499,11 +513,15 @@ export default function Dashboard() {
                   </button>
                   <button
                     type="submit"
-                    disabled={transferring || tickets.length === 0}
+                    disabled={transferring || tickets.length === 0 || tickets.find((t) => String(t.id) === String(selectedTicketId))?.vecesTransferida >= 3}
                     className="flex-1 bg-tertiary text-on-primary font-label-bold py-3 rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {transferring && <Loader2 className="animate-spin" size={16} />}
-                    {transferring ? "Enviando..." : "Confirmar"}
+                    {(() => {
+                      const tktSel = tickets.find((t) => String(t.id) === String(selectedTicketId));
+                      if (tktSel?.vecesTransferida >= 3) return "Entrada no transferible";
+                      return transferring ? "Enviando..." : "Confirmar";
+                    })()}
                   </button>
                 </div>
               </form>

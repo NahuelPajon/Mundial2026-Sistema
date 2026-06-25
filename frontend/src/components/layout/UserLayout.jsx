@@ -10,6 +10,7 @@ export default function UserLayout({ children }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
   const [transferencias, setTransferencias] = useState([]);
+  const [notifEnviadas, setNotifEnviadas] = useState([]); // transferencias enviadas respondidas
   const [procesando, setProcesando] = useState(null); // id de la transferencia en proceso
   const notifRef = useRef(null);
 
@@ -26,11 +27,21 @@ export default function UserLayout({ children }) {
   // Cargar transferencias pendientes recibidas
   const cargarTransferencias = async () => {
     try {
-      const data = await apiFetch("/transferencias?tipo=recibidas");
-      const pendientes = data.filter((t) => t.estado?.toLowerCase() === "pendiente");
-      setTransferencias(pendientes);
+      const [recibidas, enviadas] = await Promise.all([
+        apiFetch("/transferencias?tipo=recibidas"),
+        apiFetch("/transferencias?tipo=enviadas"),
+      ]);
+      setTransferencias(recibidas.filter((t) => t.estado?.toLowerCase() === "pendiente"));
+      // Notificar al remitente sobre respuestas que aún no vio
+      const respondidas = enviadas.filter((t) =>
+        ["aceptada", "rechazada"].includes(t.estado?.toLowerCase())
+      );
+      // Filtrar las que el usuario ya descartó (guardadas en localStorage)
+      const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]");
+      const nuevas = respondidas.filter((t) => !descartadas.includes(t.idTransferencia));
+      setNotifEnviadas(nuevas);
     } catch {
-      // silencioso — no interrumpir la navegación
+      // silencioso
     }
   };
 
@@ -104,7 +115,7 @@ export default function UserLayout({ children }) {
               className="p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 duration-150 text-on-surface-variant hover:text-on-surface relative"
             >
               <Bell size={20} />
-              {transferencias.length > 0 && (
+              {(transferencias.length > 0 || notifEnviadas.length > 0) && (
                 <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
               )}
             </button>
@@ -116,12 +127,49 @@ export default function UserLayout({ children }) {
                   <p className="text-sm font-semibold text-on-surface">Notificaciones</p>
                 </div>
 
-                {transferencias.length === 0 ? (
+                {transferencias.length === 0 && notifEnviadas.length === 0 ? (
                   <div className="px-4 py-8 text-center text-on-surface-variant text-sm">
                     No tenés notificaciones pendientes.
                   </div>
                 ) : (
                   <div className="divide-y divide-white/5 max-h-80 overflow-y-auto">
+                    {/* Notificaciones de respuesta a transferencias enviadas */}
+                    {notifEnviadas.map((t) => (
+                      <div key={`env-${t.idTransferencia}`} className="px-4 py-3 space-y-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-xs text-on-surface-variant leading-relaxed">
+                            {t.estado?.toLowerCase() === "aceptada" ? (
+                              <>
+                                <span className="font-semibold text-green-400">{t.emailDestino}</span>
+                                {" aceptó tu transferencia ✓"}
+                              </>
+                            ) : (
+                              <>
+                                <span className="font-semibold text-error">{t.emailDestino}</span>
+                                {" rechazó tu transferencia"}
+                              </>
+                            )}
+                          </p>
+                          <button
+                            onClick={() => {
+                              const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]");
+                              localStorage.setItem("notifs_descartadas", JSON.stringify([...descartadas, t.idTransferencia]));
+                              setNotifEnviadas((prev) => prev.filter((n) => n.idTransferencia !== t.idTransferencia));
+                            }}
+                            className="text-on-surface-variant hover:text-on-surface shrink-0"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                        <p className="text-xs font-semibold text-on-surface">
+                          {t.equipoLocalNombre} vs {t.equipoVisitanteNombre}
+                        </p>
+                        <p className="text-xs text-on-surface-variant">
+                          {t.estadioNombre} · Sector {t.codigoSector}
+                        </p>
+                      </div>
+                    ))}
+                    {/* Transferencias pendientes de aceptar/rechazar */}
                     {transferencias.map((t) => (
                       <div key={t.idTransferencia} className="px-4 py-3 space-y-2">
                         <p className="text-xs text-on-surface-variant">

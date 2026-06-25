@@ -16,6 +16,7 @@ const normalizeTicket = (raw) => ({
   estadio: pick(raw, "estadio", "Estadio") ?? "",
   sector: pick(raw, "sector", "Sector", "codigoSector", "CodigoSector") ?? "",
   fila: pick(raw, "fila", "Fila") ?? "—",
+  vecesTransferida: pick(raw, "vecesTransferida", "VecesTransferida", "cantidadTransferencias", "CantidadTransferencias") ?? 0,
 });
 
 const normalizeQr = (raw) => ({

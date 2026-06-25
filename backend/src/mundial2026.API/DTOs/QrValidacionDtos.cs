@@ -10,6 +10,7 @@ public class TicketActivoResponse
     public string Estadio { get; set; } = string.Empty;
     public string Sector { get; set; } = string.Empty;
     public string Fila { get; set; } = string.Empty;
+    public int VecesTransferida { get; set; }
 }
 
 public class QrResponse

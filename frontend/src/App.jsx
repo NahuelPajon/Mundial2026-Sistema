@@ -122,6 +122,17 @@ export default function App() {
         />
 
         <Route
+          path="/comprar"
+          element={
+            <ProtectedRoute allowedRoles={['Usuario']}>
+              <UserLayout>
+                <ComprarEntradas />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/perfil"
           element={
             <ProtectedRoute allowedRoles={['Usuario', 'Admin']}>
