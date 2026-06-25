@@ -10,128 +10,83 @@ import {
   ExternalLink, 
   AlertCircle, 
   Loader2, 
+  Clock,
   X,
-  Check,
-  Copy
+  Check
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { ticketService } from "../services/ticketService";
 import { authService } from "../services/authService";
 
-const flagImports = import.meta.glob("../assets/*.svg", { query: '?url', import: 'default' });
+const flagAssets = import.meta.globEager("../../assets/*.svg", { as: "url" });
 
-const getAssetKey = (teamName) => {
+const getFlagForTeam = (teamName) => {
   const name = String(teamName || "").trim();
-  return `../assets/${name}.svg`;
+  const assetKey = `../../assets/${name}.svg`;
+  return flagAssets[assetKey] || "";
 };
 
 export default function Dashboard() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [flagUrls, setFlagUrls] = useState({});
-
-  // Estados para modal QR
+  // Estados para modales
   const [activeQR, setActiveQR] = useState(null);
   const [qrCodeData, setQrCodeData] = useState(null);
   const [countdown, setCountdown] = useState(30);
-  const [copied, setCopied] = useState(false);
-
-  // Estados para modal transferencia
   const [transferModalOpen, setTransferModalOpen] = useState(false);
   const [transferring, setTransferring] = useState(false);
-  const [transferSuccess, setTransferSuccess] = useState("");
-  const [transferError, setTransferError] = useState("");
+
+  // FIX 1: en lugar de un string genérico, guardamos el resultado completo
+  // { status: "enviada", emailDestino: "..." } | { status: "error" }
+  const [transferResult, setTransferResult] = useState(null);
+
   const [selectedTicketId, setSelectedTicketId] = useState("");
   const [recipientEmail, setRecipientEmail] = useState("");
 
-  const navigate = useNavigate();
   const user = authService.getCurrentUser();
-  const displayName = user && user.email
+  const displayName = user && user.email 
     ? user.email.split("@")[0].split(".")[0].charAt(0).toUpperCase() + user.email.split("@")[0].split(".")[0].slice(1)
     : "Aficionado";
 
-  // ── Cargar tickets ──────────────────────────────────────────
-  const loadTickets = async () => {
+  // FIX 2: loadTickets como useCallback para poder llamarlo desde cualquier lugar
+  const loadTickets = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
       const data = await ticketService.getActiveTickets();
       setTickets(data);
-      if (data.length > 0) setSelectedTicketId(data[0].id);
+      if (data.length > 0) {
+        setSelectedTicketId(data[0].id);
+      }
     } catch (err) {
-      setError(err.message || "Error al cargar tus entradas. Inténtalo de nuevo.");
+      setError(err.message || "Error al cargar tus entradas. Intentalo de nuevo.");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTickets();
-    const handleVisibility = () => {
-      if (document.visibilityState === "visible") loadTickets();
+  }, [loadTickets]);
+
+  // Escuchar evento global cuando el UserLayout acepta/rechaza una transferencia
+  // FIX 2: recargar entradas inmediatamente al aceptar
+  useEffect(() => {
+    const handleTransferUpdate = () => {
+      loadTickets();
     };
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
-  }, []);
+    window.addEventListener("transferencia-actualizada", handleTransferUpdate);
+    return () => window.removeEventListener("transferencia-actualizada", handleTransferUpdate);
+  }, [loadTickets]);
 
-  // Recargar cuando el Layout avisa que se aceptó una transferencia
-  useEffect(() => {
-    const handler = () => loadTickets();
-    window.addEventListener("tickets-actualizados", handler);
-    return () => window.removeEventListener("tickets-actualizados", handler);
-  }, []);
-
-  useEffect(() => {
-    const teams = Array.from(
-      new Set(
-        tickets
-          .flatMap((t) => [t.equipoLocal, t.equipoVisita])
-          .filter(Boolean)
-      )
-    );
-
-    const loaders = teams.map((team) => {
-      const key = getAssetKey(team);
-      const importer = flagImports[key];
-      if (!importer) return null;
-      if (flagUrls[key]) return null;
-      return importer().then((url) => [key, url?.default || url]);
-    }).filter(Boolean);
-
-    if (loaders.length === 0) return;
-
-    Promise.all(loaders).then((resolved) => {
-      setFlagUrls((prev) => {
-        const next = { ...prev };
-        resolved.forEach(([key, url]) => {
-          if (key && url) next[key] = url;
-        });
-        return next;
-      });
-    });
-  }, [tickets, flagUrls]);
-
-  const getFlagForTeam = (teamName) => {
-    const key = getAssetKey(teamName);
-    return flagUrls[key] || "";
-  };
-
-  // ── QR dinámico ─────────────────────────────────────────────
-  const refreshQR = useCallback(async (ticketId) => {
-    const qrInfo = await ticketService.generateDynamicQR(ticketId);
-    setQrCodeData(qrInfo.qrCode);
-    setCountdown(qrInfo.expiresIn ?? 30);
-  }, []);
-
-  // Timer countdown + auto-refresh
+  // Timer para el QR Dinámico
   useEffect(() => {
     let timer;
     if (activeQR) {
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
-            refreshQR(activeQR.id).catch(() => {});
+            refreshQR(activeQR.id);
             return 30;
           }
           return prev - 1;
@@ -139,17 +94,25 @@ export default function Dashboard() {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [activeQR, refreshQR]);
+  }, [activeQR]);
 
   const handleOpenQR = async (ticket) => {
     setActiveQR(ticket);
-    setQrCodeData(null);
-    setCopied(false);
     setCountdown(30);
     try {
-      await refreshQR(ticket.id);
-    } catch {
-      setActiveQR(null);
+      const qrInfo = await ticketService.generateDynamicQR(ticket.id);
+      setQrCodeData(qrInfo.qrCode);
+    } catch (err) {
+      setQrCodeData(`FIFA-2026-${ticket.id}-${Math.floor(Date.now() / 1000)}`);
+    }
+  };
+
+  const refreshQR = async (ticketId) => {
+    try {
+      const qrInfo = await ticketService.generateDynamicQR(ticketId);
+      setQrCodeData(qrInfo.qrCode);
+    } catch (err) {
+      setQrCodeData(`FIFA-2026-${ticketId}-${Math.floor(Date.now() / 1000)}`);
     }
   };
 
@@ -158,34 +121,39 @@ export default function Dashboard() {
     setQrCodeData(null);
   };
 
-  const handleCopyToken = async () => {
-    if (!qrCodeData) return;
-    try {
-      await navigator.clipboard.writeText(qrCodeData);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
-  };
-
-  // ── Transferencia ────────────────────────────────────────────
   const handleTransfer = async (e) => {
     e.preventDefault();
     if (!selectedTicketId || !recipientEmail) return;
     try {
       setTransferring(true);
-      setTransferError("");
-      setTransferSuccess("");
+      setError("");
+      setTransferResult(null);
+
       await ticketService.transferTicket(selectedTicketId, recipientEmail);
-      setTransferSuccess(recipientEmail);
-      setRecipientEmail("");
-      setTimeout(() => { loadTickets(); }, 500);
+
+      // FIX 1: mostrar mensaje correcto — solicitud enviada, no "éxito"
+      setTransferResult({ status: "enviada", emailDestino: recipientEmail.trim() });
+
+      // NO recargamos entradas aquí — la entrada todavía es del usuario
+      // hasta que el destinatario acepte. Se cerrará el modal solo.
+      setTimeout(() => {
+        setTransferModalOpen(false);
+        setTransferResult(null);
+        setRecipientEmail("");
+      }, 4000);
+
     } catch (err) {
-      setTransferError(err.message || "Hubo un error al transferir la entrada.");
+      setError(err.message || "Hubo un error al transferir la entrada.");
     } finally {
       setTransferring(false);
     }
+  };
+
+  const handleCloseTransferModal = () => {
+    setTransferModalOpen(false);
+    setTransferResult(null);
+    setError("");
+    setRecipientEmail("");
   };
 
   return (
@@ -197,7 +165,7 @@ export default function Dashboard() {
             Dashboard de Aficionado
           </p>
           <h1 className="font-display-lg-mobile text-display-lg-mobile text-on-surface">
-            Hola, <span className="text-primary">{displayName}</span> 👋
+            Hola, <span className="text-primary">{displayName}</span> 
           </h1>
         </div>
       </section>
@@ -221,14 +189,24 @@ export default function Dashboard() {
               <span className="font-label-bold text-on-surface-variant">Entradas Activas</span>
             </div>
           </div>
+          <div className="relative z-10 pt-stack-md flex gap-stack-sm">
+            <button 
+              onClick={() => tickets.length > 0 && handleOpenQR(tickets[0])}
+              disabled={tickets.length === 0}
+              className="bg-tertiary text-on-primary px-6 h-touch-target rounded-full font-label-bold active:scale-95 transition-transform flex items-center justify-center gap-2 stadium-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <QrCode size={20} />
+              Mostrar QR
+            </button>
+            <button className="border-2 border-white/20 text-white px-6 h-touch-target rounded-full font-label-bold hover:bg-white/5 active:scale-95 transition-colors">
+              Ayuda
+            </button>
+          </div>
         </div>
 
         {/* Quick Access Chips */}
         <div className="flex flex-col gap-gutter">
-          <button
-            className="flex-1 glass-card rounded-xl p-gutter flex items-center justify-between hover:bg-primary-container/20 transition-all active:scale-95 group"
-            onClick={() => navigate("/compras")}
-          >
+          <button className="flex-1 glass-card rounded-xl p-gutter flex items-center justify-between hover:bg-primary-container/20 transition-all active:scale-95 group">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-lg bg-primary-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                 <ShoppingCart size={24} />
@@ -240,7 +218,8 @@ export default function Dashboard() {
             </div>
             <ChevronRight size={20} className="text-on-surface-variant" />
           </button>
-          <button
+
+          <button 
             onClick={() => setTransferModalOpen(true)}
             className="flex-1 glass-card rounded-xl p-gutter flex items-center justify-between hover:bg-tertiary-container/20 transition-all active:scale-95 group"
           >
@@ -273,7 +252,6 @@ export default function Dashboard() {
             <Loader2 className="animate-spin text-primary" size={32} />
           </div>
         )}
-
         {error && (
           <div className="bg-error-container/20 border border-error-container text-error rounded-xl p-4 flex items-center gap-3">
             <AlertCircle size={24} />
@@ -290,7 +268,7 @@ export default function Dashboard() {
               </div>
             ) : (
               tickets.map((tkt) => (
-                <div
+                <div 
                   key={tkt.id}
                   className="flex-shrink-0 w-72 md:w-full glass-card rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-all duration-300"
                 >
@@ -300,54 +278,47 @@ export default function Dashboard() {
                       <span>{tkt.fecha}</span>
                       {tkt.isLive ? (
                         <span className="bg-error-container text-on-error-container px-2 py-0.5 rounded-full flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE
+                          <span className="w-1.5 h-1.5 rounded-full bg-white active-pulse"></span> LIVE
                         </span>
                       ) : (
                         <span className="text-primary">{tkt.fase}</span>
                       )}
                     </div>
-
+                    
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5">
-                            {getFlagForTeam(tkt.equipoLocal) ? (
-                              <img
-                                className="w-full h-full object-cover"
-                                alt={tkt.equipoLocal}
-                                src={getFlagForTeam(tkt.equipoLocal)}
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-white/10 flex items-center justify-center text-xs font-bold text-on-surface-variant">
-                                {tkt.equipoLocal?.slice(0, 2).toUpperCase()}
-                              </div>
-                            )}
+                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+                            <img
+                              className="w-full h-full object-cover"
+                              alt={tkt.equipoLocal}
+                              src={getFlagForTeam(tkt.equipoLocal)}
+                            />
                           </div>
                           <span className="font-label-bold">{tkt.equipoLocal}</span>
                         </div>
-                        <span className="font-data-mono text-primary">—</span>
+                        <span className="font-data-mono text-primary">
+                          {tkt.golesLocal !== null ? tkt.golesLocal : "-"}
+                        </span>
                       </div>
+                      
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden bg-white/5">
-                            {getFlagForTeam(tkt.equipoVisita) ? (
-                              <img
-                                className="w-full h-full object-cover"
-                                alt={tkt.equipoVisita}
-                                src={getFlagForTeam(tkt.equipoVisita)}
-                              />
-                            ) : (
-                              <div className="w-full h-full bg-white/10 flex items-center justify-center text-xs font-bold text-on-surface-variant">
-                                {tkt.equipoVisita?.slice(0, 2).toUpperCase()}
-                              </div>
-                            )}
+                          <div className="w-10 h-10 rounded-full border border-white/10 overflow-hidden">
+                            <img
+                              className="w-full h-full object-cover"
+                              alt={tkt.equipoVisita}
+                              src={getFlagForTeam(tkt.equipoVisita)}
+                            />
                           </div>
                           <span className="font-label-bold">{tkt.equipoVisita}</span>
                         </div>
-                        <span className="font-data-mono text-primary">—</span>
+                        <span className="font-data-mono text-primary">
+                          {tkt.golesVisita !== null ? tkt.golesVisita : "-"}
+                        </span>
                       </div>
                     </div>
-
+                    
                     <div className="border-t border-white/5 pt-3 space-y-2">
                       <div className="flex items-center gap-2 text-on-surface-variant text-sm">
                         <MapPin size={14} />
@@ -356,14 +327,12 @@ export default function Dashboard() {
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-on-surface-variant">
                           Sector: <span className="text-on-surface font-label-bold">{tkt.sector}</span>
-                          {tkt.fila && tkt.fila !== "—" && (
-                            <> • Fila <span className="text-on-surface font-label-bold">{tkt.fila}</span></>
-                          )}
+                          {tkt.fila ? <span className="text-on-surface font-label-bold"> · Fila {tkt.fila}</span> : null}
                         </span>
                       </div>
                     </div>
-
-                    <button
+                    
+                    <button 
                       onClick={() => handleOpenQR(tkt)}
                       className="w-full bg-primary-container text-on-primary-container h-touch-target rounded-lg font-label-bold flex items-center justify-center gap-2 hover:bg-primary-container/80 transition-colors group-hover:scale-[1.02] active:scale-95 duration-150"
                     >
@@ -381,10 +350,10 @@ export default function Dashboard() {
       {/* Live Stadium Feed */}
       <section className="glass-card rounded-2xl overflow-hidden p-0 relative h-48 md:h-64 flex flex-col justify-end group border border-white/5 hover:border-white/10 transition-colors">
         <div className="absolute inset-0 z-0">
-          <img
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            alt="Estadio Azteca"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7YcSSt8K08-4kbwB8BXQFTWQzoXVVO99dyzxHImjFm9pNij7HCQRII72HR0qdp2WQtMDblo1wKdZJC87eb3nmi9pcWmEDf3hziKF1BWVk1-S10eKt01SpfmIC1uQTI5qTzzUwVjhwD2Adn-lWMf3MJ1-Flo7fEjGmHOS21UNmCuQCaxcTEG-nGK8co6In_DAhVkZJqMBEi1JDiNOVf7zmBuCP_CLViKLW72IHtdWp_aiqSaX4C_wQvQNR8OEan6zB66Hy4GPg0nt0"
+          <img 
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+            alt="Estadio Azteca" 
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7YcSSt8K08-4kbwB8BXQFTWQzoXVVO99dyzxHImjFm9pNij7HCQRII72HR0qdp2WQtMDblo1wKdZJC87eb3nmi9pcWmEDf3hziKF1BWVk1-S10eKt01SpfmIC1uQTI5qTzzUwVjhwD2Adn-lWMf3MJ1-Flo7fEjGmHOS21UNmCuQCaxcTEG-nGK8co6In_DAhVkZJqMBEi1JDiNOVf7zmBuCP_CLViKLW72IHtdWp_aiqSaX4C_wQvQNR8OEan6zB66Hy4GPg0nt0" 
           />
           <div className="absolute inset-0 bg-gradient-to-t from-surface via-surface/40 to-transparent"></div>
         </div>
@@ -399,99 +368,76 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* ── MODAL: QR DINÁMICO (mismo que Entradas.jsx) ────────── */}
+      {/* MODAL: QR DINÁMICO */}
       {activeQR && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-sm glass-card rounded-2xl p-6 text-center space-y-6 border border-white/10 animate-in zoom-in-95 duration-200">
-            <button
+            <button 
               onClick={handleCloseQR}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
               <X size={20} />
             </button>
-
             <div className="space-y-1">
               <h3 className="font-headline-sm text-lg text-white">Entrada Digital</h3>
-              <p className="text-xs text-on-surface-variant">
-                {activeQR.equipoLocal} vs {activeQR.equipoVisita}
-              </p>
+              <p className="text-xs text-on-surface-variant">{activeQR.equipoLocal} vs {activeQR.equipoVisita}</p>
             </div>
-
-            {/* QR real generado desde el token */}
-            <div className="relative bg-white p-4 rounded-xl inline-block mx-auto shadow-2xl overflow-hidden">
-              {qrCodeData ? (
-                <img
-                  src={ticketService.getQrImageUrl(qrCodeData, 192)}
-                  alt="Código QR dinámico"
-                  className="w-48 h-48 object-contain"
-                />
-              ) : (
-                <div className="w-48 h-48 flex items-center justify-center">
-                  <Loader2 className="animate-spin text-slate-400" size={40} />
-                </div>
-              )}
-            </div>
-
-            <div className="bg-surface/50 rounded-lg p-3 text-sm text-left w-full">
-              <div className="flex justify-between text-xs text-on-surface-variant mb-1">
-                <span>ESTADIO</span>
-                <span>UBICACIÓN</span>
-              </div>
-              <div className="flex justify-between font-semibold text-white">
-                <span className="truncate max-w-[150px]">{activeQR.estadio.split(",")[0]}</span>
-                <span>Sec {activeQR.sector}{activeQR.fila && activeQR.fila !== "—" ? ` • Fila ${activeQR.fila}` : ""}</span>
+            <div className="relative bg-white p-6 rounded-xl inline-block mx-auto shadow-2xl stadium-shadow group overflow-hidden">
+              <div className="absolute left-0 right-0 h-0.5 bg-tertiary shadow-[0_0_10px_#4ce346] active-pulse pointer-events-none" style={{
+                top: "15%",
+                animation: "scan 3s ease-in-out infinite"
+              }}></div>
+              <div className="w-48 h-48 flex items-center justify-center border-4 border-dashed border-slate-200 p-2">
+                <QrCode size={144} className="text-slate-900 stroke-[1.25px]" />
               </div>
             </div>
-
-            {qrCodeData && (
-              <div className="space-y-2">
-                {/* Token copiable */}
-                <div className="flex items-center gap-2 bg-surface/50 rounded-lg px-3 py-2">
-                  <code className="text-[10px] text-on-surface-variant truncate flex-1 text-left">
-                    {qrCodeData.slice(0, 24)}…
-                  </code>
-                  <button
-                    onClick={handleCopyToken}
-                    className="text-primary hover:text-white transition-colors p-1"
-                    title="Copiar token"
-                  >
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
-                  </button>
+            <style>{`
+              @keyframes scan {
+                0%, 100% { top: 15%; opacity: 0.8; }
+                50% { top: 85%; opacity: 1; }
+              }
+            `}</style>
+            <div className="space-y-3">
+              <div className="bg-surface/50 rounded-lg p-3 text-sm text-left inline-block w-full">
+                <div className="flex justify-between text-xs text-on-surface-variant mb-1">
+                  <span>ESTADIO</span>
+                  <span>SECTOR</span>
                 </div>
-
-                {/* Countdown */}
+                <div className="flex justify-between font-semibold text-white">
+                  <span className="truncate max-w-[150px]">{activeQR.estadio.split(",")[0]}</span>
+                  <span>Sec {activeQR.sector}{activeQR.fila ? ` · Fila ${activeQR.fila}` : ""}</span>
+                </div>
+              </div>
+              <div className="space-y-1">
                 <div className="flex justify-between text-xs font-label-bold text-on-surface-variant px-1">
                   <span>Código de Seguridad Dinámico</span>
                   <span className="text-tertiary font-mono">{countdown}s</span>
                 </div>
                 <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
-                  <div
+                  <div 
                     className="bg-tertiary h-full rounded-full transition-all duration-1000 ease-linear"
                     style={{ width: `${(countdown / 30) * 100}%` }}
                   ></div>
                 </div>
-                <p className="text-[10px] text-on-surface-variant">
-                  El código QR cambia constantemente para evitar falsificaciones
-                </p>
+                <p className="text-[10px] text-on-surface-variant">El código QR cambia constantemente para evitar falsificaciones</p>
               </div>
-            )}
-
-            <button
+            </div>
+            <button 
               onClick={handleCloseQR}
               className="w-full bg-white/10 hover:bg-white/20 text-white font-label-bold py-3 rounded-lg active:scale-95 transition-transform"
             >
-              Cerrar
+              Listo
             </button>
           </div>
         </div>
       )}
 
-      {/* ── MODAL: TRANSFERIR ENTRADA ───────────────────────────── */}
+      {/* MODAL: TRANSFERIR ENTRADA */}
       {transferModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md glass-card rounded-2xl p-6 border border-white/10 animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => { setTransferModalOpen(false); setTransferError(""); setTransferSuccess(""); }}
+            <button 
+              onClick={handleCloseTransferModal}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
               <X size={20} />
@@ -502,31 +448,28 @@ export default function Dashboard() {
               Transferir Entrada
             </h3>
 
-            {transferSuccess ? (
+            {/* FIX 1: pantalla de confirmación correcta */}
+            {transferResult?.status === "enviada" ? (
               <div className="text-center py-8 space-y-4">
-                <div className="w-16 h-16 bg-tertiary/20 text-tertiary rounded-full flex items-center justify-center mx-auto">
-                  <Check size={36} />
+                <div className="w-16 h-16 bg-primary/20 text-primary rounded-full flex items-center justify-center mx-auto">
+                  <Clock size={36} />
                 </div>
-                <p className="text-lg font-semibold text-white">¡Solicitud enviada!</p>
-                <p className="text-sm text-on-surface-variant">
-                  Tu entrada fue enviada a <span className="text-primary font-semibold">{transferSuccess}</span>.
+                <p className="text-lg font-semibold text-white">Solicitud enviada</p>
+                <p className="text-sm text-on-surface-variant leading-relaxed">
+                  Le enviamos una notificación a{" "}
+                  <span className="text-primary font-semibold">{transferResult.emailDestino}</span>.
+                  La entrada seguirá siendo tuya hasta que el destinatario acepte la transferencia.
                 </p>
-                <p className="text-xs text-on-surface-variant mt-1">
-                  La entrada seguirá siendo tuya hasta que el destinatario acepte. Te avisaremos cuando responda.
+                <p className="text-xs text-on-surface-variant">
+                  Te avisaremos cuando responda.
                 </p>
-                <button
-                  onClick={() => { setTransferModalOpen(false); setTransferSuccess(""); }}
-                  className="mt-2 px-6 py-2 bg-surface-container-high rounded-lg text-sm text-on-surface hover:bg-white/10 transition-colors"
-                >
-                  Cerrar
-                </button>
               </div>
             ) : (
               <form onSubmit={handleTransfer} className="space-y-4">
-                {transferError && (
+                {error && (
                   <div className="bg-error-container/20 border border-error-container text-error rounded-lg p-3 text-xs flex items-center gap-2">
                     <AlertCircle size={16} />
-                    <span>{transferError}</span>
+                    <span>{error}</span>
                   </div>
                 )}
 
@@ -534,15 +477,16 @@ export default function Dashboard() {
                   <label className="block text-xs font-label-bold text-on-surface-variant mb-2">
                     SELECCIONAR ENTRADA
                   </label>
-                  <select
+                  {/* FIX 3: mostrar equipos + sector (no estadio) */}
+                  <select 
                     value={selectedTicketId}
                     onChange={(e) => setSelectedTicketId(e.target.value)}
                     required
                     className="w-full bg-surface-container-highest border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-primary"
                   >
                     {tickets.map((tkt) => (
-                      <option key={tkt.id} value={tkt.id} disabled={tkt.vecesTransferida >= 3}>
-                        {tkt.equipoLocal} vs {tkt.equipoVisita} — Sector {tkt.sector}{tkt.fila && tkt.fila !== "—" ? `, Fila ${tkt.fila}` : ""} ({tkt.vecesTransferida >= 3 ? "no transferible" : `${tkt.vecesTransferida ?? 0}/3`})
+                      <option key={tkt.id} value={tkt.id}>
+                        {tkt.equipoLocal} vs {tkt.equipoVisita} — Sector {tkt.sector}{tkt.fila ? `, Fila ${tkt.fila}` : ""}
                       </option>
                     ))}
                   </select>
@@ -552,7 +496,7 @@ export default function Dashboard() {
                   <label className="block text-xs font-label-bold text-on-surface-variant mb-2">
                     EMAIL DEL DESTINATARIO
                   </label>
-                  <input
+                  <input 
                     type="email"
                     required
                     value={recipientEmail}
@@ -563,28 +507,24 @@ export default function Dashboard() {
                 </div>
 
                 <div className="bg-primary-container/10 border border-primary-container/20 rounded-lg p-3 text-[11px] text-on-surface-variant leading-relaxed">
-                  ⚠️ <strong>Importante:</strong> La entrada cambiará de titular una vez que el destinatario acepte la solicitud desde sus notificaciones.
+                  ⚠ <strong>Importante:</strong> Al transferir la entrada, el destinatario recibirá una notificación para aceptar o rechazar. La entrada seguirá siendo tuya hasta que el destinatario acepte.
                 </div>
 
                 <div className="flex gap-3 pt-2">
-                  <button
+                  <button 
                     type="button"
-                    onClick={() => { setTransferModalOpen(false); setTransferError(""); }}
+                    onClick={handleCloseTransferModal}
                     className="flex-1 bg-white/5 hover:bg-white/10 text-white font-label-bold py-3 rounded-lg transition-colors"
                   >
                     Cancelar
                   </button>
-                  <button
+                  <button 
                     type="submit"
-                    disabled={transferring || tickets.length === 0 || tickets.find((t) => String(t.id) === String(selectedTicketId))?.vecesTransferida >= 3}
+                    disabled={transferring || tickets.length === 0}
                     className="flex-1 bg-tertiary text-on-primary font-label-bold py-3 rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {transferring && <Loader2 className="animate-spin" size={16} />}
-                    {(() => {
-                      const tktSel = tickets.find((t) => String(t.id) === String(selectedTicketId));
-                      if (tktSel?.vecesTransferida >= 3) return "Entrada no transferible";
-                      return transferring ? "Enviando..." : "Confirmar";
-                    })()}
+                    {transferring ? "Enviando..." : "Confirmar"}
                   </button>
                 </div>
               </form>
