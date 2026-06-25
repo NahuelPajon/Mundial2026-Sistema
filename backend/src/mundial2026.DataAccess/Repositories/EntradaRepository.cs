@@ -87,9 +87,10 @@ public class EntradaRepository : IEntradaRepository
         // así que si hace más de 2 horas que comenzó, ya pasó y la entrada desaparece.
         const string query = @"
             SELECT e.id_entrada, e.titular, e.id_venta, e.id_evento, e.id_estadio,
-                   e.codigo_sector, e.consumida,
-                   el.nombre, ev.nombre, ev_evento.fecha, est.nombre, s.costo
-            FROM Entrada e
+                e.codigo_sector, e.consumida,
+                el.nombre, ev.nombre, ev_evento.fecha, est.nombre, s.costo,
+                (SELECT COUNT(*) FROM Historial_Transferencia h WHERE h.id_entrada = e.id_entrada) AS veces_transferida
+            FROM Entrada e      
             JOIN Evento ev_evento ON ev_evento.id_evento = e.id_evento
             JOIN Equipo el ON el.id_equipo = ev_evento.id_equipo_local
             JOIN Equipo ev ON ev.id_equipo = ev_evento.id_equipo_visitante
@@ -147,6 +148,7 @@ public class EntradaRepository : IEntradaRepository
         EquipoVisitanteNombre = reader.GetString(8),
         EventoFecha = reader.GetDateTime(9),
         EstadioNombre = reader.GetString(10),
-        Costo = reader.GetDecimal(11)
+        Costo = reader.GetDecimal(11),
+        VecesTransferida = reader.FieldCount > 12 ? Convert.ToInt32(reader.GetValue(12)) : 0
     };
 }

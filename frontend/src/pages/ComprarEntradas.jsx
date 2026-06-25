@@ -380,14 +380,10 @@ function SectoresEvento({ evento, carrito, onAgregar, onQuitar, maxEntradas }) {
   useEffect(() => {
     const cargar = async () => {
       try {
-        // GET /api/estadios/:id — devuelve estadio con sus sectores (costo incluido)
+        // GET /api/eventos/:id/sectores — devuelve sectores habilitados con disponibilidad por evento
         const { apiFetch } = await import("../services/api");
-        const estadio = await apiFetch(`/estadios/${evento.idEstadio}`);
-        // Filtrar solo los habilitados para este evento
-        const habilitados = estadio.sectores.filter((s) =>
-          evento.sectoresHabilitados.includes(s.codigo)
-        );
-        setSectores(habilitados);
+        const data = await apiFetch(`/eventos/${evento.idEvento}/sectores`);
+        setSectores(data);
       } catch {
         // Si no hay endpoint de sectores, construir con lo que tenemos (sin costo)
         setSectores(

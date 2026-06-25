@@ -13,6 +13,7 @@ import AdminLayout from './components/layout/AdminLayout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminEstadios from './pages/AdminEstadios';
 import AdminPartidos from './pages/AdminPartidos';
+import UserEstadios from './pages/UserEstadios';
 import { authService } from './services/authService';
 
 // Guardia de ruta protegido con soporte de roles (RBAC)
@@ -122,6 +123,17 @@ export default function App() {
         />
 
         <Route
+          path="/comprar"
+          element={
+            <ProtectedRoute allowedRoles={['Usuario']}>
+              <UserLayout>
+                <ComprarEntradas />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/perfil"
           element={
             <ProtectedRoute allowedRoles={['Usuario', 'Admin']}>
@@ -153,6 +165,17 @@ export default function App() {
           }
         />
 
+        {/* Sedes / Estadios para el Usuario */}
+        <Route
+          path="/sedes"
+          element={
+            <ProtectedRoute allowedRoles={['Usuario']}>
+              <UserLayout>
+                <UserEstadios />
+              </UserLayout>
+            </ProtectedRoute>
+          }
+        />
         {/* Cualquier ruta inexistente */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
 

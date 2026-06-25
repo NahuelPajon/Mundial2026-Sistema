@@ -10,6 +10,7 @@ export default function UserLayout({ children }) {
   const [showDropdown, setShowDropdown] = useState(false);
   const [showNotifs, setShowNotifs] = useState(false);
   const [transferencias, setTransferencias] = useState([]);
+  const [notifEnviadas, setNotifEnviadas] = useState([]); // transferencias enviadas respondidas
   const [procesando, setProcesando] = useState(null); // id de la transferencia en proceso
   const notifRef = useRef(null);
 
@@ -23,20 +24,58 @@ export default function UserLayout({ children }) {
     navigate("/login");
   };
 
+  // ── Helpers localStorage con TTL de 7 días ─────────────────
+  const NOTIFS_KEY = "notifs_desc_v2";
+  const TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+  const getDescartadas = () => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(NOTIFS_KEY) || "[]");
+      const ahora = Date.now();
+      const vigentes = raw.filter((e) => ahora - e.ts < TTL_MS);
+      if (vigentes.length !== raw.length)
+        localStorage.setItem(NOTIFS_KEY, JSON.stringify(vigentes));
+      return vigentes.map((e) => e.id);
+    } catch {
+      localStorage.removeItem(NOTIFS_KEY);
+      return [];
+    }
+  };
+
+  const descartarNotif = (idTransferencia) => {
+    try {
+      const raw = JSON.parse(localStorage.getItem(NOTIFS_KEY) || "[]");
+      const id = Number(idTransferencia);
+      if (!raw.find((e) => e.id === id)) {
+        raw.push({ id, ts: Date.now() });
+        localStorage.setItem(NOTIFS_KEY, JSON.stringify(raw));
+      }
+    } catch {
+      localStorage.removeItem(NOTIFS_KEY);
+    }
+  };
+
   // Cargar transferencias pendientes recibidas
   const cargarTransferencias = async () => {
     try {
-      const data = await apiFetch("/transferencias?tipo=recibidas");
-      const pendientes = data.filter((t) => t.estado?.toLowerCase() === "pendiente");
-      setTransferencias(pendientes);
+      const [recibidas, enviadas] = await Promise.all([
+        apiFetch("/transferencias?tipo=recibidas"),
+        apiFetch("/transferencias?tipo=enviadas"),
+      ]);
+      setTransferencias(recibidas.filter((t) => t.estado?.toLowerCase() === "pendiente"));
+      const respondidas = enviadas.filter((t) =>
+        ["aceptada", "rechazada"].includes(t.estado?.toLowerCase())
+      );
+      const descartadas = getDescartadas();
+      const nuevas = respondidas.filter((t) => !descartadas.includes(Number(t.idTransferencia)));
+      setNotifEnviadas(nuevas);
     } catch {
-      // silencioso — no interrumpir la navegación
+      // silencioso
     }
   };
 
   useEffect(() => {
     cargarTransferencias();
-    // Polling cada 30 segundos para detectar nuevas transferencias
     const interval = setInterval(cargarTransferencias, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -104,7 +143,7 @@ export default function UserLayout({ children }) {
               className="p-2 hover:bg-white/5 rounded-full transition-colors active:scale-95 duration-150 text-on-surface-variant hover:text-on-surface relative"
             >
               <Bell size={20} />
-              {transferencias.length > 0 && (
+              {(transferencias.length > 0 || notifEnviadas.length > 0) && (
                 <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
               )}
             </button>
@@ -116,12 +155,48 @@ export default function UserLayout({ children }) {
                   <p className="text-sm font-semibold text-on-surface">Notificaciones</p>
                 </div>
 
-                {transferencias.length === 0 ? (
+                {transferencias.length === 0 && notifEnviadas.length === 0 ? (
                   <div className="px-4 py-8 text-center text-on-surface-variant text-sm">
                     No tenés notificaciones pendientes.
                   </div>
                 ) : (
                   <div className="divide-y divide-white/5 max-h-80 overflow-y-auto">
+                    {/* Notificaciones de respuesta a transferencias enviadas */}
+                    {notifEnviadas.map((t) => (
+                      <div key={`env-${t.idTransferencia}`} className="px-4 py-3 space-y-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="text-xs text-on-surface-variant leading-relaxed">
+                            {t.estado?.toLowerCase() === "aceptada" ? (
+                              <>
+                                <span className="font-semibold text-green-400">{t.emailDestino}</span>
+                                {" aceptó tu transferencia ✓"}
+                              </>
+                            ) : (
+                              <>
+                                <span className="font-semibold text-error">{t.emailDestino}</span>
+                                {" rechazó tu transferencia"}
+                              </>
+                            )}
+                          </p>
+                          <button
+                            onClick={() => {
+                              descartarNotif(t.idTransferencia);
+                              setNotifEnviadas((prev) => prev.filter((n) => n.idTransferencia !== t.idTransferencia));
+                            }}
+                            className="text-on-surface-variant hover:text-on-surface shrink-0"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
+                        <p className="text-xs font-semibold text-on-surface">
+                          {t.equipoLocalNombre} vs {t.equipoVisitanteNombre}
+                        </p>
+                        <p className="text-xs text-on-surface-variant">
+                          {t.estadioNombre} · Sector {t.codigoSector}
+                        </p>
+                      </div>
+                    ))}
+                    {/* Transferencias pendientes de aceptar/rechazar */}
                     {transferencias.map((t) => (
                       <div key={t.idTransferencia} className="px-4 py-3 space-y-2">
                         <p className="text-xs text-on-surface-variant">
