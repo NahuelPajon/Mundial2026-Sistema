@@ -129,21 +129,41 @@ export default function AdminPartidos() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] bg-[#0b1220] text-white">
-        <Loader2 className="animate-spin text-lime-400" size={28} />
+      <div className="flex justify-center items-center min-h-[60vh]" style={{ backgroundColor: "#0d0e11" }}>
+        <Loader2 className="animate-spin" size={28} style={{ color: "#4ce346" }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0b1220] text-white px-6 py-8 space-y-8">
+    <div className="min-h-screen px-6 py-8 space-y-8" style={{ backgroundColor: "#0d0e11" }}>
+      <style>{`
+        * {
+          font-family: 'Montserrat', sans-serif;
+        }
+        
+        .select-field, .input-field {
+          font-family: 'Montserrat', sans-serif;
+          transition: all 0.2s ease;
+        }
+        
+        .select-field:focus, .input-field:focus {
+          box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
+        }
+
+        .checkbox-custom:checked {
+          accent-color: #4ce346;
+        }
+      `}</style>
 
       {/* HEADER */}
       <div className="flex items-center gap-3">
-        <Trophy className="text-lime-400" />
+        <Trophy size={32} style={{ color: "#4ce346" }} />
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Partidos</h2>
-          <p className="text-sm text-gray-400">
+          <h2 className="text-3xl font-black" style={{ color: "#e3e2e5", fontWeight: 800, letterSpacing: "-0.02em" }}>
+            Gestión de Partidos
+          </h2>
+          <p className="text-base mt-1" style={{ color: "#c4c6cf" }}>
             Crea y administra los encuentros del torneo.
           </p>
         </div>
@@ -151,35 +171,58 @@ export default function AdminPartidos() {
 
       {/* ALERTAS */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg flex gap-2">
-          <AlertCircle size={18} />
-          {error}
+        <div 
+          className="p-4 rounded-lg flex gap-3 items-start"
+          style={{ 
+            backgroundColor: "rgba(255, 180, 171, 0.1)",
+            border: "1px solid #ffb4ab"
+          }}
+        >
+          <AlertCircle size={20} style={{ color: "#ffb4ab", flexShrink: 0 }} />
+          <span style={{ color: "#ffb4ab" }} className="text-sm">{error}</span>
         </div>
       )}
 
       {successMsg && (
-        <div className="bg-lime-500/10 border border-lime-500/30 text-lime-300 p-3 rounded-lg flex gap-2">
-          <Check size={18} />
-          {successMsg}
+        <div 
+          className="p-4 rounded-lg flex gap-3 items-start"
+          style={{ 
+            backgroundColor: "rgba(76, 227, 70, 0.1)",
+            border: "1px solid #4ce346"
+          }}
+        >
+          <Check size={20} style={{ color: "#4ce346", flexShrink: 0 }} />
+          <span style={{ color: "#4ce346" }} className="text-sm">{successMsg}</span>
         </div>
       )}
 
       {/* FORM */}
-      <div className="bg-[#111a2e] border border-gray-700 rounded-xl p-6 space-y-5 shadow-lg">
+      <div className="rounded-lg p-8 space-y-6 shadow-lg" style={{ backgroundColor: "#292a2c", border: "1px solid #43474e" }}>
 
-        <h3 className="text-lime-400 font-semibold text-lg">
+        <h3 className="text-lg font-bold" style={{ color: "#4ce346" }}>
           Crear nuevo partido
         </h3>
 
         {/* EQUIPOS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
 
           <div>
-            <label className="text-sm text-gray-400">Equipo local</label>
+            <label className="text-sm block mb-2 font-semibold" style={{ color: "#c4c6cf" }}>Equipo local</label>
             <select
               value={local}
               onChange={(e) => setLocal(e.target.value)}
-              className="w-full mt-1 p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white focus:border-lime-400 outline-none"
+              className="select-field w-full px-4 py-3 rounded text-base"
+              style={{ 
+                backgroundColor: "#1f2022",
+                border: "1px solid #43474e",
+                color: "#e3e2e5"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#D4AF37";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#43474e";
+              }}
             >
               <option value="">Seleccionar equipo</option>
               {equipos.map(e => (
@@ -193,17 +236,33 @@ export default function AdminPartidos() {
           <button
             type="button"
             onClick={swapTeams}
-            className="p-3 border border-gray-700 rounded-lg bg-[#0b1220] hover:border-lime-400 transition flex justify-center"
+            className="px-4 py-3 rounded transition flex justify-center hover:scale-105"
+            style={{ 
+              backgroundColor: "#1f2022",
+              border: "1px solid #43474e"
+            }}
+            title="Intercambiar equipos"
           >
-            <ArrowLeftRight className="text-lime-400" />
+            <ArrowLeftRight size={20} style={{ color: "#4ce346" }} />
           </button>
 
           <div>
-            <label className="text-sm text-gray-400">Equipo visitante</label>
+            <label className="text-sm block mb-2 font-semibold" style={{ color: "#c4c6cf" }}>Equipo visitante</label>
             <select
               value={visita}
               onChange={(e) => setVisita(e.target.value)}
-              className="w-full mt-1 p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white focus:border-lime-400 outline-none"
+              className="select-field w-full px-4 py-3 rounded text-base"
+              style={{ 
+                backgroundColor: "#1f2022",
+                border: "1px solid #43474e",
+                color: "#e3e2e5"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#D4AF37";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#43474e";
+              }}
             >
               <option value="">Seleccionar equipo</option>
               {equipos.map(e => (
@@ -216,24 +275,46 @@ export default function AdminPartidos() {
         </div>
 
         {/* FECHA + ESTADIO */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
           <div>
-            <label className="text-sm text-gray-400">Fecha y hora</label>
+            <label className="text-sm block mb-2 font-semibold" style={{ color: "#c4c6cf" }}>Fecha y hora</label>
             <input
               type="datetime-local"
               value={fechaHora}
               onChange={(e) => setFechaHora(e.target.value)}
-              className="w-full mt-1 p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white focus:border-lime-400 outline-none"
+              className="input-field w-full px-4 py-3 rounded text-base"
+              style={{ 
+                backgroundColor: "#1f2022",
+                border: "1px solid #43474e",
+                color: "#e3e2e5"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#D4AF37";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#43474e";
+              }}
             />
           </div>
 
           <div>
-            <label className="text-sm text-gray-400">Estadio</label>
+            <label className="text-sm block mb-2 font-semibold" style={{ color: "#c4c6cf" }}>Estadio</label>
             <select
               value={selectedStadium}
               onChange={(e) => handleStadiumChange(e.target.value)}
-              className="w-full mt-1 p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white focus:border-lime-400 outline-none"
+              className="select-field w-full px-4 py-3 rounded text-base"
+              style={{ 
+                backgroundColor: "#1f2022",
+                border: "1px solid #43474e",
+                color: "#e3e2e5"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#D4AF37";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#43474e";
+              }}
             >
               {stadiums.map(s => (
                 <option key={s.idEstadio} value={s.idEstadio}>
@@ -248,10 +329,10 @@ export default function AdminPartidos() {
         {/* SECTORES */}
         {stadiumSectores.length > 0 && (
           <div>
-            <label className="text-sm text-gray-400">Sectores a habilitar</label>
-            <div className="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2 bg-[#0a0f1a] p-4 rounded-lg border border-gray-700">
+            <label className="text-sm block mb-3 font-semibold" style={{ color: "#c4c6cf" }}>Sectores a habilitar</label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 rounded-lg" style={{ backgroundColor: "#1f2022", border: "1px solid #43474e" }}>
               {stadiumSectores.map(s => (
-                <label key={s.codigo} className="flex items-center gap-2 cursor-pointer hover:text-lime-400 transition">
+                <label key={s.codigo} className="flex items-center gap-3 cursor-pointer hover:text-lime-400 transition px-3 py-2" style={{ color: "#c4c6cf" }}>
                   <input
                     type="checkbox"
                     checked={selectedSectores.includes(s.codigo)}
@@ -262,9 +343,10 @@ export default function AdminPartidos() {
                         setSelectedSectores(selectedSectores.filter(c => c !== s.codigo));
                       }
                     }}
-                    className="w-4 h-4 rounded cursor-pointer"
+                    className="checkbox-custom w-5 h-5 rounded cursor-pointer"
+                    style={{ accentColor: "#4ce346" }}
                   />
-                  <span className="text-sm">
+                  <span className="text-sm font-medium">
                     {s.codigo} ({s.capacidadMaxima})
                   </span>
                 </label>
@@ -277,7 +359,12 @@ export default function AdminPartidos() {
         <button
           onClick={handleCreatePartido}
           disabled={submitting}
-          className="w-full py-3 rounded-lg border border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black transition flex justify-center items-center gap-2"
+          className="w-full py-3 rounded font-bold text-base flex justify-center items-center gap-2 transition duration-200 hover:scale-105 active:scale-98 disabled:opacity-60"
+          style={{ 
+            backgroundColor: "#4ce346",
+            color: "#001f3f",
+            height: "56px"
+          }}
         >
           {submitting ? (
             <>
@@ -297,20 +384,32 @@ export default function AdminPartidos() {
         {partidos.map(p => (
           <div
             key={p.id}
-            className="bg-[#111a2e] border border-gray-700 rounded-xl p-4 flex flex-col md:flex-row md:justify-between md:items-center hover:border-lime-400 transition"
+            className="rounded-lg p-5 flex flex-col md:flex-row md:justify-between md:items-center transition hover:scale-102"
+            style={{ 
+              backgroundColor: "#292a2c",
+              border: "1px solid #43474e"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "#4ce346";
+              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(76, 227, 70, 0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "#43474e";
+              e.currentTarget.style.boxShadow = "none";
+            }}
           >
             <div>
-              <div className="font-semibold text-lg">
-                {p.equipoLocal} <span className="text-gray-500">VS</span> {p.equipoVisita}
+              <div className="font-bold text-lg" style={{ color: "#e3e2e5" }}>
+                {p.equipoLocal} <span style={{ color: "#8e9198" }}>VS</span> {p.equipoVisita}
               </div>
 
-              <div className="text-sm text-gray-400 flex items-center gap-2 mt-1">
-                <Calendar size={14} />
+              <div className="text-sm flex items-center gap-2 mt-2" style={{ color: "#c4c6cf" }}>
+                <Calendar size={16} />
                 {formatDate(p.fechaHora)}
               </div>
 
-              <div className="text-sm text-gray-400 flex items-center gap-2">
-                <MapPin size={14} />
+              <div className="text-sm flex items-center gap-2" style={{ color: "#c4c6cf" }}>
+                <MapPin size={16} />
                 {p.estadio}
               </div>
             </div>
