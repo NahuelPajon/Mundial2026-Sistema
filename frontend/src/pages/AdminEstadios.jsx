@@ -143,9 +143,13 @@ export default function AdminEstadios() {
       }, 1500);
 
     } catch (err) {
-      console.error(err);
-      setSectorsError("Ocurrió un error al guardar los cambios en los sectores.");
-    } finally {
+  console.error(err);
+
+  setSectorsError(
+    err?.message ||
+    "Ocurrió un error al guardar los cambios en los sectores."
+  );
+} finally {
       setSavingSectors(false);
     }
   };

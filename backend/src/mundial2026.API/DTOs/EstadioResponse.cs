@@ -19,3 +19,9 @@ public class SectorResponse
     public decimal Costo { get; set; }
     public int EntradasDisponibles { get; set; }
 }
+
+// DTO nuevo para actualizar precio de sector
+public class UpdateSectorPrecioRequest
+{
+    public decimal PrecioBase { get; set; }
+}
