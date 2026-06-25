@@ -23,25 +23,37 @@ export const adminService = {
 
   getTopMatches: async () => {
     const data = await apiFetch("/reportes/eventos-mas-vendidos?limit=4");
-    return (data || []).map((ev) => ({
-      id: pick(ev, "idEvento", "IdEvento"),
-      local: pick(ev, "equipoLocal", "EquipoLocal") ?? "",
-      visita: pick(ev, "equipoVisitante", "EquipoVisitante") ?? "",
-      capacityPercent: Math.round(pick(ev, "porcentajeOcupacion", "PorcentajeOcupacion") ?? 0),
-      estadio: pick(ev, "estadio", "Estadio") ?? "",
-      entradasVendidas: pick(ev, "entradasVendidas", "EntradasVendidas") ?? 0,
-    }));
+    return (data || []).map((ev) => {
+      const vendidas = pick(ev, "entradasVendidas", "EntradasVendidas") ?? 0;
+      const capacidad = pick(ev, "capacidadTotal", "CapacidadTotal") ?? 0;
+      const porcentaje = capacidad > 0 ? Math.round((vendidas / capacidad) * 100) : 0;
+      return {
+        id: pick(ev, "idEvento", "IdEvento"),
+        local: pick(ev, "equipoLocal", "EquipoLocal", "equipoLocalNombre", "EquipoLocalNombre") ?? "",
+        visita: pick(ev, "equipoVisitante", "EquipoVisitante", "equipoVisitanteNombre", "EquipoVisitanteNombre") ?? "",
+        capacityPercent: porcentaje,
+        estadio: pick(ev, "estadio", "Estadio", "estadioNombre", "EstadioNombre") ?? "",
+        entradasVendidas: vendidas,
+        capacidadTotal: capacidad,
+      };
+    });
   },
 
   getTopBuyers: async () => {
     const data = await apiFetch("/reportes/ranking-compradores?limit=5");
-    return (data || []).map((buyer, index) => ({
-      id: pick(buyer, "email", "Email") ?? index,
-      nombre: pick(buyer, "nombre", "Nombre") ?? "",
-      ticketsCount: pick(buyer, "cantidadEntradas", "CantidadEntradas") ?? 0,
-      totalSpent: pick(buyer, "montoTotalGastado", "MontoTotalGastado") ?? 0,
-      tier: "Comprador registrado",
-      avatar: null,
-    }));
+    return (data || []).map((buyer, index) => {
+      const email = pick(buyer, "email", "Email") ?? "";
+      // Nombre derivado del email (parte antes del @)
+      const nombre = email.split("@")[0].replace(".", " ").replace(/\b\w/g, c => c.toUpperCase());
+      return {
+        id: email || index,
+        nombre,
+        email,
+        ticketsCount: pick(buyer, "cantidadEntradasCompradas", "CantidadEntradasCompradas", "cantidadEntradas", "CantidadEntradas") ?? 0,
+        totalSpent: pick(buyer, "montoTotalGastado", "MontoTotalGastado") ?? 0,
+        tier: "Comprador registrado",
+        avatar: null,
+      };
+    });
   },
 };
