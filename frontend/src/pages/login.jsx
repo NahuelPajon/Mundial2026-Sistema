@@ -27,56 +27,141 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b1220] text-white flex justify-center items-center px-4 py-8">
-      <div className="w-full max-w-md bg-[#111a2e] border border-gray-700 rounded-xl p-8 shadow-2xl space-y-6">
+    <div 
+      className="min-h-screen flex justify-center items-center px-5 py-8"
+      style={{ backgroundColor: "#0d0e11" }}
+    >
+      <style>{`
+        * {
+          font-family: 'Montserrat', sans-serif;
+        }
+        
+        .input-field {
+          font-family: 'Montserrat', sans-serif;
+          transition: all 0.2s ease;
+        }
+        
+        .input-field:focus {
+          box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+      `}</style>
+
+      <div 
+        className="w-full max-w-md rounded-lg p-8 space-y-6 shadow-2xl"
+        style={{ 
+          backgroundColor: "#292a2c",
+          border: "1px solid #43474e"
+        }}
+      >
         
         {/* HEADER */}
-        <div className="text-center space-y-2">
+        <div className="text-center space-y-3">
           <div className="flex justify-center">
-            <LogIn className="text-lime-400" size={32} />
+            <LogIn size={40} style={{ color: "#4ce346" }} className="drop-shadow-lg" />
           </div>
-          <h1 className="text-3xl font-bold">Mundial 2026</h1>
-          <p className="text-sm text-gray-400">Acceso a tu cuenta</p>
+          <h1 
+            className="text-4xl font-black tracking-tight"
+            style={{ 
+              color: "#e3e2e5",
+              fontWeight: 800,
+              letterSpacing: "-0.02em"
+            }}
+          >
+            Mundial 2026
+          </h1>
+          <p 
+            className="text-base"
+            style={{ color: "#c4c6cf" }}
+          >
+            Acceso a tu cuenta
+          </p>
         </div>
 
         {/* ERROR */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg flex gap-2">
-            <AlertCircle size={18} className="flex-shrink-0" />
-            <span>{error}</span>
+          <div 
+            className="p-4 rounded-lg flex gap-3 items-start"
+            style={{ 
+              backgroundColor: "rgba(255, 180, 171, 0.1)",
+              border: "1px solid #ffb4ab"
+            }}
+          >
+            <AlertCircle size={20} style={{ color: "#ffb4ab", flexShrink: 0, marginTop: "2px" }} />
+            <span style={{ color: "#ffb4ab" }} className="text-sm leading-relaxed">{error}</span>
           </div>
         )}
 
         {/* FORM */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="text-sm text-gray-400 block mb-2">Email</label>
+            <label 
+              className="text-sm block mb-2 font-semibold"
+              style={{ color: "#c4c6cf" }}
+            >
+              Email
+            </label>
             <input
               type="email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="tu@email.com"
               required
-              className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+              className="input-field w-full px-4 py-3 text-base rounded transition"
+              style={{ 
+                backgroundColor: "#1f2022",
+                border: "1px solid #43474e",
+                color: "#e3e2e5"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#D4AF37";
+                e.target.style.boxShadow = "0 0 0 3px rgba(212, 175, 55, 0.15)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#43474e";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </div>
 
           <div>
-            <label className="text-sm text-gray-400 block mb-2">Contraseña</label>
+            <label 
+              className="text-sm block mb-2 font-semibold"
+              style={{ color: "#c4c6cf" }}
+            >
+              Contraseña
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
+              className="input-field w-full px-4 py-3 text-base rounded transition"
+              style={{ 
+                backgroundColor: "#1f2022",
+                border: "1px solid #43474e",
+                color: "#e3e2e5"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#D4AF37";
+                e.target.style.boxShadow = "0 0 0 3px rgba(212, 175, 55, 0.15)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#43474e";
+                e.target.style.boxShadow = "none";
+              }}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg border border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black transition font-semibold flex justify-center items-center gap-2 disabled:opacity-50"
+            className="w-full py-3 rounded font-bold text-base flex justify-center items-center gap-2 transition duration-200 hover:scale-105 active:scale-98 disabled:opacity-60 disabled:cursor-not-allowed touch-target"
+            style={{ 
+              backgroundColor: "#4ce346",
+              color: "#001f3f",
+              height: "56px"
+            }}
           >
             {loading ? (
               <>
@@ -93,11 +178,12 @@ export default function Login() {
         </form>
 
         {/* REGISTER LINK */}
-        <div className="text-center text-sm">
-          <span className="text-gray-400">¿No tienes cuenta? </span>
+        <div className="text-center text-sm pt-2">
+          <span style={{ color: "#c4c6cf" }}>¿No tienes cuenta? </span>
           <Link
             to="/register"
-            className="text-lime-400 font-semibold hover:text-lime-300 transition"
+            className="font-bold transition hover:opacity-80"
+            style={{ color: "#afc8f0" }}
           >
             Regístrate aquí
           </Link>
