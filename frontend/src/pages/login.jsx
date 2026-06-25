@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authService";
 import { Link } from "react-router-dom";
+import { LogIn, AlertCircle, Loader2 } from "lucide-react";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -13,7 +14,6 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setLoading(false);
 
     try {
       setLoading(true);
@@ -27,152 +27,81 @@ export default function Login() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f3f4f6",
-        padding: "16px",
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: "#ffffff",
-          padding: "32px",
-          borderRadius: "8px",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          width: "100%",
-          maxWidth: "400px",
-        }}
-      >
-        <h2
-          style={{
-            textAlign: "center",
-            marginBottom: "24px",
-            color: "#1f2937",
-          }}
-        >
-          Mundial 2026 - Acceso
-        </h2>
+    <div className="min-h-screen bg-[#0b1220] text-white flex justify-center items-center px-4 py-8">
+      <div className="w-full max-w-md bg-[#111a2e] border border-gray-700 rounded-xl p-8 shadow-2xl space-y-6">
+        
+        {/* HEADER */}
+        <div className="text-center space-y-2">
+          <div className="flex justify-center">
+            <LogIn className="text-lime-400" size={32} />
+          </div>
+          <h1 className="text-3xl font-bold">Mundial 2026</h1>
+          <p className="text-sm text-gray-400">Acceso a tu cuenta</p>
+        </div>
 
+        {/* ERROR */}
         {error && (
-          <div
-            style={{
-              color: "#dc2626",
-              backgroundColor: "#fee2e2",
-              padding: "10px",
-              borderRadius: "4px",
-              marginBottom: "16px",
-              fontSize: "14px",
-            }}
-          >
-            {error}
+          <div className="bg-red-500/10 border border-red-500/30 text-red-300 p-3 rounded-lg flex gap-2">
+            <AlertCircle size={18} className="flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: "16px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "6px",
-                color: "#4b5563",
-                fontSize: "14px",
-              }}
-            >
-            </label>
-            Email
+        {/* FORM */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="text-sm text-gray-400 block mb-2">Email</label>
             <input
-              type="text"
+              type="email"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Email address"
+              placeholder="tu@email.com"
               required
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #d1d5db",
-                boxSizing: "border-box",
-              }}
+              className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
             />
           </div>
 
-          <div style={{ marginBottom: "24px" }}>
-            <label
-              style={{
-                display: "block",
-                marginBottom: "6px",
-                color: "#4b5563",
-                fontSize: "14px",
-              }}
-            >
-              Contraseña
-            </label>
+          <div>
+            <label className="text-sm text-gray-400 block mb-2">Contraseña</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="******"
+              placeholder="••••••••"
               required
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "4px",
-                border: "1px solid #d1d5db",
-                boxSizing: "border-box",
-              }}
+              className="w-full p-3 bg-[#0b1220] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-lime-400 outline-none transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            style={{
-              width: "100%",
-              padding: "12px",
-              backgroundColor: "#2563eb",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "4px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
+            className="w-full py-3 rounded-lg border border-lime-400 text-lime-400 hover:bg-lime-400 hover:text-black transition font-semibold flex justify-center items-center gap-2 disabled:opacity-50"
           >
-            {loading ? "Cargando..." : "Iniciar Sesión"}
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" size={18} />
+                Accediendo...
+              </>
+            ) : (
+              <>
+                <LogIn size={18} />
+                Iniciar Sesión
+              </>
+            )}
           </button>
         </form>
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "16px",
-          }}
-        >
-          <span style={{ color: "#6b7280", fontSize: "14px" }}>
-            ¿No tienes cuenta?{" "}
-          </span>
 
+        {/* REGISTER LINK */}
+        <div className="text-center text-sm">
+          <span className="text-gray-400">¿No tienes cuenta? </span>
           <Link
             to="/register"
-            style={{
-              color: "#2563eb",
-              textDecoration: "none",
-              fontWeight: "bold",
-            }}
+            className="text-lime-400 font-semibold hover:text-lime-300 transition"
           >
-            Registrarse
+            Regístrate aquí
           </Link>
         </div>
-        <p
-          style={{
-            textAlign: "center",
-            color: "#9ca3af",
-            fontSize: "12px",
-            marginTop: "16px",
-          }}
-        ></p>
       </div>
     </div>
   );
