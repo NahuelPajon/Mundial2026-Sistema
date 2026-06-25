@@ -37,8 +37,8 @@ export default function UserLayout({ children }) {
         ["aceptada", "rechazada"].includes(t.estado?.toLowerCase())
       );
       // Filtrar las que el usuario ya descartó (guardadas en localStorage)
-      const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]");
-      const nuevas = respondidas.filter((t) => !descartadas.includes(t.idTransferencia));
+      const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]").map(Number);
+      const nuevas = respondidas.filter((t) => !descartadas.includes(Number(t.idTransferencia)));
       setNotifEnviadas(nuevas);
     } catch {
       // silencioso
@@ -46,8 +46,15 @@ export default function UserLayout({ children }) {
   };
 
   useEffect(() => {
+    // Normalizar IDs en localStorage a número (fix de tipo string vs number)
+    try {
+      const raw = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]");
+      const normalized = raw.map(Number).filter((n) => !isNaN(n));
+      localStorage.setItem("notifs_descartadas", JSON.stringify(normalized));
+    } catch {
+      localStorage.removeItem("notifs_descartadas");
+    }
     cargarTransferencias();
-    // Polling cada 30 segundos para detectar nuevas transferencias
     const interval = setInterval(cargarTransferencias, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -152,8 +159,8 @@ export default function UserLayout({ children }) {
                           </p>
                           <button
                             onClick={() => {
-                              const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]");
-                              localStorage.setItem("notifs_descartadas", JSON.stringify([...descartadas, t.idTransferencia]));
+                              const descartadas = JSON.parse(localStorage.getItem("notifs_descartadas") || "[]").map(Number);
+                              localStorage.setItem("notifs_descartadas", JSON.stringify([...descartadas, Number(t.idTransferencia)]));
                               setNotifEnviadas((prev) => prev.filter((n) => n.idTransferencia !== t.idTransferencia));
                             }}
                             className="text-on-surface-variant hover:text-on-surface shrink-0"
