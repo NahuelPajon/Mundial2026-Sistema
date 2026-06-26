@@ -136,7 +136,7 @@ export default function AdminPartidos() {
   }
 
   return (
-    <div className="min-h-screen px-6 py-8 space-y-8" style={{ backgroundColor: "#0d0e11" }}>
+    <div className="min-h-screen px-6 py-8 space-y-8">
       <style>{`
         * {
           font-family: 'Montserrat', sans-serif;
