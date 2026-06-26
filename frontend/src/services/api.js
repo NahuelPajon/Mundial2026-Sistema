@@ -1,6 +1,6 @@
 const BASE_URL = "http://localhost:5053/api";
 
-export const apiFetch = async (endpoint, options = {}) => {
+export const apiFetch =   async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
 
   // Obtener el token de la sesión guardada en localStorage

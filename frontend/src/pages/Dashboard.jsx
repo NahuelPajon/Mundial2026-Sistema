@@ -1,24 +1,27 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-  Ticket, 
-  QrCode, 
-  ShoppingCart, 
-  Send, 
-  ChevronRight, 
-  MapPin, 
-  Compass, 
-  ExternalLink, 
-  AlertCircle, 
-  Loader2, 
+import {
+  Ticket,
+  QrCode,
+  ShoppingCart,
+  Send,
+  ChevronRight,
+  MapPin,
+  Compass,
+  ExternalLink,
+  AlertCircle,
+  Loader2,
   X,
   Check,
-  Copy
+  Copy,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ticketService } from "../services/ticketService";
 import { authService } from "../services/authService";
 
-const flagImports = import.meta.glob("../assets/*.svg", { query: '?url', import: 'default' });
+const flagImports = import.meta.glob("../assets/*.svg", {
+  query: "?url",
+  import: "default",
+});
 
 const getAssetKey = (teamName) => {
   const name = String(teamName || "").trim();
@@ -47,9 +50,15 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
   const user = authService.getCurrentUser();
-  const displayName = user && user.email
-    ? user.email.split("@")[0].split(".")[0].charAt(0).toUpperCase() + user.email.split("@")[0].split(".")[0].slice(1)
-    : "Aficionado";
+  const displayName =
+    user && user.email
+      ? user.email.split("@")[0].split(".")[0].charAt(0).toUpperCase() +
+        user.email.split("@")[0].split(".")[0].slice(1)
+      : "Aficionado";
+
+  const handleVerPdf = () => {
+    window.open("../public/FWC26CALENDAR.pdf", "_blank", "noopener,noreferrer");
+  };
 
   // ── Cargar tickets ──────────────────────────────────────────
   const loadTickets = async () => {
@@ -60,7 +69,9 @@ export default function Dashboard() {
       setTickets(data);
       if (data.length > 0) setSelectedTicketId(data[0].id);
     } catch (err) {
-      setError(err.message || "Error al cargar tus entradas. Inténtalo de nuevo.");
+      setError(
+        err.message || "Error al cargar tus entradas. Inténtalo de nuevo.",
+      );
     } finally {
       setLoading(false);
     }
@@ -72,7 +83,8 @@ export default function Dashboard() {
       if (document.visibilityState === "visible") loadTickets();
     };
     document.addEventListener("visibilitychange", handleVisibility);
-    return () => document.removeEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
 
   // Recargar cuando el Layout avisa que se aceptó una transferencia
@@ -85,19 +97,19 @@ export default function Dashboard() {
   useEffect(() => {
     const teams = Array.from(
       new Set(
-        tickets
-          .flatMap((t) => [t.equipoLocal, t.equipoVisita])
-          .filter(Boolean)
-      )
+        tickets.flatMap((t) => [t.equipoLocal, t.equipoVisita]).filter(Boolean),
+      ),
     );
 
-    const loaders = teams.map((team) => {
-      const key = getAssetKey(team);
-      const importer = flagImports[key];
-      if (!importer) return null;
-      if (flagUrls[key]) return null;
-      return importer().then((url) => [key, url?.default || url]);
-    }).filter(Boolean);
+    const loaders = teams
+      .map((team) => {
+        const key = getAssetKey(team);
+        const importer = flagImports[key];
+        if (!importer) return null;
+        if (flagUrls[key]) return null;
+        return importer().then((url) => [key, url?.default || url]);
+      })
+      .filter(Boolean);
 
     if (loaders.length === 0) return;
 
@@ -180,9 +192,13 @@ export default function Dashboard() {
       await ticketService.transferTicket(selectedTicketId, recipientEmail);
       setTransferSuccess(recipientEmail);
       setRecipientEmail("");
-      setTimeout(() => { loadTickets(); }, 500);
+      setTimeout(() => {
+        loadTickets();
+      }, 500);
     } catch (err) {
-      setTransferError(err.message || "Hubo un error al transferir la entrada.");
+      setTransferError(
+        err.message || "Hubo un error al transferir la entrada.",
+      );
     } finally {
       setTransferring(false);
     }
@@ -212,13 +228,17 @@ export default function Dashboard() {
             </h3>
             <div className="flex items-baseline gap-2">
               {loading ? (
-                <span className="text-6xl font-extrabold text-white animate-pulse">--</span>
+                <span className="text-6xl font-extrabold text-white animate-pulse">
+                  --
+                </span>
               ) : (
                 <span className="text-6xl font-extrabold text-white">
                   {String(tickets.length).padStart(2, "0")}
                 </span>
               )}
-              <span className="font-label-bold text-on-surface-variant">Entradas Activas</span>
+              <span className="font-label-bold text-on-surface-variant">
+                Entradas Activas
+              </span>
             </div>
           </div>
         </div>
@@ -235,7 +255,9 @@ export default function Dashboard() {
               </div>
               <div className="text-left">
                 <p className="font-label-bold text-on-surface">Mis Compras</p>
-                <p className="text-xs text-on-surface-variant">Historial de pagos</p>
+                <p className="text-xs text-on-surface-variant">
+                  Historial de pagos
+                </p>
               </div>
             </div>
             <ChevronRight size={20} className="text-on-surface-variant" />
@@ -250,7 +272,9 @@ export default function Dashboard() {
               </div>
               <div className="text-left">
                 <p className="font-label-bold text-on-surface">Transferir</p>
-                <p className="text-xs text-on-surface-variant">Enviar a un amigo</p>
+                <p className="text-xs text-on-surface-variant">
+                  Enviar a un amigo
+                </p>
               </div>
             </div>
             <ChevronRight size={20} className="text-on-surface-variant" />
@@ -261,8 +285,13 @@ export default function Dashboard() {
       {/* Upcoming Matches */}
       <section className="space-y-stack-md">
         <div className="flex items-center justify-between">
-          <h2 className="font-headline-md text-headline-md">Próximos Partidos</h2>
-          <button className="text-primary font-label-bold flex items-center gap-1 hover:underline text-sm">
+          <h2 className="font-headline-md text-headline-md">
+            Próximos Partidos
+          </h2>
+          <button
+            onClick={handleVerPdf}
+            className="text-primary font-label-bold flex items-center gap-1 hover:underline text-sm"
+          >
             Calendario completo
             <ExternalLink size={14} />
           </button>
@@ -285,8 +314,13 @@ export default function Dashboard() {
           <div className="flex md:grid md:grid-cols-3 gap-gutter overflow-x-auto no-scrollbar pb-4 -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
             {tickets.length === 0 ? (
               <div className="col-span-3 text-center py-12 glass-card rounded-xl">
-                <Ticket className="mx-auto text-on-surface-variant mb-3 opacity-50" size={48} />
-                <p className="text-on-surface-variant">No tienes entradas activas</p>
+                <Ticket
+                  className="mx-auto text-on-surface-variant mb-3 opacity-50"
+                  size={48}
+                />
+                <p className="text-on-surface-variant">
+                  No tienes entradas activas
+                </p>
               </div>
             ) : (
               tickets.map((tkt) => (
@@ -294,13 +328,16 @@ export default function Dashboard() {
                   key={tkt.id}
                   className="flex-shrink-0 w-72 md:w-full glass-card rounded-xl overflow-hidden flex flex-col group hover:border-primary/30 transition-all duration-300"
                 >
-                  <div className={`h-2 ${tkt.isLive ? "bg-gradient-to-r from-primary to-tertiary" : "bg-white/5"}`}></div>
+                  <div
+                    className={`h-2 ${tkt.isLive ? "bg-gradient-to-r from-primary to-tertiary" : "bg-white/5"}`}
+                  ></div>
                   <div className="p-gutter space-y-4">
                     <div className="flex justify-between items-center text-xs font-label-bold text-on-surface-variant">
                       <span>{tkt.fecha}</span>
                       {tkt.isLive ? (
                         <span className="bg-error-container text-on-error-container px-2 py-0.5 rounded-full flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span> LIVE
+                          <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>{" "}
+                          LIVE
                         </span>
                       ) : (
                         <span className="text-primary">{tkt.fase}</span>
@@ -323,7 +360,9 @@ export default function Dashboard() {
                               </div>
                             )}
                           </div>
-                          <span className="font-label-bold">{tkt.equipoLocal}</span>
+                          <span className="font-label-bold">
+                            {tkt.equipoLocal}
+                          </span>
                         </div>
                         <span className="font-data-mono text-primary">—</span>
                       </div>
@@ -342,7 +381,9 @@ export default function Dashboard() {
                               </div>
                             )}
                           </div>
-                          <span className="font-label-bold">{tkt.equipoVisita}</span>
+                          <span className="font-label-bold">
+                            {tkt.equipoVisita}
+                          </span>
                         </div>
                         <span className="font-data-mono text-primary">—</span>
                       </div>
@@ -355,9 +396,18 @@ export default function Dashboard() {
                       </div>
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-on-surface-variant">
-                          Sector: <span className="text-on-surface font-label-bold">{tkt.sector}</span>
+                          Sector:{" "}
+                          <span className="text-on-surface font-label-bold">
+                            {tkt.sector}
+                          </span>
                           {tkt.fila && tkt.fila !== "—" && (
-                            <> • Fila <span className="text-on-surface font-label-bold">{tkt.fila}</span></>
+                            <>
+                              {" "}
+                              • Fila{" "}
+                              <span className="text-on-surface font-label-bold">
+                                {tkt.fila}
+                              </span>
+                            </>
                           )}
                         </span>
                       </div>
@@ -393,9 +443,13 @@ export default function Dashboard() {
         </div>
         <div className="relative z-10 p-gutter flex items-center justify-between">
           <div>
-            <h3 className="font-headline-sm text-headline-sm text-white">Explora el Estadio Azteca</h3>
+            <h3 className="font-headline-sm text-headline-sm text-white">
+              Explora el Estadio Azteca
+            </h3>
             {/* CAMBIO 2: texto actualizado */}
-            <p className="text-sm text-on-surface-variant">Ver todos los estadios y sus sectores</p>
+            <p className="text-sm text-on-surface-variant">
+              Ver todos los estadios y sus sectores
+            </p>
           </div>
           <button className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-full text-white hover:bg-white/20 transition-all active:scale-90 duration-150">
             <Compass size={24} />
@@ -415,7 +469,9 @@ export default function Dashboard() {
             </button>
 
             <div className="space-y-1">
-              <h3 className="font-headline-sm text-lg text-white">Entrada Digital</h3>
+              <h3 className="font-headline-sm text-lg text-white">
+                Entrada Digital
+              </h3>
               <p className="text-xs text-on-surface-variant">
                 {activeQR.equipoLocal} vs {activeQR.equipoVisita}
               </p>
@@ -441,8 +497,15 @@ export default function Dashboard() {
                 <span>UBICACIÓN</span>
               </div>
               <div className="flex justify-between font-semibold text-white">
-                <span className="truncate max-w-[150px]">{activeQR.estadio.split(",")[0]}</span>
-                <span>Sec {activeQR.sector}{activeQR.fila && activeQR.fila !== "—" ? ` • Fila ${activeQR.fila}` : ""}</span>
+                <span className="truncate max-w-[150px]">
+                  {activeQR.estadio.split(",")[0]}
+                </span>
+                <span>
+                  Sec {activeQR.sector}
+                  {activeQR.fila && activeQR.fila !== "—"
+                    ? ` • Fila ${activeQR.fila}`
+                    : ""}
+                </span>
               </div>
             </div>
 
@@ -492,7 +555,11 @@ export default function Dashboard() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="relative w-full max-w-md glass-card rounded-2xl p-6 border border-white/10 animate-in zoom-in-95 duration-200">
             <button
-              onClick={() => { setTransferModalOpen(false); setTransferError(""); setTransferSuccess(""); }}
+              onClick={() => {
+                setTransferModalOpen(false);
+                setTransferError("");
+                setTransferSuccess("");
+              }}
               className="absolute top-4 right-4 p-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-full transition-all"
             >
               <X size={20} />
@@ -508,15 +575,25 @@ export default function Dashboard() {
                 <div className="w-16 h-16 bg-tertiary/20 text-tertiary rounded-full flex items-center justify-center mx-auto">
                   <Check size={36} />
                 </div>
-                <p className="text-lg font-semibold text-white">¡Solicitud enviada!</p>
+                <p className="text-lg font-semibold text-white">
+                  ¡Solicitud enviada!
+                </p>
                 <p className="text-sm text-on-surface-variant">
-                  Tu entrada fue enviada a <span className="text-primary font-semibold">{transferSuccess}</span>.
+                  Tu entrada fue enviada a{" "}
+                  <span className="text-primary font-semibold">
+                    {transferSuccess}
+                  </span>
+                  .
                 </p>
                 <p className="text-xs text-on-surface-variant mt-1">
-                  La entrada seguirá siendo tuya hasta que el destinatario acepte. Te avisaremos cuando responda.
+                  La entrada seguirá siendo tuya hasta que el destinatario
+                  acepte. Te avisaremos cuando responda.
                 </p>
                 <button
-                  onClick={() => { setTransferModalOpen(false); setTransferSuccess(""); }}
+                  onClick={() => {
+                    setTransferModalOpen(false);
+                    setTransferSuccess("");
+                  }}
                   className="mt-2 px-6 py-2 bg-surface-container-high rounded-lg text-sm text-on-surface hover:bg-white/10 transition-colors"
                 >
                   Cerrar
@@ -542,8 +619,21 @@ export default function Dashboard() {
                     className="w-full bg-surface-container-highest border border-white/10 rounded-lg p-3 text-sm text-white focus:outline-none focus:border-primary"
                   >
                     {tickets.map((tkt) => (
-                      <option key={tkt.id} value={tkt.id} disabled={tkt.vecesTransferida >= 3}>
-                        {tkt.equipoLocal} vs {tkt.equipoVisita} — Sector {tkt.sector}{tkt.fila && tkt.fila !== "—" ? `, Fila ${tkt.fila}` : ""} ({tkt.vecesTransferida >= 3 ? "no transferible" : `${tkt.vecesTransferida ?? 0}/3`})
+                      <option
+                        key={tkt.id}
+                        value={tkt.id}
+                        disabled={tkt.vecesTransferida >= 3}
+                      >
+                        {tkt.equipoLocal} vs {tkt.equipoVisita} — Sector{" "}
+                        {tkt.sector}
+                        {tkt.fila && tkt.fila !== "—"
+                          ? `, Fila ${tkt.fila}`
+                          : ""}{" "}
+                        (
+                        {tkt.vecesTransferida >= 3
+                          ? "no transferible"
+                          : `${tkt.vecesTransferida ?? 0}/3`}
+                        )
                       </option>
                     ))}
                   </select>
@@ -564,26 +654,42 @@ export default function Dashboard() {
                 </div>
 
                 <div className="bg-primary-container/10 border border-primary-container/20 rounded-lg p-3 text-[11px] text-on-surface-variant leading-relaxed">
-                  ⚠️ <strong>Importante:</strong> La entrada cambiará de titular una vez que el destinatario acepte la solicitud desde sus notificaciones.
+                  ⚠️ <strong>Importante:</strong> La entrada cambiará de titular
+                  una vez que el destinatario acepte la solicitud desde sus
+                  notificaciones.
                 </div>
 
                 <div className="flex gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => { setTransferModalOpen(false); setTransferError(""); }}
+                    onClick={() => {
+                      setTransferModalOpen(false);
+                      setTransferError("");
+                    }}
                     className="flex-1 bg-white/5 hover:bg-white/10 text-white font-label-bold py-3 rounded-lg transition-colors"
                   >
                     Cancelar
                   </button>
                   <button
                     type="submit"
-                    disabled={transferring || tickets.length === 0 || tickets.find((t) => String(t.id) === String(selectedTicketId))?.vecesTransferida >= 3}
+                    disabled={
+                      transferring ||
+                      tickets.length === 0 ||
+                      tickets.find(
+                        (t) => String(t.id) === String(selectedTicketId),
+                      )?.vecesTransferida >= 3
+                    }
                     className="flex-1 bg-tertiary text-on-primary font-label-bold py-3 rounded-lg hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {transferring && <Loader2 className="animate-spin" size={16} />}
+                    {transferring && (
+                      <Loader2 className="animate-spin" size={16} />
+                    )}
                     {(() => {
-                      const tktSel = tickets.find((t) => String(t.id) === String(selectedTicketId));
-                      if (tktSel?.vecesTransferida >= 3) return "Entrada no transferible";
+                      const tktSel = tickets.find(
+                        (t) => String(t.id) === String(selectedTicketId),
+                      );
+                      if (tktSel?.vecesTransferida >= 3)
+                        return "Entrada no transferible";
                       return transferring ? "Enviando..." : "Confirmar";
                     })()}
                   </button>

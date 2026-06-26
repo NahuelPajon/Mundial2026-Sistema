@@ -10,6 +10,7 @@ import {
   Plus
 } from "lucide-react";
 import { estadioService } from "../services/estadioService";
+import PaisSelect from "../components/common/PaisSelect";
 
 export default function AdminEstadios() {
   const [stadiums, setStadiums] = useState([]);
@@ -26,6 +27,25 @@ export default function AdminEstadios() {
   const [editedPrices, setEditedPrices] = useState({}); // { [sectorId]: price }
   const [savingSectors, setSavingSectors] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState("");
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [creatingStadium, setCreatingStadium] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [createSuccess, setCreateSuccess] = useState("");
+  const [createForm, setCreateForm] = useState({
+    nombre: "",
+    aforo: "",
+    paisDir: "",
+    localidad: "",
+    calle: "",
+    numeroDir: "",
+    sectores: [
+      { codigo: "A", capacidadMaxima: "15000", costo: "45" },
+      { codigo: "B", capacidadMaxima: "12000", costo: "35" },
+      { codigo: "C", capacidadMaxima: "9000", costo: "25" },
+      { codigo: "D", capacidadMaxima: "6000", costo: "15" }
+    ]
+  });
 
   const loadStadiums = async () => {
     try {
@@ -101,6 +121,86 @@ export default function AdminEstadios() {
     }
   };
 
+  const handleCreateInputChange = (field, value) => {
+    setCreateForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleCreateSectorChange = (index, field, value) => {
+    setCreateForm(prev => {
+      const updatedSectores = [...prev.sectores];
+      updatedSectores[index] = {
+        ...updatedSectores[index],
+        [field]: value
+      };
+      return { ...prev, sectores: updatedSectores };
+    });
+  };
+
+  const resetCreateForm = () => {
+    setCreateForm({
+      nombre: "",
+      aforo: "",
+      paisDir: "",
+      localidad: "",
+      calle: "",
+      numeroDir: "",
+      sectores: [
+        { codigo: "A", capacidadMaxima: "15000", costo: "45" },
+        { codigo: "B", capacidadMaxima: "12000", costo: "35" },
+        { codigo: "C", capacidadMaxima: "9000", costo: "25" },
+        { codigo: "D", capacidadMaxima: "6000", costo: "15" }
+      ]
+    });
+    setCreateError("");
+    setCreateSuccess("");
+  };
+
+  const handleCreateStadium = async (e) => {
+    e.preventDefault();
+    setCreateError("");
+    setCreateSuccess("");
+
+    if (!createForm.nombre || !createForm.aforo || !createForm.paisDir || !createForm.localidad) {
+      setCreateError("Completa los campos obligatorios para crear el estadio.");
+      return;
+    }
+
+    const sectores = createForm.sectores.map((sector) => ({
+      codigo: sector.codigo,
+      capacidadMaxima: Number(sector.capacidadMaxima),
+      costo: Number(sector.costo)
+    }));
+
+    try {
+      setCreatingStadium(true);
+
+      await estadioService.create({
+        nombre: createForm.nombre,
+        aforo: Number(createForm.aforo),
+        paisDir: createForm.paisDir,
+        localidad: createForm.localidad,
+        calle: createForm.calle,
+        numeroDir: createForm.numeroDir,
+        sectores
+      });
+
+      setCreateSuccess("Estadio creado correctamente.");
+      await loadStadiums();
+      setTimeout(() => {
+        setIsCreateModalOpen(false);
+        resetCreateForm();
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      setCreateError(err.message || "Error al crear el estadio.");
+    } finally {
+      setCreatingStadium(false);
+    }
+  };
+
   const handlePriceChange = (sectorId, val) => {
     setEditedPrices(prev => ({
       ...prev,
@@ -143,9 +243,13 @@ export default function AdminEstadios() {
       }, 1500);
 
     } catch (err) {
-      console.error(err);
-      setSectorsError("Ocurrió un error al guardar los cambios en los sectores.");
-    } finally {
+  console.error(err);
+
+  setSectorsError(
+    err?.message ||
+    "Ocurrió un error al guardar los cambios en los sectores."
+  );
+} finally {
       setSavingSectors(false);
     }
   };
@@ -257,9 +361,167 @@ export default function AdminEstadios() {
       </section>
 
       {/* Floating Action Button (Optional Visual Polish) */}
-      <button className="fixed bottom-24 right-6 w-14 h-14 bg-tertiary text-primary-container rounded-full shadow-[0_8px_24px_rgba(76,227,70,0.3)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-40">
+      <button
+        onClick={() => setIsCreateModalOpen(true)}
+        className="fixed bottom-24 right-6 w-14 h-14 bg-tertiary text-primary-container rounded-full shadow-[0_8px_24px_rgba(76,227,70,0.3)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform z-40"
+      >
         <Plus size={28} />
       </button>
+
+      {/* Create Stadium Modal */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0" onClick={() => !creatingStadium && setIsCreateModalOpen(false)}></div>
+          <div className="relative w-full max-w-3xl bg-surface-container-high rounded-t-3xl md:rounded-xl shadow-2xl overflow-hidden border-t md:border border-white/10 flex flex-col z-10 max-h-[90vh] animate-in slide-in-from-bottom md:zoom-in-95 duration-200">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+              <div>
+                <h3 className="font-headline-sm text-lg text-primary font-bold">Crear nueva sede</h3>
+                <p className="text-xs text-on-surface-variant mt-1">
+                  Los estadios sólo se crearán si pertenecen al país del administrador.
+                </p>
+              </div>
+              <button
+                onClick={() => !creatingStadium && setIsCreateModalOpen(false)}
+                disabled={creatingStadium}
+                className="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant hover:text-white hover:bg-white/5 active:scale-90 transition-transform"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateStadium} className="p-6 overflow-y-auto space-y-4 max-h-[75vh]">
+              {createError && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl p-4">
+                  {createError}
+                </div>
+              )}
+              {createSuccess && (
+                <div className="bg-lime-500/10 border border-lime-500/30 text-lime-300 rounded-xl p-4">
+                  {createSuccess}
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-on-surface-variant block mb-2">Nombre del estadio</label>
+                  <input
+                    value={createForm.nombre}
+                    onChange={(e) => handleCreateInputChange("nombre", e.target.value)}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                    placeholder="Ej. Estadio Azteca"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-on-surface-variant block mb-2">Aforo total</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={createForm.aforo}
+                    onChange={(e) => handleCreateInputChange("aforo", e.target.value)}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                    placeholder="50000"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-on-surface-variant block mb-2">País</label>
+                  <PaisSelect
+                    value={createForm.paisDir}
+                    onChange={(e) => handleCreateInputChange("paisDir", e.target.value)}
+                    soloAnfitriones={true}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-on-surface-variant block mb-2">Localidad</label>
+                  <input
+                    value={createForm.localidad}
+                    onChange={(e) => handleCreateInputChange("localidad", e.target.value)}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                    placeholder="Ciudad"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-on-surface-variant block mb-2">Calle</label>
+                  <input
+                    value={createForm.calle}
+                    onChange={(e) => handleCreateInputChange("calle", e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                    placeholder="Av. Principal"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm text-on-surface-variant block mb-2">Número</label>
+                  <input
+                    value={createForm.numeroDir}
+                    onChange={(e) => handleCreateInputChange("numeroDir", e.target.value)}
+                    className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                    placeholder="123"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-primary">Sectores iniciales</h4>
+                {createForm.sectores.map((sector, index) => (
+                  <div key={sector.codigo} className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                    <div>
+                      <label className="text-sm text-on-surface-variant block mb-2">Código</label>
+                      <input
+                        value={sector.codigo}
+                        disabled
+                        className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm text-on-surface-variant block mb-2">Capacidad</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={sector.capacidadMaxima}
+                        onChange={(e) => handleCreateSectorChange(index, "capacidadMaxima", e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm text-on-surface-variant block mb-2">Costo USD</label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={sector.costo}
+                        onChange={(e) => handleCreateSectorChange(index, "costo", e.target.value)}
+                        className="w-full rounded-xl border border-white/10 bg-surface-container-low p-3 text-white outline-none focus:border-primary"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex flex-col md:flex-row gap-3 pt-4 border-t border-white/10">
+                <button
+                  type="button"
+                  onClick={() => { resetCreateForm(); setIsCreateModalOpen(false); }}
+                  disabled={creatingStadium}
+                  className="w-full md:w-auto flex-1 rounded-xl border border-white/10 text-white px-5 py-3 hover:bg-white/5 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingStadium}
+                  className="w-full md:w-auto flex-2 rounded-xl bg-tertiary text-primary-container px-5 py-3 font-semibold hover:brightness-105 transition"
+                >
+                  {creatingStadium ? "Creando..." : "Crear estadio"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Sector Details Modal */}
       {selectedStadium && (
